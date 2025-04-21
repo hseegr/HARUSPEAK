@@ -1,0 +1,48 @@
+# .idea 폴더 (IntelliJ IDEA 프로젝트 설정 파일들)
+.idea/
+
+# 빌드 파일들
+target/
+build/
+
+# Eclipse, NetBeans와 같은 다른 IDE에서 생성되는 파일들
+*.classpath
+*.project
+*.settings/
+
+# 운영 체제별 파일들
+.DS_Store
+Thumbs.db
+
+# Maven 관련 파일들
+*.log
+*.tmp
+*.bak
+
+# Gradle 관련 파일들
+.gradle/
+build/
+out/
+
+# Java 파일 컴파일 관련
+*.class
+*.jar
+*.war
+*.ear
+
+# IntelliJ IDEA에서 사용하는 임시 파일들
+*.iml
+.idea/
+
+# 라이브러리 및 의존성 관련 (IDE 설정에 따라 필요할 수 있음)
+*.jar
+
+# Spring Boot에서 실행되는 임시 디렉토리
+.spring-boot-devtools/
+
+# 환경 설정 파일들 (비밀번호나 API 키가 포함될 수 있으므로)
+*.env
+*.local
+application.properties
+application.yml
+application.yaml
