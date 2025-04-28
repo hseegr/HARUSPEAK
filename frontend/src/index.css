@@ -136,3 +136,29 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-VariableFont_wght.ttf');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.ttf');
+  font-weight: 100 900;
+  /* 가변 폰트 지원 */
+  font-style: normal;
+}
+
+@layer base {
+  body {
+    font-family: 'Montserrat', 'Pretendard', 'LeeSeoYoon', sans-serif;
+  }
+}
+
+@font-face {
+  font-family: 'LeeSeoYoon'; /* 네가 부를 이름 (영문 이름 추천) */
+  src: url('/fonts/이서윤체.ttf') format('truetype'); /* 파일 경로 맞게! */
+  font-weight: normal;
+  font-style: normal;
+}

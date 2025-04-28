@@ -12,6 +12,17 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        'haru-green': '#0D4715',
+        'haru-light-green': '#41644A',
+        'haru-beige': '#F1F0E9',
+        'haru-yellow': '#FCFBF2',
+        'haru-gray-1': '#FCFCFC',
+        'haru-gray-2': '#F4F4F4',
+        'haru-gray-3': '#E5E5E5',
+        'haru-gray-4': '#CCCCCC',
+        'haru-gray-5': '#A9A9A9',
+        'haru-black': '#242424',
+
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
