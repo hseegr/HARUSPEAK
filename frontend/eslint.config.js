@@ -73,9 +73,36 @@ export default [
         'error',
         {
           cases: {
-            kebabCase: true,
-            pascalCase: true,
+            // 기본 케이스를 지정하지 않고, 패턴별로 다른 케이스 적용
           },
+          // 패턴별 케이스 규칙
+          ignores: ['\\.[jt]sx$'], // 컴포넌트 파일(.jsx, .tsx)은 별도 규칙 적용
+          overrides: [
+            // 컴포넌트 파일에는 PascalCase 적용
+            {
+              match: ['\\.[jt]sx$'],
+              case: 'pascalCase',
+            },
+            // 정적 자산 파일에는 kebab-case 적용
+            {
+              match: [
+                '\\.png$',
+                '\\.jpg$',
+                '\\.svg$',
+                '\\.gif$',
+                '\\.webp$',
+                '\\.ico$',
+                '\\.json$',
+                '\\.md$',
+              ],
+              case: 'kebabCase',
+            },
+            // 기타 파일(훅, API 함수 등)에는 camelCase 적용
+            {
+              match: ['\\.[jt]s$'],
+              case: 'camelCase',
+            },
+          ],
         },
       ],
 
