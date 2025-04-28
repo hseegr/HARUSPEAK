@@ -1,10 +1,12 @@
 import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+
+// import { useNavigate } from 'react-router-dom';
 
 import myTodayOff from '@/assets/images/mytoday_off.png';
-import myTodayOn from '@/assets/images/mytoday_on.png';
 import todayOff from '@/assets/images/today_off.png';
-import todayOn from '@/assets/images/today_on.png';
+
+// import myTodayOn from '@/assets/images/mytoday_on.png';
+// import todayOn from '@/assets/images/today_on.png';
 
 const NavigationBar = () => {
   return (
