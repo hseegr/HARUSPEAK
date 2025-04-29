@@ -63,6 +63,10 @@ dependencies {
 
     // swagger
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+
+    testImplementation "org.junit.platform:junit-platform-launcher:1.5.2"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
+    testImplementation "org.mockito:mockito-core:3.12.4"
 }
 
 dependencyManagement {
