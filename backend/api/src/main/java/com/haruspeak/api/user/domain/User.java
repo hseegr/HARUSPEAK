@@ -53,7 +53,7 @@ public class User {
     /**
      * 회원 가입 시 사용
      */
-    public static User signup(String snsId, String email, String name) {
+    public static User create(String snsId, String email, String name) {
         return User.builder()
                 .snsType("google")
                 .snsId(snsId)

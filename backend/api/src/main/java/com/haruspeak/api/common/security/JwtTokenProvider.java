@@ -1,0 +1,168 @@
+package com.haruspeak.api.common.security;
+
+import com.haruspeak.api.common.exception.user.InvalidJwtInputException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
+
+/**
+ * JWT 토큰 발급기
+ * - AccessToken : 사용자 인증용
+ * - RefreshToken : 토큰 재발급용
+ */
+@Component
+@RequiredArgsConstructor
+@Setter
+public class JwtTokenProvider {
+
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+
+    @Getter
+    @Value("${jwt.expiration-ms.access}")
+    private long accessTokenExpiration;
+
+    @Getter
+    @Value("${jwt.expiration-ms.refresh}")
+    private long refreshTokenExpiration;
+
+    @Value("${jwt.token-prefix}")
+    private String tokenPrefix;
+
+    private Key signingKey;
+
+    @PostConstruct
+    public void init() {
+        this.signingKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
+
+    /**
+     * Access Token 생성
+     *
+     * @param userId 사용자 ID (PK)
+     * @param name 사용자 이름
+     * @return JWT 문자열
+     */
+    public String createAccessToken(Integer userId, String name) {
+        if (userId == null) {
+            throw new InvalidJwtInputException("userId");
+        }
+
+        if (name == null || name.isBlank()) {
+            throw new InvalidJwtInputException("name");
+        }
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + accessTokenExpiration);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("name", name)
+                .claim("userId", userId)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Refresh Token 생성
+     *
+     * @param userId 사용자 ID (PK)
+     * @return JWT 문자열
+     */
+    public String createRefreshToken(Integer userId) {
+        if (userId == null) {
+            throw new InvalidJwtInputException("userId");
+        }
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshTokenExpiration);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("userId", userId)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Authorization 헤더 - 토큰 포맷 생성
+     *
+     * @param token JWT 문자열
+     * @return "Bearer {token}" 형태의 문자열
+     */
+    public String getTokenWithPrefix(String token) {
+        return tokenPrefix + token;
+    }
+
+    /**
+     * 토큰에서 userId 추출
+     *
+     * @param token JWT 문자열
+     * @return userId (Integer)
+     */
+    public Integer getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("userId", Integer.class);
+    }
+
+    /**
+     * 토큰에서 name 추출
+     *
+     * @param token JWT 문자열
+     * @return 사용자 이름 (String)
+     */
+    public String getNameFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("name", String.class);
+    }
+
+    /**
+     * JWT 토큰 문자열을 파싱하여 Claims 추출
+     *
+     * @param token JWT 문자열
+     * @return Claims
+     */
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * 토큰 유효성 검사
+     * - 만료 여부 / 서명 위조 여부 / 구조 손상 여부 검사
+     *
+     * @param token JWT 문자열
+     * @return 유효하면 true, 유효하지 않으면 false
+     */
+    public boolean validateToken(String token) {
+        try {
+            parseClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return false; // 만료된 토큰
+        } catch (Exception e) {
+            return false; // 서명 위조, 구조 이상 등
+        }
+    }
+
+
+
+}
