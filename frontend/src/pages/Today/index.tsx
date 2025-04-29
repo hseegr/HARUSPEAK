@@ -1,5 +1,5 @@
 import MomentCard from '@/components/MomentCard';
-import { useToday } from '@/hooks/useToday';
+import { useToday } from '@/hooks/useTodayQuery';
 
 const TodayPage = () => {
   const { data, isLoading } = useToday();
