@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
+import java.time.LocalDateTime;
+
 /**
  * View - daily_moments
  * - is_deleted = 0
@@ -22,9 +24,11 @@ public class ActiveDailyMoment {
 
     private Integer summaryId;
 
+    private Integer userId;
+
     private String content;
 
-    private java.sql.Timestamp momentTime;
+    private LocalDateTime momentTime;
 
     private Integer imageCount;
 
