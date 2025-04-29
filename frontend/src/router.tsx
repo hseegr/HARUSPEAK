@@ -4,6 +4,9 @@ import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound/NotFound';
 import TodayPage from './pages/Today';
+import ImageUpload from './pages/TodayWritePage/ImageUpload';
+import TodayWritePage from './pages/TodayWritePage/TodayWritePage';
+import VoiceToText from './pages/TodayWritePage/VoiceToText';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +23,9 @@ export const router = createBrowserRouter([
         element: <NotFound />,
         handle: { title: '페이지를 찾을 수 없습니다' },
       },
+      { path: 'todaywrite', element: <TodayWritePage /> },
+      { path: 'todaywrite/voice', element: <VoiceToText /> },
+      { path: 'todaywrite/image', element: <ImageUpload /> },
       // 예시
       // { index: true, element: <OnboardingPage /> },
       // { path: 'main', element: <MainPage /> },
