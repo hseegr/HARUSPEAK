@@ -44,6 +44,9 @@ importers:
       react-router-dom:
         specifier: ^7.5.1
         version: 7.5.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-speech-recognition:
+        specifier: ^4.0.1
+        version: 4.0.1(react@18.2.0)
       tailwind-merge:
         specifier: ^3.2.0
         version: 3.2.0
@@ -2851,6 +2854,11 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-speech-recognition@4.0.1:
+    resolution: {integrity: sha512-0fIqzLtfY8vuYA6AmJVK7qiabZx0oFKOO+rbiBgFI3COWVGREy0A+gdU16hWXmFebeyrI8JsOLYsWk6WaHUXRw==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -6302,6 +6310,11 @@ snapshots:
       turbo-stream: 2.4.0
     optionalDependencies:
       react-dom: 18.2.0(react@18.2.0)
+
+  react-speech-recognition@4.0.1(react@18.2.0):
+    dependencies:
+      lodash.debounce: 4.0.8
+      react: 18.2.0
 
   react-style-singleton@2.2.3(@types/react@18.0.38)(react@18.2.0):
     dependencies:

@@ -18,7 +18,9 @@ const Header = ({ title }: HeaderProps) => {
       </button>
 
       {/* 가운데: 타이틀 */}
-      <h1 className='header-title text-base font-semibold text-gray-800'>{title}</h1>
+      <h1 className='header-title text-base font-semibold text-gray-800'>
+        {title}
+      </h1>
 
       {/* 오른쪽: 홈 아이콘 + (선택) 저장 버튼 */}
       <div className='flex items-center space-x-3'>

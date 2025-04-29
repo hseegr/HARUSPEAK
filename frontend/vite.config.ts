@@ -56,6 +56,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}'],
         cleanupOutdatedCaches: true,
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB로 늘림
       },
 
       // 개발 중에도 PWA 기능 테스트 가능
