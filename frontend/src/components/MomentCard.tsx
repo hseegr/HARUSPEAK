@@ -1,4 +1,7 @@
+import { useState } from 'react';
+
 import TagBadge from '@/components/TagBadge';
+import { createTags } from '@/mock/mockTodayApi';
 import { MomentCardProps } from '@/types/common';
 
 const formatMomentTime = (momentTime: string): string => {
@@ -11,11 +14,34 @@ const formatMomentTime = (momentTime: string): string => {
 };
 
 const MomentCard = ({ moment, isToday }: MomentCardProps) => {
+  const [tags, setTags] = useState<string[]>(moment.tags); // 서버에서 받은 기존 태그 유지
+  const [isLoading, setIsLoading] = useState(false);
   const formattedTime = formatMomentTime(moment.momentTime);
+
+  const handleGenerateTags = async () => {
+    try {
+      setIsLoading(true);
+      const response = await createTags({
+        tags, // 현재 가지고 있는 태그를 보내기
+        createdAt: moment.momentTime,
+        content: moment.content,
+      });
+
+      setTags(prevTags => {
+        const spaceLeft = 3 - prevTags.length;
+        const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
+        return [...prevTags, ...tagsToAdd];
+      });
+    } catch (error) {
+      console.error('태그 생성 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3 shadow-md'>
-      {/* 상단 : 사용자 지정 시각, 버튼 모음 */}
+      {/* 상단 */}
       <section className='flex justify-between'>
         <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
           {formattedTime}
@@ -27,7 +53,8 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           </div>
         )}
       </section>
-      {/* 중심부 : 이미지, 내용 세로 정렬 */}
+
+      {/* 중심부 */}
       <section className='text-start'>
         <div className='mb-3 flex w-full justify-between'>
           {moment.images.slice(0, 3).map((image, idx) => {
@@ -57,17 +84,24 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         </div>
         <div>{moment.content}</div>
       </section>
-      {/* 하단 : 태그 뱃지 모음, 태그 생성 버튼 */}
+
+      {/* 하단 */}
       <section className='flex items-start'>
         <div className='flex flex-1 flex-wrap items-center gap-2'>
-          {moment.tags.map((tag, idx) => (
+          {tags.map((tag, idx) => (
             <TagBadge key={`${tag}-${idx}`} tag={tag} />
           ))}
         </div>
-        {isToday && (
+
+        {/* ✨ 태그가 3개 미만일 때만 버튼 보이기 */}
+        {isToday && tags.length < 3 && (
           <div className='flex-shrink-0 pl-1'>
-            <button className='rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white'>
-              태그 자동 생성
+            <button
+              onClick={handleGenerateTags}
+              className='rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+              disabled={isLoading}
+            >
+              {isLoading ? '생성 중...' : '태그 자동 생성'}
             </button>
           </div>
         )}
