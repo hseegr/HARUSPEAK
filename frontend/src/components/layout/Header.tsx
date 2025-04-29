@@ -11,14 +11,14 @@ const Header = ({ title }: HeaderProps) => {
   const navigate = useNavigate();
 
   return (
-    <header className='absolute top-0 z-10 flex h-12 w-full px-4 items-center justify-between'>
+    <header className='fixed top-0 z-10 flex h-12 w-full max-w-96 items-center justify-between bg-white px-4'>
       {/* 왼쪽: 뒤로가기 */}
       <button onClick={() => navigate(-1)} className='text-gray-800'>
         <ChevronLeft />
       </button>
 
       {/* 가운데: 타이틀 */}
-      <h1 className='text-base font-semibold text-gray-800'>{title}</h1>
+      <h1 className='header-title text-base font-semibold text-gray-800'>{title}</h1>
 
       {/* 오른쪽: 홈 아이콘 + (선택) 저장 버튼 */}
       <div className='flex items-center space-x-3'>
