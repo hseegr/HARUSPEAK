@@ -18,16 +18,16 @@ const TodayWritePage = () => {
   };
 
   return (
-    <div className='flex flex-col items-center'>
-      <div className='w-full min-w-60'>
+    <div className='mb-2 flex w-full flex-col'>
+      <div className='flex min-h-[calc(100vh-150px)] flex-col justify-between px-2'>
         {/* 안내 문구 */}
-        <div className='m-10 mb-6 text-center text-sm text-gray-400'>
+        <div className='text-center text-sm text-gray-400'>
           오늘 일기를 작성해주세요
         </div>
 
-        <div className='fixed bottom-20 left-1/2 w-full max-w-md -translate-x-1/2 p-4'>
+        <div className='flex flex-col gap-4'>
           {/* 버튼들 */}
-          <div className='mb-4 flex gap-2'>
+          <div className='flex gap-2'>
             <ImageAttachButton onClick={handleImageButtonClick} />
             <VoiceToTextButton onClick={handleVoiceButtonClick} />
           </div>

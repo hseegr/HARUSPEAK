@@ -13,7 +13,15 @@ const ImageUpload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setImages(prev => [...prev, ...newFiles]);
+      setImages(prev => {
+        const combined = [...prev, ...newFiles];
+        if (combined.length > 10) {
+          // 토스트 ???
+          // alert('이미지는 최대 10개까지만 첨부할 수 있어요.');
+          return prev; // 변경하지 않음
+        }
+        return combined;
+      });
     }
   };
 
@@ -34,19 +42,24 @@ const ImageUpload = () => {
   };
 
   return (
-    <div className='flex min-h-screen max-w-md flex-col justify-center px-4 pt-6'>
-      <div className='flex h-96 w-full items-center justify-center rounded-xl border bg-gray-50 text-sm text-gray-400'>
-        <div className=''>
-          {/* 업로드 전/후 구간 */}
-          {images.length === 0 ? (
-            <div>이미지를 업로드 하세요</div>
-          ) : (
-            <ImageList images={images} onRemove={handleRemove} />
-          )}
+    <div className='flex w-full flex-col justify-center px-4 pt-6'>
+      <div className='flex min-h-96 rounded-xl border bg-gray-50 text-sm text-gray-400'>
+        <div className='flex w-full flex-col justify-between p-4'>
+          {/* 상단 콘텐츠 (업로드 전 or 이미지 리스트) */}
+          <div className='flex-1'>
+            {images.length === 0 ? (
+              <div className='text-center'>이미지를 업로드 하세요</div>
+            ) : (
+              <ImageList images={images} onRemove={handleRemove} />
+            )}
+          </div>
 
-          {/* 이미지 찾기 버튼 */}
-          <div className='mt-4'>
-            <ImageFindButton onChange={handleFileChange} />
+          {/* 하단 이미지 찾기 버튼 */}
+          <div className='mt-4 flex justify-end'>
+            <ImageFindButton
+              onChange={handleFileChange}
+              disabled={images.length >= 10}
+            />
           </div>
         </div>
       </div>

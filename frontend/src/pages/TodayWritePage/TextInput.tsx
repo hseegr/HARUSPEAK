@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ChevronUp } from 'lucide-react';
 
-// 보내기 아이콘
-
 const TextInput = () => {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -30,20 +28,22 @@ const TextInput = () => {
   };
 
   return (
-    <div className='relative w-full'>
+    <div className='flex min-h-20 w-full rounded-xl border px-2 py-2 focus-within:border-haru-green'>
       {/* 텍스트 입력창 */}
       <textarea
         ref={textareaRef}
         value={text}
         onChange={handleChange}
         placeholder='오늘 일기를 작성해주세요'
-        className='min-h-[120px] w-full resize-none rounded-xl border p-3 pr-12 text-sm placeholder-gray-400 focus:border-haru-green focus:outline-none'
+        rows={1}
+        className='flex-grow resize-none bg-transparent text-sm placeholder-gray-400 focus:outline-none'
       />
 
       {/* 보내기 버튼 */}
       <button
         onClick={handleSubmit}
-        className={`absolute bottom-4 right-4 flex h-8 w-8 items-center justify-center rounded-full ${text.trim() ? 'bg-haru-green' : 'bg-gray-300'}`}
+        disabled={!text.trim()}
+        className={`ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${text.trim() ? 'bg-haru-green' : 'bg-gray-300'}`}
       >
         <ChevronUp className='h-4 w-4 text-white' />
       </button>

@@ -45,7 +45,7 @@ const VoiceToText = () => {
   };
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center'>
+    <div className='flex min-h-[calc(100vh-150px)] w-full flex-col items-center justify-center'>
       {!convertedText ? (
         <>
           {listening ? (
