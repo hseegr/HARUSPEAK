@@ -13,6 +13,7 @@ public enum ErrorCode  {
     MISSING_REQUIRED_FIELDS(40000, "요청에 필수 필드가 누락되었습니다."),
     GOOGLE_LOGIN_FAILED(40010, "구글 로그인 인증 실패. 유효한 인증 정보를 제공해 주세요. 구글에서 반환된 오류: %s"),
     INVALID_AUDIO_FILE(40020, "음성 파일이 유효하지 않거나 잘못된 형식입니다."),
+    INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED_USER(40110, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
