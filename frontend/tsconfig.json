@@ -6,6 +6,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".", // 경로 기준을 프로젝트 루트로 설정
+    "types": ["dom-speech-recognition"],
     "paths": {
       "@/*": ["src/*"] // '@'를 'src' 디렉토리로 매핑
     }
