@@ -6,7 +6,7 @@ import TodayPage from './pages/Today';
 import ImageUpload from './pages/TodayWritePage/ImageUpload';
 import TodayWritePage from './pages/TodayWritePage/TodayWritePage';
 import VoiceToText from './pages/TodayWritePage/VoiceToText';
-import NotFound from './pages/notFound/NotFound';
+import NotFound from './pages/notFound/index';
 
 export const router = createBrowserRouter([
   {
