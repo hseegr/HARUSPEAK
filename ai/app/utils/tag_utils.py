@@ -22,6 +22,10 @@ parser = PydanticOutputParser(pydantic_object=KeywordOutput)
 # 프롬프트 템플릿
 prompt = PromptTemplate(
     template="""
+다음은 사용자의 일기입니다. 전체 내용을 대표할 수 있는 짧고 압축적인 핵심 키워드를 추출해 주세요.
+- 각 키워드는 명사형으로 5자 이내로 작성해 주세요.
+- 감정, 주제, 활동 등을 대표하는 단어여야 합니다.
+
 [일기]
 {diary}
 
