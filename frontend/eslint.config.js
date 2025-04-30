@@ -23,7 +23,7 @@ import globals from 'globals';
 export default [
   {
     // ESLint가 무시할 디렉토리를 지정합니다.
-    ignores: ['dist', 'node_modules'],
+    ignores: ['dist', 'dev-dist', 'node_modules'],
   },
   // ESLint의 기본 권장 설정을 적용합니다.
   js.configs.recommended,
@@ -69,40 +69,19 @@ export default [
       'check-file/folder-naming-convention': ['error', { '**/': 'CAMEL_CASE' }],
 
       // 파일 이름은 kebab-case 또는 PascalCase를 허용합니다.
+      // 수정된 unicorn/filename-case 룰
       'unicorn/filename-case': [
         'error',
         {
           cases: {
-            // 기본 케이스를 지정하지 않고, 패턴별로 다른 케이스 적용
+            camelCase: true,
+            pascalCase: true,
+            kebabCase: true,
           },
-          // 패턴별 케이스 규칙
-          ignores: ['\\.[jt]sx$'], // 컴포넌트 파일(.jsx, .tsx)은 별도 규칙 적용
-          overrides: [
-            // 컴포넌트 파일에는 PascalCase 적용
-            {
-              match: ['\\.[jt]sx$'],
-              case: 'pascalCase',
-            },
-            // 정적 자산 파일에는 kebab-case 적용
-            {
-              match: [
-                '\\.png$',
-                '\\.jpg$',
-                '\\.svg$',
-                '\\.gif$',
-                '\\.webp$',
-                '\\.ico$',
-                '\\.json$',
-                '\\.md$',
-              ],
-              case: 'kebabCase',
-            },
-            // 기타 파일(훅, API 함수 등)에는 camelCase 적용
-            {
-              match: ['\\.[jt]s$'],
-              case: 'camelCase',
-            },
-          ],
+          ignore: ['\\.tsx$', '\\.jsx$'],
+          // 특정 파일 타입에 대한 규칙을 정의하거나,
+          // 모든 파일에 camelCase, pascalCase, kebabCase를 허용하는 것으로 단순화
+          multipleFileExtensions: true,
         },
       ],
 

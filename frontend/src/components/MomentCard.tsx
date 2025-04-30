@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import TagBadge from '@/components/TagBadge';
 import { createTags } from '@/mock/mockTodayApi';
-import TagEditDialog from '@/pages/Today/components/TagEditDialog';
+import TagEditDialog from '@/pages/today/components/TagEditDialog';
 import { MomentCardProps } from '@/types/common';
 
 const formatMomentTime = (momentTime: string): string => {
