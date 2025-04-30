@@ -31,6 +31,7 @@ const MomentEditDialog = ({
   const [tags, setTags] = useState(moment.tags);
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteImages, setDeleteImages] = useState<string[]>([]);
   const [originalState, setOriginalState] = useState({
     content: moment.content,
     images: moment.images,
@@ -98,8 +99,8 @@ const MomentEditDialog = ({
       finalHours = 0;
     }
 
-    date.setHours(finalHours);
-    date.setMinutes(minutes);
+    date.setUTCHours(finalHours);
+    date.setUTCMinutes(minutes);
     return date.toISOString();
   };
 
@@ -145,7 +146,9 @@ const MomentEditDialog = ({
 
   // 이미지 삭제
   const handleDeleteImage = (index: number) => {
+    const deletedImage = images[index];
     setImages(prev => prev.filter((_, i) => i !== index));
+    setDeleteImages(prev => [...prev, deletedImage]);
   };
 
   // 태그 삭제
@@ -172,7 +175,7 @@ const MomentEditDialog = ({
         content,
         images,
         tags,
-        deleteImages: [],
+        deleteImages,
       };
 
       await updateMoment(updateData);
