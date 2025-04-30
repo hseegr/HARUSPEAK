@@ -43,7 +43,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-//    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.2.1'
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+    implementation 'software.amazon.awssdk:s3'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -70,7 +72,9 @@ dependencies {
 }
 
 dependencyManagement {
-
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1"
+    }
 }
 
 tasks.named('test') {

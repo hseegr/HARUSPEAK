@@ -14,6 +14,8 @@ public enum ErrorCode  {
     GOOGLE_LOGIN_FAILED(40010, "구글 로그인 인증 실패. 유효한 인증 정보를 제공해 주세요. 구글에서 반환된 오류: %s"),
     INVALID_JWT_INPUT(400011, "JWT 생성에 필요한 필드가 누락되었거나 잘못되었습니다."),
     INVALID_AUDIO_FILE(40020, "음성 파일이 유효하지 않거나 잘못된 형식입니다."),
+    BLANK_BASE64(40021, "Base64 문자열이 비어있습니다."),
+    INVALID_BASE64(40022, "유효하지 않은 Base64 문자열입니다."),
     INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
 
     // 401 Unauthorized
