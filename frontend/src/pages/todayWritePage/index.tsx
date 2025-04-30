@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
-import ImageAttachButton from './ImageAttachButton';
-import TextInput from './TextInput';
-import VoiceToTextButton from './VoiceToTextButton';
+import ImageAttachButton from './components/ImageAttachButton';
+import TextInput from './components/TextInput';
+import VoiceToTextButton from './components/VoiceToTextButton';
 
 const TodayWritePage = () => {
   const navigate = useNavigate();

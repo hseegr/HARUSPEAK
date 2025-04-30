@@ -3,12 +3,18 @@ import { createBrowserRouter } from 'react-router-dom';
 import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
 import TodayPage from './pages/Today';
-import ImageUpload from './pages/TodayWritePage/ImageUpload';
-import TodayWritePage from './pages/TodayWritePage/TodayWritePage';
-import VoiceToText from './pages/TodayWritePage/VoiceToText';
-import NotFound from './pages/notFound/index';
+import LoginPage from './pages/login/LoginPage';
+import NotFound from './pages/notFound/NotFound';
+import TodayWritePage from './pages/todayWritePage';
+import ImageUpload from './pages/todayWritePage/components/ImageUpload';
+import VoiceToText from './pages/todayWritePage/components/VoiceToText';
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+    handle: { title: '로그인' },
+  },
   {
     element: <BaseLayout />,
     children: [
