@@ -67,6 +67,10 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-launcher:1.5.2"
     testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
     testImplementation "org.mockito:mockito-core:3.12.4"
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'  // WebClient 사용
+
 }
 
 dependencyManagement {
