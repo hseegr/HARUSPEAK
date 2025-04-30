@@ -1,18 +1,10 @@
 import { useState } from 'react';
 
 import TagBadge from '@/components/TagBadge';
+import { formatMomentTime } from '@/lib/timeUtils';
 import { createTags } from '@/mock/mockTodayApi';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
-
-const formatMomentTime = (momentTime: string): string => {
-  const timeStr = momentTime.split('T')[1].slice(0, 5);
-  const [hoursStr, minutesStr] = timeStr.split(':');
-  const hours = parseInt(hoursStr, 10);
-  const hours12 = hours % 12 || 12;
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  return `${ampm} ${hours12}:${minutesStr}`;
-};
 
 const MomentCard = ({ moment, isToday }: MomentCardProps) => {
   const [tags, setTags] = useState<string[]>(moment.tags);
