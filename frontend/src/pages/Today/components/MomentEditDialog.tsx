@@ -10,6 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  convert24To12HourFormat,
+  get24HourFormat,
+  parseMomentTime,
+  updateMomentTime,
+} from '@/lib/timeUtils';
 import { updateMoment } from '@/mock/mockTodayApi';
 import { MomentContent } from '@/types/common';
 import { UpdateMomentRequest } from '@/types/today';
@@ -66,82 +72,14 @@ const MomentEditDialog = ({
   const isSaveDisabled = content.trim() === '' && images.length === 0;
 
   // momentTime 파싱 및 포맷팅
-  const parseMomentTime = (momentTime: string) => {
-    const date = new Date(momentTime);
-    return {
-      date: date
-        .toLocaleDateString('ko-KR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        })
-        .replace(/\. /g, '.')
-        .replace(/\.$/, ''),
-      time: date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
-    };
-  };
-
-  // 시간 업데이트
-  const updateMomentTime = (originalTime: string, newTime: string) => {
-    const date = new Date(originalTime);
-    const [time, period] = newTime.split(' ');
-    const [hours, minutes] = time.split(':').map(Number);
-
-    // AM/PM 처리
-    let finalHours = hours;
-    if (period === 'PM' && hours !== 12) {
-      finalHours += 12;
-    } else if (period === 'AM' && hours === 12) {
-      finalHours = 0;
-    }
-
-    date.setUTCHours(finalHours);
-    date.setUTCMinutes(minutes);
-    return date.toISOString();
-  };
-
   const { date, time } = parseMomentTime(moment.momentTime);
   const [editedTime, setEditedTime] = useState(time);
 
   // 시간 입력 핸들러
   const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputTime = e.target.value;
-    const [hours, minutes] = inputTime.split(':').map(Number);
-
-    // 24시간 형식을 12시간 형식으로 변환
-    let period = 'AM';
-    let displayHours = hours;
-
-    if (hours >= 12) {
-      period = 'PM';
-      if (hours > 12) {
-        displayHours = hours - 12;
-      }
-    } else if (hours === 0) {
-      displayHours = 12;
-    }
-
-    const formattedTime = `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+    const formattedTime = convert24To12HourFormat(inputTime);
     setEditedTime(formattedTime);
-  };
-
-  // 12시간 형식을 24시간 형식으로 변환
-  const get24HourFormat = (timeStr: string) => {
-    const [time, period] = timeStr.split(' ');
-    const [hours, minutes] = time.split(':').map(Number);
-
-    let finalHours = hours;
-    if (period === 'PM' && hours !== 12) {
-      finalHours += 12;
-    } else if (period === 'AM' && hours === 12) {
-      finalHours = 0;
-    }
-
-    return `${finalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
 
   // 이미지 삭제
