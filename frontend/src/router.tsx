@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
 import TodayPage from './pages/Today';
-import LoginPage from './pages/login/LoginPage';
+import LoginPage from './pages/login';
 import NotFound from './pages/notFound/NotFound';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUpload from './pages/todayWritePage/components/ImageUpload';
