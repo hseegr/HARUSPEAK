@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -108,7 +108,7 @@ const MomentEditDialog = ({
   const [editedTime, setEditedTime] = useState(time);
 
   // 시간 입력 핸들러
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputTime = e.target.value;
     const [hours, minutes] = inputTime.split(':').map(Number);
 
