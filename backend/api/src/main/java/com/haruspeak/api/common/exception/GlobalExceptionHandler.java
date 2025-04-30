@@ -26,8 +26,11 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("errorCode", e.getErrorCode().getCode());  // 커스텀 에러 코드
         errorDetails.put("message", e.getErrorCode().getMessage()); // 기본 메시지
-        errorDetails.put("details", e.getDetails()); // 추가 정보
         errorDetails.put("timestamp", LocalDateTime.now());
+
+        if(e.getDetails() != null) {
+            errorDetails.put("details", e.getDetails()); // 추가 정보
+        }
 
         return ResponseEntity.status(e.getErrorCode().getCode() / 100)
                 .body(errorDetails);
