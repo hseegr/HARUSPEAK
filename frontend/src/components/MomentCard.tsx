@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import TagBadge from '@/components/TagBadge';
 import { createTags } from '@/mock/mockTodayApi';
-import TagEditDialog from '@/pages/Today/components/TagEditDialog';
+import MomentEditDialog from '@/pages/Today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
 
 const formatMomentTime = (momentTime: string): string => {
@@ -43,7 +43,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
   return (
     <>
-      <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3 shadow-md'>
+      <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3'>
         {/* 상단 */}
         <section className='flex justify-between'>
           <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
@@ -109,13 +109,10 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           )}
         </section>
       </article>
-      <TagEditDialog
+      <MomentEditDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
-        momentTime={moment.momentTime}
-        content={moment.content}
-        images={moment.images}
-        tags={tags}
+        moment={moment}
       />
     </>
   );
