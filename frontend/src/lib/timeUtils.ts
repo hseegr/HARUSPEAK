@@ -38,8 +38,20 @@ export const updateMomentTime = (originalTime: string, newTime: string) => {
 };
 
 export const get24HourFormat = (timeStr: string) => {
-  const [time, period] = timeStr.split(' ');
+  if (!timeStr) {
+    return '00:00';
+  }
+
+  // "AM 10:00" 형식의 문자열을 파싱
+  const [period, time] = timeStr.split(' ');
+  if (!time) {
+    return '00:00';
+  }
+
   const [hours, minutes] = time.split(':').map(Number);
+  if (isNaN(hours) || isNaN(minutes)) {
+    return '00:00';
+  }
 
   let finalHours = hours;
   if (period === 'PM' && hours !== 12) {

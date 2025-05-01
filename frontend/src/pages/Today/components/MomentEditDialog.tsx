@@ -32,72 +32,78 @@ const MomentEditDialog = ({
   moment,
 }: MomentEditDialogProps) => {
   const queryClient = useQueryClient();
-  const [content, setContent] = useState(moment.content);
-  const [images, setImages] = useState(moment.images);
-  const [tags, setTags] = useState(moment.tags);
+  const [editedMoment, setEditedMoment] = useState<MomentContent>(moment);
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deleteImages, setDeleteImages] = useState<string[]>([]);
-  const [originalState, setOriginalState] = useState({
-    content: moment.content,
-    images: moment.images,
-    tags: moment.tags,
-  });
 
   // Dialog가 열릴 때마다 상태 초기화
   useEffect(() => {
     if (open) {
-      setContent(moment.content);
-      setImages(moment.images);
-      setTags(moment.tags);
+      setEditedMoment(moment);
       setNewTag('');
-      setOriginalState({
-        content: moment.content,
-        images: moment.images,
-        tags: moment.tags,
-      });
+      setDeleteImages([]);
     }
   }, [open, moment]);
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
-    setContent(originalState.content);
-    setImages(originalState.images);
-    setTags(originalState.tags);
+    setEditedMoment(moment);
     setNewTag('');
     onOpenChange(false);
   };
 
   // 저장 버튼 비활성화 조건
-  const isSaveDisabled = content.trim() === '' && images.length === 0;
+  const isSaveDisabled =
+    editedMoment.content.trim() === '' && editedMoment.images.length === 0;
 
   // momentTime 파싱 및 포맷팅
-  const { date, time } = parseMomentTime(moment.momentTime);
-  const [editedTime, setEditedTime] = useState(time);
+  const { date } = parseMomentTime(editedMoment.momentTime);
+  const currentTime = get24HourFormat(
+    parseMomentTime(editedMoment.momentTime).time,
+  );
 
   // 시간 입력 핸들러
   const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputTime = e.target.value;
     const formattedTime = convert24To12HourFormat(inputTime);
-    setEditedTime(formattedTime);
+    setEditedMoment(prev => {
+      const updatedMomentTime = updateMomentTime(
+        prev.momentTime,
+        formattedTime,
+      );
+      return {
+        ...prev,
+        momentTime: updatedMomentTime,
+      };
+    });
   };
 
   // 이미지 삭제
   const handleDeleteImage = (index: number) => {
-    const deletedImage = images[index];
-    setImages(prev => prev.filter((_, i) => i !== index));
+    const deletedImage = editedMoment.images[index];
+    setEditedMoment(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
     setDeleteImages(prev => [...prev, deletedImage]);
   };
 
   // 태그 삭제
   const handleDeleteTag = (index: number) => {
-    setTags(prev => prev.filter((_, i) => i !== index));
+    setEditedMoment(prev => ({
+      ...prev,
+      tags: prev.tags.filter((_, i) => i !== index),
+    }));
   };
 
   // 태그 추가
   const handleAddTag = () => {
     if (newTag.trim() !== '') {
-      setTags(prev => [...prev, newTag.trim()]);
+      setEditedMoment(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()],
+      }));
       setNewTag('');
     }
   };
@@ -106,13 +112,12 @@ const MomentEditDialog = ({
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const updatedMomentTime = updateMomentTime(moment.momentTime, editedTime);
 
       const updateData: UpdateMomentRequest = {
-        momentTime: updatedMomentTime,
-        content,
-        images,
-        tags,
+        momentTime: editedMoment.momentTime,
+        content: editedMoment.content,
+        images: editedMoment.images,
+        tags: editedMoment.tags,
         deleteImages,
       };
 
@@ -158,14 +163,14 @@ const MomentEditDialog = ({
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
-          <div className='text-end text-sm text-gray-600'>{date}</div>
+          <div className='text-sm text-gray-600 text-end'>{date}</div>
         </div>
-        <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
+        <div className='flex flex-col gap-4 p-3 rounded-xl bg-haru-beige'>
           {/* 날짜 & 시간 */}
           <div>
             <input
               type='time'
-              value={get24HourFormat(editedTime)}
+              value={currentTime}
               onChange={handleTimeChange}
               className='rounded-full border bg-haru-yellow p-2 text-sm focus:outline-[#41644A]'
             />
@@ -173,35 +178,39 @@ const MomentEditDialog = ({
 
           {/* 이미지 리스트 */}
           <div className='grid grid-cols-3 gap-2'>
-            {Array.from({ length: images.length }).map((_, idx) => (
-              <div
-                key={idx}
-                className='relative h-24 w-full rounded-lg bg-gray-100'
-              >
-                {images[idx] ? (
-                  <>
-                    <img
-                      src={images[idx]}
-                      alt={`image-${idx}`}
-                      className='h-full w-full rounded-lg object-cover'
-                    />
-                    <button
-                      onClick={() => handleDeleteImage(idx)}
-                      className='absolute right-1 top-1 rounded-full bg-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
-                    >
-                      ✕
-                    </button>
-                  </>
-                ) : null}
-              </div>
-            ))}
+            {Array.from({ length: editedMoment.images.length }).map(
+              (_, idx) => (
+                <div
+                  key={idx}
+                  className='relative w-full h-24 bg-gray-100 rounded-lg'
+                >
+                  {editedMoment.images[idx] ? (
+                    <>
+                      <img
+                        src={editedMoment.images[idx]}
+                        alt={`image-${idx}`}
+                        className='object-cover w-full h-full rounded-lg'
+                      />
+                      <button
+                        onClick={() => handleDeleteImage(idx)}
+                        className='absolute right-1 top-1 rounded-full bg-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
+                      >
+                        ✕
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+              ),
+            )}
           </div>
 
           {/* 순간 기록 */}
           <div className='flex flex-col gap-1'>
             <textarea
-              value={content}
-              onChange={e => setContent(e.target.value)}
+              value={editedMoment.content}
+              onChange={e =>
+                setEditedMoment(prev => ({ ...prev, content: e.target.value }))
+              }
               rows={4}
               className='w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
               placeholder='순간의 기록을 입력하세요'
@@ -228,10 +237,10 @@ const MomentEditDialog = ({
 
             {/* 현재 태그 목록 */}
             <div className='flex flex-wrap gap-2'>
-              {tags.map((tag, idx) => (
+              {editedMoment.tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs'
+                  className='flex items-center gap-1 px-3 py-1 text-xs bg-gray-200 rounded-full'
                 >
                   {tag}
                   <button
@@ -246,7 +255,7 @@ const MomentEditDialog = ({
           </div>
         </div>
         {isSaveDisabled && (
-          <div className='mt-2 text-center text-sm text-red-500'>
+          <div className='mt-2 text-sm text-center text-red-500'>
             내용과 이미지가 모두 비어있어 저장할 수 없습니다.
           </div>
         )}
