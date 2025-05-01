@@ -37,12 +37,12 @@ const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
   }, []);
 
   return (
-    <div className='flex flex-col items-center w-full p-4 mb-3 h-80'>
-      <div ref={containerRef} className='relative w-full h-full bg-transparent'>
+    <div className='mb-3 flex h-80 w-full flex-col items-center p-4'>
+      <div ref={containerRef} className='relative h-full w-full bg-transparent'>
         {particles.map(particle => (
           <div
             key={particle.id}
-            className='absolute select-none cursor-grab active:cursor-grabbing'
+            className='absolute cursor-grab select-none active:cursor-grabbing'
             style={{
               left: `${particle.x}px`,
               top: `${particle.y}px`,

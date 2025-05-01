@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Dimensions, EmojiParticle } from '../types/moment';
 import {
   applyGravity,
   handleFloorCollision,
   handleParticleCollision,
   handleWallCollision,
-} from '../utils/physics';
+} from '../lib/physics';
+import { Dimensions, EmojiParticle } from '../types/moment';
 
 const emojiSize = 36;
 const EMOJIS = ['🌟', '💖', '✨', '😊', '🌈', '🌱', '🌸', '🙌', '💫', '🍀'];
@@ -111,7 +111,13 @@ export const useEmojiParticles = (
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [dimensions, particles.length, dragState.emoji]);
+  }, [
+    dimensions,
+    particles.length,
+    dragState.emoji,
+    dragState.velocity.x,
+    dragState.velocity.y,
+  ]);
 
   return particles;
 };

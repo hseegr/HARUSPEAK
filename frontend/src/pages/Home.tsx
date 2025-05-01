@@ -28,8 +28,8 @@ const Home = () => {
   }
 
   return (
-    <div className='flex flex-col w-full'>
-      <div className='flex flex-col justify-between flex-1 gap-8 p-4'>
+    <div className='flex min-h-80 w-full flex-col'>
+      <div className='flex flex-1 flex-col justify-between gap-8 p-4'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
           <p>안녕하세요 [사용자]님</p>
@@ -39,7 +39,7 @@ const Home = () => {
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='items-center flex-1 w-full rounded-lg min-h-96'>
+            <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayMomentCount} />
               <p className='w-full text-center text-gray-600'>
                 오늘 {statistics.todayMomentCount}개의 순간을 기록했어요
@@ -47,16 +47,16 @@ const Home = () => {
             </section>
 
             {/* 전체 통계 섹션 */}
-            <section className='w-full p-4 rounded-lg bg-haru-beige'>
-              <div className='flex justify-between mb-2'>
+            <section className='w-full rounded-lg bg-haru-beige p-4'>
+              <div className='mb-2 flex justify-between'>
                 <p className='text-gray-600'>지금까지 기록한 순간들 : </p>
-                <p className='font-bold text-green-500'>
+                <p className='font-bold text-haru-green'>
                   {statistics.totalMomentCount}개
                 </p>
               </div>
               <div className='flex justify-between'>
                 <p className='text-gray-600'>지금까지 기록한 하루들 : </p>
-                <p className='font-bold text-green-500'>
+                <p className='font-bold text-haru-green'>
                   {statistics.totalDayCount}일
                 </p>
               </div>

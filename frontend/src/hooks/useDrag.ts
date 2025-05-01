@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DragState, EmojiParticle } from '../types/moment';
 
@@ -13,69 +13,75 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
   const prevMousePosRef = useRef({ x: 0, y: 0 });
   const prevTimeRef = useRef(0);
 
-  const handleMouseDown = (e: React.MouseEvent, emoji: EmojiParticle) => {
-    e.preventDefault();
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent, emoji: EmojiParticle) => {
+      e.preventDefault();
 
-    if (!containerRef.current) return;
+      if (!containerRef.current) return;
 
-    const container = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - container.left;
-    const mouseY = e.clientY - container.top;
+      const container = containerRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - container.left;
+      const mouseY = e.clientY - container.top;
 
-    setDragState({
-      emoji: {
-        ...emoji,
-        vx: 0,
-        vy: 0,
-      },
-      offset: {
-        x: mouseX - emoji.x,
-        y: mouseY - emoji.y,
-      },
-      velocity: { x: 0, y: 0 },
-    });
-
-    prevMousePosRef.current = { x: mouseX, y: mouseY };
-    prevTimeRef.current = performance.now();
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!dragState.emoji || !containerRef.current) return;
-
-    const container = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - container.left;
-    const mouseY = e.clientY - container.top;
-
-    const currentTime = performance.now();
-    const deltaTime = currentTime - prevTimeRef.current;
-
-    if (deltaTime > 0) {
-      const newVelocityX =
-        ((mouseX - prevMousePosRef.current.x) / deltaTime) * 15;
-      const newVelocityY =
-        ((mouseY - prevMousePosRef.current.y) / deltaTime) * 15;
-
-      setDragState(prev => ({
-        ...prev,
+      setDragState({
         emoji: {
-          ...prev.emoji!,
-          x: mouseX - prev.offset.x,
-          y: mouseY - prev.offset.y,
+          ...emoji,
           vx: 0,
           vy: 0,
         },
-        velocity: {
-          x: prev.velocity.x * 0.7 + newVelocityX * 0.3,
-          y: prev.velocity.y * 0.7 + newVelocityY * 0.3,
+        offset: {
+          x: mouseX - emoji.x,
+          y: mouseY - emoji.y,
         },
-      }));
+        velocity: { x: 0, y: 0 },
+      });
 
       prevMousePosRef.current = { x: mouseX, y: mouseY };
-      prevTimeRef.current = currentTime;
-    }
-  };
+      prevTimeRef.current = performance.now();
+    },
+    [containerRef],
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!dragState.emoji || !containerRef.current) return;
+
+      const container = containerRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - container.left;
+      const mouseY = e.clientY - container.top;
+
+      const currentTime = performance.now();
+      const deltaTime = currentTime - prevTimeRef.current;
+
+      if (deltaTime > 0) {
+        const newVelocityX =
+          ((mouseX - prevMousePosRef.current.x) / deltaTime) * 15;
+        const newVelocityY =
+          ((mouseY - prevMousePosRef.current.y) / deltaTime) * 15;
+
+        setDragState(prev => ({
+          ...prev,
+          emoji: {
+            ...prev.emoji!,
+            x: mouseX - prev.offset.x,
+            y: mouseY - prev.offset.y,
+            vx: 0,
+            vy: 0,
+          },
+          velocity: {
+            x: prev.velocity.x * 0.7 + newVelocityX * 0.3,
+            y: prev.velocity.y * 0.7 + newVelocityY * 0.3,
+          },
+        }));
+
+        prevMousePosRef.current = { x: mouseX, y: mouseY };
+        prevTimeRef.current = currentTime;
+      }
+    },
+    [containerRef, dragState.emoji],
+  );
+
+  const handleMouseUp = useCallback(() => {
     if (dragState.emoji) {
       setDragState(prev => ({
         ...prev,
@@ -87,7 +93,7 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
       }));
     }
     setDragState(prev => ({ ...prev, emoji: null }));
-  };
+  }, [dragState.emoji]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -101,7 +107,7 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [dragState.emoji]);
+  }, [containerRef, handleMouseMove, handleMouseUp, dragState.emoji]);
 
   return {
     dragState,
