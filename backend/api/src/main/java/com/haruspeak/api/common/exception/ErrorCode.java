@@ -25,7 +25,7 @@ public enum ErrorCode  {
     TOKEN_EXPIRED(40112, "토큰이 만료되었습니다."),
 
     // 403 Forbidden
-    USER_NOT_FORBIDDEN(40310, "접근이 허용되지 않은 사용자입니다."),
+    ACCESS_DENIED(40310, "접근이 허용되지 않은 사용자입니다."),
 
     // 404 Not Found
     USER_NOT_FOUND(40410, "존재하지 않는 사용자입니다."),

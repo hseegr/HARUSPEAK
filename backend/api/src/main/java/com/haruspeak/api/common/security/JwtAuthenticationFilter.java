@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // accessToken 쿠키에서 토큰 추출
         String token = CookieUtil.extractTokenFromCookie(request.getCookies(), "accessToken");
+        log.debug("accessToken: {}", token);
         if(token == null) {
             throw new UnauthorizedException();
         }
@@ -71,7 +72,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         log.info("🧪 요청 경로: {}", path);
-        return path.startsWith("/api/");
+//        return path.startsWith("/api/auth/");
+        return false;
     }
 }
 

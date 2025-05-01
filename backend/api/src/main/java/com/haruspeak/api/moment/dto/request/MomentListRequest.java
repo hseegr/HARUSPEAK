@@ -14,6 +14,6 @@ public record MomentListRequest(
         LocalDate startDate,
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
-        List<String> userTags
+        List<Integer> userTags
 ) {
 }

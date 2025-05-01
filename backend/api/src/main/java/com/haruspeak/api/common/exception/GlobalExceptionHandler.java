@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HaruspeakException .class)
     public ResponseEntity<Map<String, Object>> handleHaruspeakException(HaruspeakException e) {
-        log.error("HarusepakException 발생: {} | details: {}", e.getErrorCode().getMessage(), e.getDetails());
+        log.error("HarusepakException 발생: {}", e.getErrorCode().getMessage());
 
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("errorCode", e.getErrorCode().getCode());  // 커스텀 에러 코드
@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         errorDetails.put("timestamp", LocalDateTime.now());
 
         if(e.getDetails() != null) {
+            log.error("HarusepakException details: {}", e.getDetails());
             errorDetails.put("details", e.getDetails()); // 추가 정보
         }
 
