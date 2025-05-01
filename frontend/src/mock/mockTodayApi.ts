@@ -47,3 +47,12 @@ export const updateMoment = async (
     }, 300);
   });
 };
+
+export const deleteMoment = async (momentTime: string): Promise<void> => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      console.log('deleted moment:', momentTime);
+      resolve();
+    }, 300);
+  });
+};
