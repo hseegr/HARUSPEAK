@@ -19,7 +19,6 @@ export const useEmojiParticles = (
     velocity: { x: number; y: number };
     offset: { x: number; y: number };
   },
-  handleMouseMove: (e: MouseEvent) => { x: number; y: number } | undefined,
 ) => {
   const [particles, setParticles] = useState<EmojiParticle[]>([]);
   const animationRef = useRef<number | null>(null);
@@ -28,7 +27,7 @@ export const useEmojiParticles = (
     if (dimensions.width === 0 || dimensions.height === 0 || momentCount <= 0)
       return;
 
-    const maxEmojis = Math.min(momentCount, 15);
+    const maxEmojis = Math.min(momentCount, 24);
     const newParticles = Array.from({ length: maxEmojis }).map((_, index) => ({
       id: `emoji-${index}`,
       emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],

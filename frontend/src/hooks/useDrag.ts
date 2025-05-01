@@ -51,9 +51,9 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
 
     if (deltaTime > 0) {
       const newVelocityX =
-        ((mouseX - prevMousePosRef.current.x) / deltaTime) * 10;
+        ((mouseX - prevMousePosRef.current.x) / deltaTime) * 15;
       const newVelocityY =
-        ((mouseY - prevMousePosRef.current.y) / deltaTime) * 10;
+        ((mouseY - prevMousePosRef.current.y) / deltaTime) * 15;
 
       setDragState(prev => ({
         ...prev,
@@ -65,8 +65,8 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
           vy: 0,
         },
         velocity: {
-          x: newVelocityX,
-          y: newVelocityY,
+          x: prev.velocity.x * 0.7 + newVelocityX * 0.3,
+          y: prev.velocity.y * 0.7 + newVelocityY * 0.3,
         },
       }));
 
@@ -106,5 +106,6 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
   return {
     dragState,
     handleMouseDown,
+    handleMouseMove,
   };
 };

@@ -2,7 +2,6 @@ import { EmojiParticle } from '../types/moment';
 
 const emojiSize = 36;
 const gravity = 0.2;
-const airResistance = 0.99;
 
 export const applyGravity = (
   particle: EmojiParticle,

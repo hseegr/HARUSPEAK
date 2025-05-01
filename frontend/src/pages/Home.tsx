@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
 import { getHomeStatistics } from '@/mock/mockHomeApi';
 import { HomeStatisticsResponse } from '@/types/home';
@@ -8,6 +9,7 @@ const Home = () => {
   const [statistics, setStatistics] = useState<HomeStatisticsResponse | null>(
     null,
   );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -17,19 +19,27 @@ const Home = () => {
     fetchStatistics();
   }, []);
 
+  const handleSplashFinish = () => {
+    setIsLoading(false);
+  };
+
+  if (isLoading) {
+    return <SplashScreen onFinish={handleSplashFinish} />;
+  }
+
   return (
     <div className='flex flex-col w-full'>
       <div className='flex flex-col justify-between flex-1 gap-8 p-4'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
-          <p className='text-xl text-gray-600'>안녕하세요.</p>
-          <p>오늘 하루를 잘 보내고 계신가요?</p>
+          <p>안녕하세요 [사용자]님</p>
+          <p>오늘 하루 잘 보내고 계신가요?</p>
         </section>
 
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='items-center flex-1 w-full bg-white rounded-lg min-h-96'>
+            <section className='items-center flex-1 w-full rounded-lg min-h-96'>
               <TodayMoments momentCount={statistics.todayMomentCount} />
               <p className='w-full text-center text-gray-600'>
                 오늘 {statistics.todayMomentCount}개의 순간을 기록했어요

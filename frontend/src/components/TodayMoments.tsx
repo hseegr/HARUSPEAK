@@ -16,13 +16,8 @@ const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
   });
   const emojiSize = 36;
 
-  const { dragState, handleMouseDown, handleMouseMove } = useDrag(containerRef);
-  const particles = useEmojiParticles(
-    dimensions,
-    momentCount,
-    dragState,
-    handleMouseMove,
-  );
+  const { dragState, handleMouseDown } = useDrag(containerRef);
+  const particles = useEmojiParticles(dimensions, momentCount, dragState);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -42,7 +37,7 @@ const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
   }, []);
 
   return (
-    <div className='flex flex-col items-center w-full h-full'>
+    <div className='flex flex-col items-center w-full p-4 mb-3 h-80'>
       <div ref={containerRef} className='relative w-full h-full bg-transparent'>
         {particles.map(particle => (
           <div
@@ -68,5 +63,4 @@ const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
     </div>
   );
 };
-
 export default TodayMoments;
