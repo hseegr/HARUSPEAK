@@ -135,3 +135,6 @@ dev-dist/
 *.njsproj
 *.sln
 *.sw?
+
+# Service Worker
+sw.js
