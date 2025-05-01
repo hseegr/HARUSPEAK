@@ -1,6 +1,8 @@
 package com.haruspeak.api.common.security;
 
+import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.user.InvalidJwtInputException;
+import com.haruspeak.api.common.exception.user.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +16,7 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 
 /**
@@ -76,9 +79,9 @@ class JwtTokenProviderTest {
      * - 만료 시간은 현재 시간 이후
      */
     @Test
-    @DisplayName("Access Token 생성 성공 테스트")
+    @DisplayName("✅ Access Token 생성 성공 테스트")
     void createAccessToken_success() {
-        String token = jwtTokenProvider.createAccessToken(1, "이름");
+        String token = jwtTokenProvider.issueAccessToken(1, "이름");
 
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())
@@ -107,9 +110,9 @@ class JwtTokenProviderTest {
      * - InvalidJwtInputException 발생
      */
     @Test
-    @DisplayName("name이 null이면 예외 발생 테스트")
+    @DisplayName("⚠️ name이 null이면 예외 발생 테스트")
     void createAccessToken_nameNull_throwsException() {
-        assertThatThrownBy(() -> jwtTokenProvider.createAccessToken(1, null))
+        assertThatThrownBy(() -> jwtTokenProvider.issueAccessToken(1, null))
                 .isInstanceOf(InvalidJwtInputException.class)
                 .hasMessage("JWT 생성에 필요한 필드가 누락되었거나 잘못되었습니다. | field: name");
     }
@@ -128,9 +131,9 @@ class JwtTokenProviderTest {
      * - InvalidJwtInputException 발생
      */
     @Test
-    @DisplayName("userId가 null이면 예외 발생 테스트")
+    @DisplayName("⚠️ userId가 null이면 예외 발생 테스트")
     void createAccessToken_userIdNull_throwsException() {
-        assertThatThrownBy(() -> jwtTokenProvider.createAccessToken(null, "홍길동"))
+        assertThatThrownBy(() -> jwtTokenProvider.issueAccessToken(null, "홍길동"))
                 .isInstanceOf(InvalidJwtInputException.class)
                 .hasMessage("JWT 생성에 필요한 필드가 누락되었거나 잘못되었습니다. | field: userId");
     }
@@ -155,9 +158,9 @@ class JwtTokenProviderTest {
      * - 만료 시간은 현재 시간 이후
      */
     @Test
-    @DisplayName("Refresh Token 생성 성공 테스트")
+    @DisplayName("✅ Refresh Token 생성 성공 테스트")
     void createRefreshToken_success() {
-        String token = jwtTokenProvider.createRefreshToken(42);
+        String token = jwtTokenProvider.issueRefreshToken(42);
 
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())
@@ -184,9 +187,9 @@ class JwtTokenProviderTest {
      * - InvalidJwtInputException 발생
      */
     @Test
-    @DisplayName("userId가 null이면 예외 발생 테스트")
+    @DisplayName("⚠️ userId가 null이면 예외 발생 테스트")
     void createRefreshToken_userIdNull_throwsException() {
-        assertThatThrownBy(() -> jwtTokenProvider.createRefreshToken(null))
+        assertThatThrownBy(() -> jwtTokenProvider.issueRefreshToken(null))
                 .isInstanceOf(InvalidJwtInputException.class)
                 .hasMessage("JWT 생성에 필요한 필드가 누락되었거나 잘못되었습니다. | field: userId");
     }
@@ -209,7 +212,7 @@ class JwtTokenProviderTest {
      * - removePrefix → "test.jwt.token"
      */
     @Test
-    @DisplayName("Prefix 추가 성공 테스트")
+    @DisplayName("✅ Prefix 추가 성공 테스트")
     void tokenPrefixTest_success() {
         String rawToken = "test.jwt.token";
         String tokenWithPrefix = jwtTokenProvider.getTokenWithPrefix(rawToken);
@@ -223,64 +226,63 @@ class JwtTokenProviderTest {
      * [✅ 성공 테스트] 유효한 토큰 검증 성공
      *
      * 목적:
-     * - 생성된 access token이 validateToken 호출 시 true를 반환하는지 확인
+     * - 생성된 access token이 validateTokenOrThrow 호출 시 예외 발생 없지 통과하는지 확인
      *
      * 입력:
      * - userId: 99
      * - name: "검증유저"
      *
      * 예상 결과:
-     * - validateToken() == true
+     * - 예외가 발생하지 않음
      */
     @Test
-    @DisplayName("유효한 토큰이면 true 반환")
+    @DisplayName("✅ 유효한 토큰이면 예외 없이 통과")
     void validateToken_validToken_returnsTrue() {
-        String token = jwtTokenProvider.createAccessToken(99, "검증유저");
+        String token = jwtTokenProvider.issueAccessToken(99, "검증유저");
 
-        boolean result = jwtTokenProvider.validateToken(token);
-
-        assertThat(result).isTrue();
+        assertThatCode(() -> jwtTokenProvider.validateTokenOrThrow(token))
+                .doesNotThrowAnyException();
     }
 
     /**
      * [⚠️ 실패 테스트] 변조된 토큰 검증 실패
      *
      * 목적:
-     * - 잘못된 형식 혹은 위조된 JWT에 대해 validateToken이 false를 반환하는지 확인
+     * - 잘못된 형식 혹은 위조된 JWT에 대해 validateTokenOrThrow이 예외를 반환하는지 확인
      *
      * 입력:
      * - invalid token string
      *
      * 예상 결과:
-     * - validateToken() == false
+     * - INVALID_TOKEN_FORMAT 예외 발생
      */
     @Test
-    @DisplayName("잘못된 토큰이면 false 반환")
-    void validateToken_invalidToken_returnsFalse() {
+    @DisplayName("⚠️ 잘못된 형식의 토큰이면 INVALID_TOKEN_FORMAT 예외 발생")
+    void validateToken_invalidToken_throwsInvalidTokenFormat() {
         String invalidToken = "invalid.token.payload";
 
-        boolean result = jwtTokenProvider.validateToken(invalidToken);
-
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> jwtTokenProvider.validateTokenOrThrow(invalidToken))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessageContaining(ErrorCode.INVALID_TOKEN_FORMAT.getMessage());
     }
 
     /**
      * [⚠️ 실패 테스트] 만료된 토큰 검증 실패
      *
      * 목적:
-     * - 만료된 토큰이 validateToken 호출 시 false를 반환하는지 확인
+     * - 잘못된 형식 혹은 위조된 JWT에 대해 validateTokenOrThrow이 예외를 반환하는지 확인
      *
      * 입력:
      * - 만료시간이 현재보다 과거인 토큰
      *
      * 예상 결과:
-     * - validateToken() == false
+     * - TOKEN_EXPIRED 예외 발생
      */
     @Test
-    @DisplayName("만료된 토큰이면 false 반환")
-    void validateToken_expiredToken_returnsFalse() {
+    @DisplayName("⚠️ 만료된 토큰이면 TOKEN_EXPIRED 예외 발생")
+    void validateToken_expiredToken_throwsTokenExpired() {
         Date now = new Date();
-        Date expired = new Date(now.getTime() - 1000); // 이미 만료된 시간
+        Date expired = new Date(now.getTime() - 1000);
 
         String expiredToken = Jwts.builder()
                 .setSubject("1")
@@ -289,8 +291,8 @@ class JwtTokenProviderTest {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 
-        boolean result = jwtTokenProvider.validateToken(expiredToken);
-
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> jwtTokenProvider.validateTokenOrThrow(expiredToken))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessageContaining(ErrorCode.TOKEN_EXPIRED.getMessage());
     }
 }

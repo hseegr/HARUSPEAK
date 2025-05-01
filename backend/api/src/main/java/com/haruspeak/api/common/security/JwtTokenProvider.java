@@ -1,20 +1,23 @@
 package com.haruspeak.api.common.security;
 
+import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.user.InvalidJwtInputException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.haruspeak.api.common.exception.user.InvalidTokenException;
+import com.haruspeak.api.user.dto.CustomUserPrincipal;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JWT 토큰 발급기
@@ -40,6 +43,7 @@ public class JwtTokenProvider {
     @Value("${jwt.token-prefix}")
     private String tokenPrefix;
 
+    @Getter
     private Key signingKey;
 
     @PostConstruct
@@ -54,7 +58,7 @@ public class JwtTokenProvider {
      * @param name 사용자 이름
      * @return JWT 문자열
      */
-    public String createAccessToken(Integer userId, String name) {
+    public String issueAccessToken(Integer userId, String name) {
         if (userId == null) {
             throw new InvalidJwtInputException("userId");
         }
@@ -82,7 +86,7 @@ public class JwtTokenProvider {
      * @param userId 사용자 ID (PK)
      * @return JWT 문자열
      */
-    public String createRefreshToken(Integer userId) {
+    public String issueRefreshToken(Integer userId) {
         if (userId == null) {
             throw new InvalidJwtInputException("userId");
         }
@@ -150,19 +154,37 @@ public class JwtTokenProvider {
      * - 만료 여부 / 서명 위조 여부 / 구조 손상 여부 검사
      *
      * @param token JWT 문자열
-     * @return 유효하면 true, 유효하지 않으면 false
+     * 유효하면 성공, 아니면 예외
      */
-    public boolean validateToken(String token) {
+    public void validateTokenOrThrow(String token) {
         try {
             parseClaims(token);
-            return true;
         } catch (ExpiredJwtException e) {
-            return false; // 만료된 토큰
+            throw new InvalidTokenException(ErrorCode.TOKEN_EXPIRED);
+        } catch (MalformedJwtException e) {
+            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN_FORMAT);
         } catch (Exception e) {
-            return false; // 서명 위조, 구조 이상 등
+            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
         }
     }
 
+    /**
+     * JWT로부터 Authentication 객체 생성
+     * - Principal: CustomUserPrincipal(userId, name)
+     * - Credentials: null (패스워드 없음)
+     * - Authorities: 권한 없음
+     *
+     * @param token JWT accessToken
+     * @return 인증 객체 (UsernamePasswordAuthenticationToken)
+     */
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
+        Integer userId = claims.get("userId", Integer.class);
+        String name = claims.get("name", String.class);
+
+        CustomUserPrincipal principal = new CustomUserPrincipal(userId, name);
+        return new UsernamePasswordAuthenticationToken(principal, null, List.of());
+    }
 
 
 }
