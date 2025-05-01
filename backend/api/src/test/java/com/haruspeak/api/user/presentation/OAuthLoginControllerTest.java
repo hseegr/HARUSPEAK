@@ -49,7 +49,7 @@ class OAuthLoginControllerTest {
      * - Spring Security Filter 비활성화 후 테스트 (@AutoConfigureMockMvc(addFilters = false))
      */
     @Test
-    @DisplayName("구글 로그인 요청 시 302 Redirect 응답과 Location 헤더를 반환한다")
+    @DisplayName("✅ 구글 로그인 요청 시 302 Redirect 응답과 Location 헤더를 반환")
     void redirectToGoogleTest() throws Exception {
         mockMvc.perform(get("/api/auth/google/login"))
                 .andExpect(status().isFound()) // 302 FOUND
