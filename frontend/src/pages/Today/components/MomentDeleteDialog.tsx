@@ -19,7 +19,7 @@ const MomentDeleteDialog = ({
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-      <div className='w-full max-w-sm p-6 bg-white rounded-lg'>
+      <div className='w-full max-w-sm rounded-lg bg-white p-6'>
         <h3 className='mb-4 text-lg font-semibold'>기록 삭제</h3>
         <p className='mb-6'>{formattedTime}의 기록을 정말 삭제하시겠습니까?</p>
         <div className='flex justify-end gap-4'>
@@ -31,7 +31,7 @@ const MomentDeleteDialog = ({
           </button>
           <button
             onClick={onDelete}
-            className='px-4 py-2 text-white rounded bg-haru-light-green hover:bg-haru-green'
+            className='rounded bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green'
           >
             삭제
           </button>

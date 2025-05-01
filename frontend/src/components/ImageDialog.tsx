@@ -85,7 +85,7 @@ const ImageDialog = ({
         </div>
 
         {/* 상단 헤더 */}
-        <div className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4'>
+        <div className='absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-4'>
           <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
             <span>{formattedTime}</span>
             <span>의 기록</span>
@@ -97,7 +97,7 @@ const ImageDialog = ({
         </div>
 
         {/* 이미지 영역 */}
-        <div className='relative flex items-center justify-center w-full h-full'>
+        <div className='relative flex h-full w-full items-center justify-center'>
           {/* 이전 버튼 */}
           <button
             onClick={handlePrevious}
@@ -139,15 +139,15 @@ const ImageDialog = ({
               }
             >
               {isAutoPlaying ? (
-                <Pause className='w-4 h-4' />
+                <Pause className='h-4 w-4' />
               ) : (
-                <Play className='w-4 h-4' />
+                <Play className='h-4 w-4' />
               )}
             </button>
           </div>
 
           {/* 인디케이터 */}
-          <div className='flex w-full h-1 gap-1'>
+          <div className='flex h-1 w-full gap-1'>
             {images.map((_, idx) => (
               <button
                 key={idx}

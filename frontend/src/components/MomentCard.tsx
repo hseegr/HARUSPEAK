@@ -66,7 +66,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='flex justify-between w-full mb-3'>
+          <div className='mb-3 flex w-full justify-between'>
             {moment.images.slice(0, 3).map((image, idx) => {
               const remainingCount = moment.images.length - 3;
 
@@ -88,7 +88,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
                     className={`h-full w-full object-cover ${idx === 2 && remainingCount > 0 ? 'blur-sm' : ''}`}
                   />
                   {idx === 2 && remainingCount > 0 && (
-                    <div className='absolute inset-0 flex items-center justify-center text-lg font-bold text-white bg-black bg-opacity-50'>
+                    <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-bold text-white'>
                       +{remainingCount}
                     </div>
                   )}
@@ -101,7 +101,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 하단 */}
         <section className='flex items-start'>
-          <div className='flex flex-wrap items-center flex-1 gap-2'>
+          <div className='flex flex-1 flex-wrap items-center gap-2'>
             {tags.map((tag, idx) => (
               <TagBadge key={`${tag}-${idx}`} tag={tag} />
             ))}
