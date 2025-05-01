@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import TodayMoments from '@/components/TodayMoments';
 import { getHomeStatistics } from '@/mock/mockHomeApi';
 import { HomeStatisticsResponse } from '@/types/home';
-
-// import Modal from '@/components/Modal';
 
 const Home = () => {
   const [statistics, setStatistics] = useState<HomeStatisticsResponse | null>(
@@ -30,7 +29,8 @@ const Home = () => {
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='flex items-center flex-1 w-full bg-white rounded-lg min-h-96'>
+            <section className='items-center flex-1 w-full bg-white rounded-lg min-h-96'>
+              <TodayMoments momentCount={statistics.todayMomentCount} />
               <p className='w-full text-center text-gray-600'>
                 오늘 {statistics.todayMomentCount}개의 순간을 기록했어요
               </p>
