@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
+import ImageDialog from '@/components/ImageDialog';
 import TagBadge from '@/components/TagBadge';
 import { formatMomentTime } from '@/lib/timeUtils';
-import { createTags } from '@/mock/mockTodayApi';
+import { createTags, deleteMoment } from '@/mock/mockTodayApi';
+import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
 
@@ -10,6 +12,9 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
   const [tags, setTags] = useState<string[]>(moment.tags);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const formattedTime = formatMomentTime(moment.momentTime);
 
   const handleGenerateTags = async () => {
@@ -33,6 +38,16 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteMoment(moment.momentTime);
+      setIsDeleteDialogOpen(false);
+      // TODO: 삭제 후 리스트 갱신 로직 추가
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
+  };
+
   return (
     <>
       <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3'>
@@ -44,21 +59,25 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           {isToday && (
             <div className='flex gap-2'>
               <button onClick={() => setIsDialogOpen(true)}>수정</button>
-              <button>삭제</button>
+              <button onClick={() => setIsDeleteDialogOpen(true)}>삭제</button>
             </div>
           )}
         </section>
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='mb-3 flex w-full justify-between'>
+          <div className='flex justify-between w-full mb-3'>
             {moment.images.slice(0, 3).map((image, idx) => {
               const remainingCount = moment.images.length - 3;
 
               return (
                 <div
                   key={`${image}-${idx}`}
-                  className='relative h-[105px] w-[105px] overflow-hidden rounded-xl'
+                  className='relative h-[105px] w-[105px] cursor-pointer overflow-hidden rounded-xl'
+                  onClick={() => {
+                    setSelectedImageIndex(idx);
+                    setIsImageDialogOpen(true);
+                  }}
                 >
                   <img
                     src={image}
@@ -69,7 +88,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
                     className={`h-full w-full object-cover ${idx === 2 && remainingCount > 0 ? 'blur-sm' : ''}`}
                   />
                   {idx === 2 && remainingCount > 0 && (
-                    <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-bold text-white'>
+                    <div className='absolute inset-0 flex items-center justify-center text-lg font-bold text-white bg-black bg-opacity-50'>
                       +{remainingCount}
                     </div>
                   )}
@@ -82,7 +101,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 하단 */}
         <section className='flex items-start'>
-          <div className='flex flex-1 flex-wrap items-center gap-2'>
+          <div className='flex flex-wrap items-center flex-1 gap-2'>
             {tags.map((tag, idx) => (
               <TagBadge key={`${tag}-${idx}`} tag={tag} />
             ))}
@@ -105,6 +124,20 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         moment={moment}
+      />
+      <ImageDialog
+        open={isImageDialogOpen}
+        onOpenChange={setIsImageDialogOpen}
+        images={moment.images}
+        currentIndex={selectedImageIndex}
+        momentTime={moment.momentTime}
+      />
+
+      <MomentDeleteDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        momentTime={moment.momentTime}
+        onDelete={handleDelete}
       />
     </>
   );
