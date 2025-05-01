@@ -163,9 +163,9 @@ const MomentEditDialog = ({
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
-          <div className='text-sm text-gray-600 text-end'>{date}</div>
+          <div className='text-end text-sm text-gray-600'>{date}</div>
         </div>
-        <div className='flex flex-col gap-4 p-3 rounded-xl bg-haru-beige'>
+        <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
           {/* 날짜 & 시간 */}
           <div>
             <input
@@ -182,14 +182,14 @@ const MomentEditDialog = ({
               (_, idx) => (
                 <div
                   key={idx}
-                  className='relative w-full h-24 bg-gray-100 rounded-lg'
+                  className='relative h-24 w-full rounded-lg bg-gray-100'
                 >
                   {editedMoment.images[idx] ? (
                     <>
                       <img
                         src={editedMoment.images[idx]}
                         alt={`image-${idx}`}
-                        className='object-cover w-full h-full rounded-lg'
+                        className='h-full w-full rounded-lg object-cover'
                       />
                       <button
                         onClick={() => handleDeleteImage(idx)}
@@ -240,7 +240,7 @@ const MomentEditDialog = ({
               {editedMoment.tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 px-3 py-1 text-xs bg-gray-200 rounded-full'
+                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs'
                 >
                   {tag}
                   <button
@@ -255,7 +255,7 @@ const MomentEditDialog = ({
           </div>
         </div>
         {isSaveDisabled && (
-          <div className='mt-2 text-sm text-center text-red-500'>
+          <div className='mt-2 text-center text-sm text-red-500'>
             내용과 이미지가 모두 비어있어 저장할 수 없습니다.
           </div>
         )}
