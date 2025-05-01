@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MomentDetailRaw(
+public record MomentListDetailRaw(
+        Integer summaryId,
         Integer momentId,
         @JsonFormat(timezone = "Asia/Seoul")
         LocalDateTime momentTime,
-        List<String> imageUrls,
+        Integer imageCount,
+        List<String> images,
         String content,
+        Integer tagCount,
         List<String> tags
 ) {
 }
