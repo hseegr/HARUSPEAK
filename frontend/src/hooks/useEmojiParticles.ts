@@ -8,6 +8,7 @@ import {
 } from '../lib/physics';
 import { Dimensions, EmojiParticle } from '../types/moment';
 
+// 이모지 크기와 사용 가능한 이모지 목록
 const emojiSize = 36;
 const EMOJIS = ['🌟', '💖', '✨', '😊', '🌈', '🌱', '🌸', '🙌', '💫', '🍀'];
 
@@ -23,6 +24,7 @@ export const useEmojiParticles = (
   const [particles, setParticles] = useState<EmojiParticle[]>([]);
   const animationRef = useRef<number | null>(null);
 
+  // 초기 파티클 생성 : 순간 기록 개수에 따라 이모지 파티클을 생성하고 초기 위치 설정
   useEffect(() => {
     if (dimensions.width === 0 || dimensions.height === 0 || momentCount <= 0)
       return;
@@ -41,6 +43,7 @@ export const useEmojiParticles = (
     setParticles(newParticles);
   }, [dimensions, momentCount]);
 
+  // 파티클 애니메이션 : 중력 & 벽-바닥-파티클 충돌 처리 & 드래그 파티클 위치
   useEffect(() => {
     if (
       dimensions.width === 0 ||
@@ -61,6 +64,7 @@ export const useEmojiParticles = (
             return dragState.emoji;
           }
 
+          // 드래그가 끝난 파티클은 최종 속도 적용
           if (
             particle.id === dragState.emoji?.id &&
             dragState.velocity.x !== 0 &&
@@ -73,6 +77,7 @@ export const useEmojiParticles = (
             };
           }
 
+          // 물리 효과 적용
           let updatedParticle = applyGravity(particle, deltaTime);
           updatedParticle = handleFloorCollision(
             updatedParticle,
@@ -83,6 +88,7 @@ export const useEmojiParticles = (
             dimensions.width,
           );
 
+          // 다른 파티클과의 충돌 처리
           prevParticles.forEach(other => {
             if (
               other.id !== particle.id &&
@@ -92,6 +98,7 @@ export const useEmojiParticles = (
             }
           });
 
+          // 최종 위치와 회전 업데이트
           return {
             ...updatedParticle,
             x: updatedParticle.x + updatedParticle.vx * deltaTime,
@@ -106,6 +113,7 @@ export const useEmojiParticles = (
 
     animationRef.current = requestAnimationFrame(animate);
 
+    // 컴포넌트 언마운트 시 애니메이션 정리
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);

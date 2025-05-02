@@ -1,3 +1,5 @@
+import { ParsedTime } from '@/types/common';
+
 export const formatMomentTime = (momentTime: string): string => {
   const timeStr = momentTime.split('T')[1].slice(0, 5);
   const [hoursStr, minutesStr] = timeStr.split(':');
@@ -7,20 +9,21 @@ export const formatMomentTime = (momentTime: string): string => {
   return `${ampm} ${hours12}:${minutesStr}`;
 };
 
-export const parseMomentTime = (momentTime: string) => {
-  const timeStr = momentTime.split('T')[1].slice(0, 5);
-  const [hoursStr, minutesStr] = timeStr.split(':');
-  const hours = parseInt(hoursStr, 10);
-  const hours12 = hours % 12 || 12;
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+export const formatDate = (dateString: string): string => {
+  return dateString.split('T')[0].replace(/-/g, '.');
+};
 
+export const parseMomentTime = (momentTime: string): ParsedTime => {
   return {
-    date: momentTime.split('T')[0].replace(/-/g, '.'),
-    time: `${ampm} ${hours12}:${minutesStr}`,
+    date: formatDate(momentTime),
+    time: formatMomentTime(momentTime),
   };
 };
 
-export const updateMomentTime = (originalTime: string, newTime: string) => {
+export const updateMomentTime = (
+  originalTime: string,
+  newTime: string,
+): string => {
   const [datePart] = originalTime.split('T');
   const [time, period] = newTime.split(' ');
   const [hours, minutes] = time.split(':').map(Number);
@@ -37,7 +40,7 @@ export const updateMomentTime = (originalTime: string, newTime: string) => {
   return `${datePart}T${finalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00.000Z`;
 };
 
-export const get24HourFormat = (timeStr: string) => {
+export const get24HourFormat = (timeStr: string): string => {
   if (!timeStr) {
     return '00:00';
   }
@@ -63,7 +66,7 @@ export const get24HourFormat = (timeStr: string) => {
   return `${finalHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
-export const convert24To12HourFormat = (inputTime: string) => {
+export const convert24To12HourFormat = (inputTime: string): string => {
   const [hours, minutes] = inputTime.split(':').map(Number);
 
   // 24시간 형식을 12시간 형식으로 변환
