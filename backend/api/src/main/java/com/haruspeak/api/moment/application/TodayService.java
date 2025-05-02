@@ -17,10 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Optional.*;
 
 @Service
 @RequiredArgsConstructor
@@ -76,9 +75,8 @@ public class TodayService {
                     .toList();
 
             Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
-            if (existingMoment == null) {
-                throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
-            }
+
+            if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
 
             existingMoment.put("momentTime", request.momentTime());
             existingMoment.put("content", request.content());
@@ -89,6 +87,30 @@ public class TodayService {
 
         } catch (Exception e) {
             throw new HaruspeakException(ErrorCode.MOMENT_UPDATE_ERROR);
+        }
+    }
+
+    /**
+     * 오늘 순간 일기 삭제
+     * @param time
+     * @param userId
+     */
+    public void removeMoment(String time, Integer userId){
+        String date = LocalDate.now().toString();
+        String key = "user:" + userId + ":moment:" + date;
+
+        try {
+            Map<String, Object> moment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
+
+            if (moment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
+
+            ofNullable((List<String>) moment.get("images"))
+                    .ifPresent(images -> images.forEach(s3Service::deleteImages));
+
+            redisTemplate.opsForHash().delete(key, time);
+
+        } catch (Exception e) {
+            throw new HaruspeakException(ErrorCode.MOMENT_DELETE_ERROR);
         }
     }
 }

@@ -45,6 +45,7 @@ public enum ErrorCode  {
     SUMMARY_CONTENT_REGENERATION_FAILED(50030, "일기 요약 재생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     MOMENT_SAVE_ERROR(50040, "순간 일기 저장 중 오류가 발생했습니다."),
     MOMENT_UPDATE_ERROR(50040,"순간 일기 업데이트 중 오류가 발생했습니다."),
+    MOMENT_DELETE_ERROR(50040,"순간 일기 삭제 중 오류가 발생했습니다."),
     IMAGE_DELETE_ERROR(50000, "이미지 삭제 중 오류가 발생했습니다.")
     ;
 
