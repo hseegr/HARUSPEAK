@@ -4,6 +4,7 @@ import com.haruspeak.api.common.security.AuthenticatedUser;
 import com.haruspeak.api.moment.application.TodayService;
 import com.haruspeak.api.moment.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.moment.dto.request.MomentWriteRequest;
+import com.haruspeak.api.moment.dto.response.TodayMomentListResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,11 @@ public class TodayController {
     public ResponseEntity<Void> deleteMoment(@PathVariable String time, @AuthenticatedUser Integer userId){
         todayService.removeMoment(time,userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<TodayMomentListResponse> getTodayMoments(@AuthenticatedUser Integer userId){
+        TodayMomentListResponse result = todayService.getTodayMoments(userId);
+        return ResponseEntity.ok(result);
     }
 }
