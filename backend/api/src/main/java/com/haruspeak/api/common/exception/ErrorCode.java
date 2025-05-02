@@ -46,7 +46,8 @@ public enum ErrorCode  {
     MOMENT_SAVE_ERROR(50040, "순간 일기 저장 중 오류가 발생했습니다."),
     MOMENT_UPDATE_ERROR(50040,"순간 일기 업데이트 중 오류가 발생했습니다."),
     MOMENT_DELETE_ERROR(50040,"순간 일기 삭제 중 오류가 발생했습니다."),
-    IMAGE_DELETE_ERROR(50000, "이미지 삭제 중 오류가 발생했습니다.")
+    MOMENT_READ_ERROR(50040, "순간 일기들 불러오기 중 오류가 발생했습니다."),
+    IMAGE_DELETE_ERROR(50000, "이미지 삭제 중 오류가 발생했습니다."),
     ;
 
     private final int code;

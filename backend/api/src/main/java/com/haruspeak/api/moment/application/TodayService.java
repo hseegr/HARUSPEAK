@@ -6,11 +6,14 @@ import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.s3.FileConverter;
 import com.haruspeak.api.common.s3.S3Service;
 import com.haruspeak.api.common.s3.S3Uploader;
+import com.haruspeak.api.moment.dto.TodayMoment;
 import com.haruspeak.api.moment.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.moment.dto.request.MomentWriteRequest;
+import com.haruspeak.api.moment.dto.response.TodayMomentListResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,7 +49,7 @@ public class TodayService {
         momentData.put("momentTime", now);
         momentData.put("content", request.content());
         momentData.put("images", images);
-        momentData.put("tags", new String[0]);
+        momentData.put("tags", List.of());
 
         try {
             redisTemplate.opsForHash().put(key, now, momentData);
@@ -111,6 +114,39 @@ public class TodayService {
 
         } catch (Exception e) {
             throw new HaruspeakException(ErrorCode.MOMENT_DELETE_ERROR);
+        }
+    }
+
+    /**
+     * 오늘의 순간 일기들 불러오기
+     * @param userId
+     * @return
+     */
+    public TodayMomentListResponse getTodayMoments(Integer userId) {
+        String date = LocalDate.now().toString();
+        String key = "user:" + userId + ":moment:" + date;
+
+        try{
+            Map<Object, Object> todayMoments = redisTemplate.opsForHash().entries(key);
+
+            if (todayMoments.isEmpty()) return new TodayMomentListResponse(List.of(), 0);
+
+            List<TodayMoment> moments = todayMoments.entrySet().stream()
+                    .map(e -> {
+                        Map<String, Object> momentData = (Map<String, Object>) e.getValue();
+                        return new TodayMoment(
+                                e.getKey().toString(),
+                                momentData.get("momentTime").toString(),
+                                (List<String>) momentData.get("images"),
+                                momentData.get("content").toString(),
+                                (List<String>) momentData.get("tags")
+                        );
+                    })
+                    .toList();
+
+            return new TodayMomentListResponse(moments, moments.size());
+        } catch (Exception e) {
+            throw new HaruspeakException(ErrorCode.MOMENT_READ_ERROR);
         }
     }
 }
