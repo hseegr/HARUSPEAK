@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -47,6 +47,11 @@ export const useMomentEdit = (
         momentTime: updatedMomentTime,
       };
     });
+  };
+
+  // 내용 변경 핸들러
+  const handleContentChange = (value: string) => {
+    setEditedMoment(prev => ({ ...prev, content: value }));
   };
 
   // 이미지 삭제 핸들러 : 이미지를 목록에서 제거하고 삭제된 이미지 목록에 추가
@@ -102,15 +107,14 @@ export const useMomentEdit = (
   };
 
   // 상태 초기화 함수 : 다이얼로그 열리거나 수정 취소 시 돌려놓기용
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setEditedMoment(initialMoment);
     setNewTag('');
     setDeleteImages([]);
-  };
+  }, [initialMoment]);
 
   return {
     editedMoment,
-    setEditedMoment,
     newTag,
     setNewTag,
     isSaving,
@@ -119,6 +123,7 @@ export const useMomentEdit = (
     currentTime,
     isSaveDisabled,
     handleTimeChange,
+    handleContentChange,
     handleDeleteImage,
     handleDeleteTag,
     handleAddTag,

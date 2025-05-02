@@ -24,7 +24,6 @@ const MomentEditDialog = ({
 }: MomentEditDialogProps) => {
   const {
     editedMoment,
-    setEditedMoment,
     newTag,
     setNewTag,
     isSaving,
@@ -32,6 +31,7 @@ const MomentEditDialog = ({
     currentTime,
     isSaveDisabled,
     handleTimeChange,
+    handleContentChange,
     handleDeleteImage,
     handleDeleteTag,
     handleAddTag,
@@ -44,7 +44,7 @@ const MomentEditDialog = ({
     if (open) {
       resetState();
     }
-  }, [open, resetState]);
+  }, [open, resetState]); // resetState가 useCallback으로 memoized되어 있어서 안전함
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
@@ -126,9 +126,7 @@ const MomentEditDialog = ({
           <div className='flex flex-col gap-1'>
             <textarea
               value={editedMoment.content}
-              onChange={e =>
-                setEditedMoment(prev => ({ ...prev, content: e.target.value }))
-              }
+              onChange={e => handleContentChange(e.target.value)}
               rows={4}
               className='w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
               placeholder='순간의 기록을 입력하세요'
