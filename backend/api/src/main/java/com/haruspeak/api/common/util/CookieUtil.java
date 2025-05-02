@@ -2,8 +2,6 @@ package com.haruspeak.api.common.util;
 
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 
 import java.util.Arrays;
@@ -37,18 +35,15 @@ public class CookieUtil {
     /**
      * 쿠키에서 토큰 추출
      *
-     * @param request 요청
+     * @param cookies 쿠키
      * @param token 토큰 accessToken / refreshToken
      */
-    public static String extractTokenFromCookie(HttpServletRequest request, String token) {
-        if (request.getCookies() == null) {
-            throw new UnauthorizedException();
-        }
-        return Arrays.stream(request.getCookies())
+    public static String extractTokenFromCookie(Cookie[] cookies, String token) {
+        return Arrays.stream(cookies)
                 .filter(cookie -> token.equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(UnauthorizedException::new);
+                .orElse(null);
     }
 
     /**

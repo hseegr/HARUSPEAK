@@ -1,14 +1,13 @@
 package com.haruspeak.api.user.presentation;
 
-import com.haruspeak.api.common.security.AuthenticatedUserArgumentResolver;
+import com.haruspeak.api.HaruspeakApiApplication;
 import com.haruspeak.api.common.security.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,9 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * - 성공
  *
  */
-@WebMvcTest(AuthorizationTestController.class)
-@Import(AuthorizationArgumentResolverTest.TestConfig.class)
-@AutoConfigureMockMvc(addFilters = false)
+@SpringBootTest(classes = HaruspeakApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc // 필터 포함
 class AuthorizationArgumentResolverTest {
 
     @Autowired
@@ -36,10 +34,10 @@ class AuthorizationArgumentResolverTest {
     /// 🧪🧪🧪 어노테이션으로 userId 테스트 🧪🧪🧪 //////////////////////////////////////////////
 
     /**
-     * [✅ 성공 테스트] @Authorization Integer userId
+     * [✅ 성공 테스트] @AuthenticatedUser Integer userId
      *
      * 목적:
-     * - @Authorization 을 사용했을 때 userId가 추출되는지 검증
+     * - @AuthenticatedUser 을 사용했을 때 userId가 추출되는지 검증
      *
      * 입력:
      * - userId: 1234
@@ -50,31 +48,20 @@ class AuthorizationArgumentResolverTest {
      * - content == "1234"
      */
     @Test
-    void authorizationResolver_success() throws Exception {
-        String token = jwtTokenProvider.createAccessToken(1234, "이름");
+    @DisplayName("✅ @AuthenticatedUser 사용 시 필터 적용 후 userId를 반환")
+    void integration_filterToController_authenticatedUserInjection() throws Exception {
+        // given
+        int userId = 1234;
+        String name = "이름";
+        String accessToken = jwtTokenProvider.issueAccessToken(userId, name);
 
-        mockMvc.perform(get("/test/athenticatedUser")
-                        .cookie(new Cookie("accessToken", token)))
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        // when + then
+        mockMvc.perform(get("/test/authenticatedUser").cookie(cookie))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1234"));
-    }
-
-    // ✅ 테스트 전용 Config
-    static class TestConfig {
-        @Bean
-        public JwtTokenProvider jwtTokenProvider() {
-            JwtTokenProvider provider = new JwtTokenProvider();
-            provider.setSecretKey("12345678901234567890123456789012"); // 32byte 이상
-            provider.setAccessTokenExpiration(3600000); // 1시간
-            provider.setRefreshTokenExpiration(3600000); // 1시간
-            provider.setTokenPrefix("Bearer ");
-            provider.init(); // 꼭 초기화
-            return provider;
-        }
-
-        @Bean
-        public AuthenticatedUserArgumentResolver authorizationArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-            return new AuthenticatedUserArgumentResolver(jwtTokenProvider);
-        }
+                .andExpect(content().string(String.valueOf(userId))); // "1234"
     }
 }
