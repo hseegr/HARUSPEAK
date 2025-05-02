@@ -28,4 +28,10 @@ public class TodayController {
         todayService.updateMoment(time, request,userId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/time/{time}")
+    public ResponseEntity<Void> deleteMoment(@PathVariable String time, @AuthenticatedUser Integer userId){
+        todayService.removeMoment(time,userId);
+        return ResponseEntity.ok().build();
+    }
 }
