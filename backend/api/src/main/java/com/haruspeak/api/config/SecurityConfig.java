@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 // 허용할 요청
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/", "/login/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/login/**", "/oauth2/**").permitAll()
                         .anyRequest().permitAll() //
                 )
 

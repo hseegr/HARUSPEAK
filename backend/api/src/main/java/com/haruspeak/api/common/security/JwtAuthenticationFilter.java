@@ -14,9 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * JWT 인증 필터
@@ -30,11 +32,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private static final List<String> EXCLUDED_PATTERNS = List.of(
+            "/favicon.ico/**",
+            "/swagger-ui/**",
+            "/api/auth/google/**",
+            "/api/auth/**"
+    );
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("필터 진입 : {}", request.getRequestURI());
         // request에서 쿠키 추출
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
@@ -71,12 +83,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        log.info("🧪 요청 경로: {}", path);
-        if(path.startsWith("/api/auth/token/refresh")) {
-            return false;
-        }
-//        return path.startsWith("/api/auth/");
-        return true;
+        log.info("필터 체크 중 요청 경로: {}", path); // 여기서도 경로를 확인하여 필터가 적용되기 전 체크
+
+        // 경로 매칭 확인
+        boolean shouldFilter = EXCLUDED_PATTERNS.stream()
+                .anyMatch(pattern -> pathMatcher.match(pattern, path));  // 패턴과 경로를 매칭
+
+        log.info("필터 적용 여부: {}", !shouldFilter); // 필터가 적용될지 여부를 확인
+
+        return shouldFilter;
     }
 }
 
