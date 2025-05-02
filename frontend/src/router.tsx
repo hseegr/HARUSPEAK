@@ -2,9 +2,9 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
-import TodayPage from './pages/Today';
+import TodayPage from './pages/TodayDeleted';
 import LoginPage from './pages/login';
-import NotFound from './pages/notFound/NotFound';
+import NotFound from './pages/notFound';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUpload from './pages/todayWritePage/components/ImageUpload';
 import VoiceToText from './pages/todayWritePage/components/VoiceToText';
@@ -44,10 +44,6 @@ export const router = createBrowserRouter([
         element: <ImageUpload />,
         handle: { title: '이미지 업로드하기' },
       },
-      // 예시
-      // { index: true, element: <OnboardingPage /> },
-      // { path: 'main', element: <MainPage /> },
-      // { path: 'account/login', element: <Login /> },
     ],
   },
 ]);
