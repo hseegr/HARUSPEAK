@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
-import Home from './pages/Home';
-import TodayPage from './pages/Today';
+import Home from './pages/home';
 import LoginPage from './pages/login';
 import NotFound from './pages/notFound/index';
+import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUploadPage from './pages/todayWritePage/ImageUploadPage';
 import VoiceToTextPage from './pages/todayWritePage/VoiceToTextPage';

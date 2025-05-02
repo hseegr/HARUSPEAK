@@ -5,8 +5,6 @@ import { RouterProvider } from 'react-router-dom';
 
 import { router } from '@/router';
 
-import './App.css';
-
 // QueryClient 인스턴스 생성
 // 이 인스턴스는 캐시, 쿼리 동기화, 리페치 등의 설정을 관리한다.
 const queryClient = new QueryClient();
