@@ -33,9 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final List<String> EXCLUDED_PATTERNS = List.of(
-            "/favicon.ico/**",
+            "/favicon.ico",
             "/swagger-ui/**",
-            "/api/auth/google/**",
+            "/v3/api-docs/**",
+            "/oauth2/**",
+            "/login/oauth2/**",
             "/api/auth/**"
     );
 
