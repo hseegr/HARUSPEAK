@@ -43,7 +43,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-//    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.2.1'
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+    implementation 'software.amazon.awssdk:s3'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -67,10 +69,16 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-launcher:1.5.2"
     testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
     testImplementation "org.mockito:mockito-core:3.12.4"
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'  // WebClient 사용
+
 }
 
 dependencyManagement {
-
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1"
+    }
 }
 
 tasks.named('test') {
@@ -85,4 +93,8 @@ tasks.named('asciidoctor') {
 
 clean {
     delete file('src/main/generated')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

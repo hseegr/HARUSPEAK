@@ -2,13 +2,16 @@ package com.haruspeak.api.config;
 
 import com.haruspeak.api.common.security.JwtTokenProvider;
 import com.haruspeak.api.common.util.CookieUtil;
+import com.haruspeak.api.user.application.AuthTokenService;
 import com.haruspeak.api.user.application.OAuthLoginService;
+import com.haruspeak.api.user.dto.TokenIssueResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,8 +30,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final OAuthLoginService oAuthLoginService;
+    private final AuthTokenService authTokenService;
 
     @Value("${app.oauth2.redirect-uri}")
     private String frontendRedirectUri;
@@ -70,20 +73,19 @@ public class SecurityConfig {
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
 
+        // 구글에게 받아온 정보
         String sub = String.valueOf(attributes.get("sub"));
         String email = String.valueOf(attributes.get("email"));
         String name = String.valueOf(attributes.get("name"));
 
+        // 로그인 / 회원가입 후 로그인 진행
         Integer userId = oAuthLoginService.processLoginOrRegister(sub, email, name);
 
-        String accessToken = jwtTokenProvider.createAccessToken(userId, name);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
+        // 토큰 발급
+        TokenIssueResult token = authTokenService.issueToken(userId, name);
 
-        ResponseCookie accessCookie = CookieUtil.createTokenCookie("accessToken", accessToken, jwtTokenProvider.getAccessTokenExpiration());
-        ResponseCookie refreshCookie = CookieUtil.createTokenCookie("refreshToken", refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
-
-        response.addHeader("Set-Cookie", accessCookie.toString());
-        response.addHeader("Set-Cookie", refreshCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, token.accessCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, token.refreshCookie().toString());
 
         response.sendRedirect(frontendRedirectUri); // 프론트 메인으로 이동
     }

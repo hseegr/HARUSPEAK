@@ -1,8 +1,6 @@
 package com.haruspeak.api.moment.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
@@ -36,7 +34,7 @@ public class ActiveDailyMoment {
 
     private Integer viewCount;
 
-    private String imageUrls;
-
-    private String tags;
+//    private String imageUrls;
+//
+//    private String tags;
 }

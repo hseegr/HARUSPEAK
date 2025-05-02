@@ -2,10 +2,12 @@ package com.haruspeak.api.moment.application;
 
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
+import com.haruspeak.api.common.exception.user.AccessDeniedException;
 import com.haruspeak.api.moment.domain.ActiveDailyMoment;
 import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentRepository;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
 import com.haruspeak.api.moment.dto.MomentListDetail;
+import com.haruspeak.api.moment.dto.MomentListDetailRaw;
 import com.haruspeak.api.moment.dto.ResInfo;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
@@ -17,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,20 +28,21 @@ public class ActiveDailyMomentService {
 
     /**
      * 일기 상세조회
-     * @param momentId
-     * @return
+     * @param userId 사용자 ID
+     * @param momentId 일기 ID
+     * @return MomentDetailResponse
      */
     @Transactional(readOnly = true)
-    public MomentDetailResponse findMomentDetail(Integer momentId){
-        MomentDetailRaw raw = activeDailyMomentRepository.getMomentDetailRaw(momentId)
-                .orElseThrow(() -> new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND));
+    public MomentDetailResponse getMomentDetail(Integer userId, Integer momentId){
+        MomentDetailRaw raw = activeDailyMomentRepository.findMomentDetailRaw(userId, momentId)
+                .orElseThrow(AccessDeniedException::new);
 
         return new MomentDetailResponse(
                 raw.momentId(),
                 raw.momentTime(),
-                splitString(raw.imageUrls()),
+                raw.imageUrls(),
                 raw.content(),
-                splitString(raw.tags())
+                raw.tags()
         );
     }
 
@@ -51,55 +53,40 @@ public class ActiveDailyMomentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public MomentListResponse findMomentList(MomentListRequest request, Integer userId){
-
+    public MomentListResponse getMomentList(MomentListRequest request, Integer userId){
         if (request.startDate() != null && request.endDate() != null) {
             if (request.startDate().isAfter(request.endDate())) {
                 throw new HaruspeakException(ErrorCode.INVALID_CONDITION_FORMAT);
             }
         }
 
-        List<ActiveDailyMoment> results = activeDailyMomentRepository.getMomentList(userId,request);
-
-        if (results.isEmpty()) {
-            throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
-        }
+        List<MomentListDetailRaw> results = activeDailyMomentRepository.findMomentList(userId,request);
 
         List<MomentListDetail> detailList = results.stream()
-                .map(entity -> new MomentListDetail(
-                        entity.getSummaryId(),
-                        entity.getMomentId(),
-                        entity.getMomentTime(),
-                        entity.getImageCount(),
-                        splitString(entity.getImageUrls()),
-                        entity.getContent(),
-                        entity.getTagCount(),
-                        splitString(entity.getTags())
+                .map(result -> new MomentListDetail(
+                        result.summaryId(),
+                        result.momentId(),
+                        result.momentTime(),
+                        result.imageCount(),
+                        result.images(),
+                        result.content(),
+                        result.tagCount(),
+                        result.tags()
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
-        Boolean hasNext = results.size() == request.limit();
+        Boolean hasNext = results.size() > request.limit(); // 1개 더 조회해서 다 조회 됐으면 hasNext
+        LocalDateTime nextCursor = hasNext ? detailList.get(detailList.size() - 2).momentTime() : null;
 
-        LocalDateTime nextCursor = hasNext ? detailList.get(detailList.size() - 1).momentTime() : null;
+        List<MomentListDetail> finalList = detailList.subList(0, Math.min(request.limit(), results.size()));
 
         ResInfo resInfo = new ResInfo(
-                detailList.size(),
+                finalList.size(),
                 nextCursor,
                 hasNext
         );
 
-        return new MomentListResponse(detailList, resInfo);
+        return new MomentListResponse(finalList, resInfo);
     }
 
-    /**
-     * String을 리스트로 변경하는 메서드
-     * @param source
-     * @return
-     */
-    private List<String> splitString(String source) {
-        if (source == null || source.isBlank()) {
-            return Collections.emptyList();
-        }
-        return List.of(source.split(","));
-    }
 }

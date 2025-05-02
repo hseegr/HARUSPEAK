@@ -9,8 +9,8 @@ public record MomentDetailRaw(
         Integer momentId,
         @JsonFormat(timezone = "Asia/Seoul")
         LocalDateTime momentTime,
-        String imageUrls,
+        List<String> imageUrls,
         String content,
-        String tags
+        List<String> tags
 ) {
 }
