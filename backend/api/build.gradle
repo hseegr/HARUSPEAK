@@ -94,3 +94,7 @@ tasks.named('asciidoctor') {
 clean {
     delete file('src/main/generated')
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
