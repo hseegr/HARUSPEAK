@@ -5,9 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ChevronUp } from 'lucide-react';
 
+import { TodayWriteStore } from '@/store/todayWriteStore';
+
 const TextInput = () => {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const addTextBlock = TodayWriteStore(state => state.addTextBlock);
 
   const handleResizeHeight = () => {
     const textarea = textareaRef.current;
@@ -27,6 +30,7 @@ const TextInput = () => {
 
   const handleSubmit = () => {
     if (!text.trim()) return;
+    addTextBlock(text.trim());
     setText('');
   };
 

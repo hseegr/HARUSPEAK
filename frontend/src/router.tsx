@@ -4,10 +4,10 @@ import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
 import TodayPage from './pages/Today';
 import LoginPage from './pages/login';
-import NotFound from './pages/notFound/NotFound';
+import NotFound from './pages/notFound/index';
 import TodayWritePage from './pages/todayWritePage';
-import ImageUpload from './pages/todayWritePage/components/ImageUpload';
-import VoiceToText from './pages/todayWritePage/components/VoiceToText';
+import ImageUploadPage from './pages/todayWritePage/ImageUploadPage';
+import VoiceToTextPage from './pages/todayWritePage/VoiceToTextPage';
 
 export const router = createBrowserRouter([
   {
@@ -36,18 +36,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'todaywrite/voice',
-        element: <VoiceToText />,
+        element: <VoiceToTextPage />,
         handle: { title: '음성 변환하기' },
       },
       {
         path: 'todaywrite/image',
-        element: <ImageUpload />,
+        element: <ImageUploadPage />,
         handle: { title: '이미지 업로드하기' },
       },
-      // 예시
-      // { index: true, element: <OnboardingPage /> },
-      // { path: 'main', element: <MainPage /> },
-      // { path: 'account/login', element: <Login /> },
     ],
   },
 ]);

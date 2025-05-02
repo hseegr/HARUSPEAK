@@ -1,46 +1,51 @@
 // TypeScript는 JSX 문법을 사용하면 내부적으로 React.createElement를 호출한다고 가정함.
 // 그래서 React 변수가 필요.
 import React from 'react';
-import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import ImageFindButton from './ImageFindButton';
-import ImageList from './ImageList';
+import { TodayWriteStore } from '@/store/todayWriteStore';
 
-const ImageUpload = () => {
+import ImageFindButton from './components/ImageFindButton';
+import ImageList from './components/ImageList';
+
+const ImageUploadPage = () => {
   const navigate = useNavigate();
-  const [images, setImages] = useState<File[]>([]);
+
+  // 이미지 업로드 상태관리
+  const images = TodayWriteStore(state => state.images);
+  const addImages = TodayWriteStore(state => state.addImages);
+  const removeImages = TodayWriteStore(state => state.removeImages);
+  const clearImages = TodayWriteStore(state => state.clearImages);
 
   // 파일 선택
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setImages(prev => {
-        const combined = [...prev, ...newFiles];
-        if (combined.length > 10) {
-          // 토스트 ???
-          // alert('이미지는 최대 10개까지만 첨부할 수 있어요.');
-          return prev; // 변경하지 않음
-        }
-        return combined;
-      });
+      const total = images.length + newFiles.length;
+      if (total > 10) {
+        // 토스트 ???
+        // alert('이미지는 최대 10개까지만 첨부할 수 있어요.');
+        return;
+      }
+
+      newFiles.forEach(file => addImages(file));
     }
   };
 
   // 파일 삭제
   const handleRemove = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    removeImages(index);
   };
 
-  // 업로드 (아직 콘솔 처리)
+  // 업로드
   const handleUpload = () => {
-    console.log('업로드할 이미지 목록:', images);
+    navigate('/todaywrite');
   };
 
   // 취소
   const handleCancel = () => {
-    setImages([]);
+    clearImages();
     navigate('/todaywrite');
   };
 
@@ -84,4 +89,4 @@ const ImageUpload = () => {
   );
 };
 
-export default ImageUpload;
+export default ImageUploadPage;
