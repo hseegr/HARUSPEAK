@@ -2,9 +2,9 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
-import TodayPage from './pages/today';
 import LoginPage from './pages/login';
 import NotFound from './pages/notFound';
+import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUpload from './pages/todayWritePage/components/ImageUpload';
 import VoiceToText from './pages/todayWritePage/components/VoiceToText';
