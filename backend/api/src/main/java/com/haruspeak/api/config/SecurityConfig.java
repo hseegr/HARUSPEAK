@@ -49,9 +49,8 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 // 허용할 요청
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**", "/oauth2/**").permitAll()
-//                        .anyRequest().authenticated() // 테스트 종료 시
-                        .anyRequest().permitAll() // 테스트
+//                        .requestMatchers("/", "/login/**", "/oauth2/**").permitAll()
+                        .anyRequest().permitAll() //
                 )
 
                 .oauth2Login(oauth2 -> oauth2
