@@ -4,8 +4,8 @@ import ImageDialog from '@/components/ImageDialog';
 import TagBadge from '@/components/TagBadge';
 import { formatMomentTime } from '@/lib/timeUtils';
 import { createTags, deleteMoment } from '@/mock/mockTodayApi';
-import MomentDeleteDialog from '@/pages/TodayDeleted/components/MomentDeleteDialog';
-import MomentEditDialog from '@/pages/TodayDeleted/components/MomentEditDialog';
+import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
+import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
 
 const MomentCard = ({ moment, isToday }: MomentCardProps) => {
