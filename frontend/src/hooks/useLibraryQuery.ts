@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { deleteDiaries, editDiary, getLibrary } from '@/apis/myLibraryApi';
+import { deleteDiaries, editDiary, getLibrary } from '@/apis/libraryApi';
 
 export interface Diary {
   summaryId: number;
