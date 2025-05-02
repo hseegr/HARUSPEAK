@@ -1,8 +1,15 @@
 import { axiosInstance } from '@/apis/core';
 
+interface GetLibraryParams {
+  before?: string;
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 // 하루 요약 일기 모아보기 - 최신순/검색
-export const getLibrary = async () => {
-  const response = await axiosInstance.get('/api/summary');
+export const getLibrary = async (params?: GetLibraryParams) => {
+  const response = await axiosInstance.get('/api/summary', { params });
   return response.data;
 };
 
@@ -12,8 +19,10 @@ export const editDiary = async (summaryId: string) => {
   return response.data;
 };
 
-// 하루 일기들 삭제
-export const deleteDiaries = async (summaryIds: string) => {
-  const response = await axiosInstance.delete(`/api/summary/${summaryIds}`);
+// 하루일기 삭제(오늘 제외)
+export const deleteDiaries = async (summaryIds: string[]) => {
+  const response = await axiosInstance.delete('/api/summary', {
+    data: { summaryIds },
+  });
   return response.data;
 };

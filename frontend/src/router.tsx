@@ -44,6 +44,10 @@ export const router = createBrowserRouter([
         element: <ImageUploadPage />,
         handle: { title: '이미지 업로드하기' },
       },
+      // 예시
+      // { index: true, element: <OnboardingPage /> },
+      // { path: 'main', element: <MainPage /> },
+      // { path: 'account/login', element: <Login /> },
     ],
   },
 ]);

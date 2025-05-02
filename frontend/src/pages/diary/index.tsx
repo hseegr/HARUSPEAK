@@ -1,11 +1,26 @@
+import { useParams } from 'react-router-dom';
+
+import MomentCard from '@/components/MomentCard';
+
+import ContentSummary from './components/ContentSummary';
+import DiaryHeader from './components/DiaryHeader';
+import Thumbnail from './components/Thumbnail';
+
 // 일기 1개 상세 보기
 const Diary = () => {
+  const { summaryId } = useParams();
+
+  if (!summaryId) {
+    return null;
+  }
+
   return (
     <div>
-      <div>썸네일</div>
-      <div>AI 요약</div>
-      <div>순간 일기1-공통 컴포넌트</div>
-      <div>순간 일기2-공통 컴포넌트</div>
+      <DiaryHeader />
+      <Thumbnail summaryId={summaryId} />
+      <ContentSummary />
+
+      <MomentCard />
     </div>
   );
 };
