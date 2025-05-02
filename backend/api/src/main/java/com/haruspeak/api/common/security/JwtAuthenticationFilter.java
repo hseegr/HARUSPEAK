@@ -72,8 +72,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         log.info("🧪 요청 경로: {}", path);
+        if(path.startsWith("/api/auth/token/refresh")) {
+            return false;
+        }
 //        return path.startsWith("/api/auth/");
-        return false;
+        return true;
     }
 }
 
