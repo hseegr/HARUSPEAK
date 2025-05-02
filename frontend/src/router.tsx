@@ -2,9 +2,11 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
 import Home from './pages/Home';
-import TodayPage from './pages/Today';
+import Diary from './pages/diary/index';
+import Library from './pages/library/index';
 import LoginPage from './pages/login';
-import NotFound from './pages/notFound/NotFound';
+import NotFound from './pages/notFound/index';
+import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUpload from './pages/todayWritePage/components/ImageUpload';
 import VoiceToText from './pages/todayWritePage/components/VoiceToText';
@@ -43,6 +45,21 @@ export const router = createBrowserRouter([
         path: 'todaywrite/image',
         element: <ImageUpload />,
         handle: { title: '이미지 업로드하기' },
+      },
+      {
+        path: 'library',
+        element: <Library />,
+        handle: { title: '내 서재' },
+      },
+      {
+        path: 'moments',
+        element: <Library />,
+        handle: { title: '필터링된 순간 일기들' },
+      },
+      {
+        path: 'diary/:summaryId',
+        element: <Diary />,
+        handle: { title: '일기 상세' },
       },
       // 예시
       // { index: true, element: <OnboardingPage /> },
