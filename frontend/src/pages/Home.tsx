@@ -41,7 +41,7 @@ const Home = () => {
             {/* 오늘의 순간 섹션 */}
             <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayMomentCount} />
-              <p className='w-full text-center text-gray-600'>
+              <p className='w-full text-center text-haru-gray-5'>
                 오늘 {statistics.todayMomentCount}개의 순간을 기록했어요
               </p>
             </section>
@@ -49,13 +49,13 @@ const Home = () => {
             {/* 전체 통계 섹션 */}
             <section className='w-full rounded-lg bg-haru-beige p-4'>
               <div className='mb-2 flex justify-between'>
-                <p className='text-gray-600'>지금까지 기록한 순간들 : </p>
+                <p className='text-haru-gray-5'>지금까지 기록한 순간들 : </p>
                 <p className='font-bold text-haru-green'>
                   {statistics.totalMomentCount}개
                 </p>
               </div>
               <div className='flex justify-between'>
-                <p className='text-gray-600'>지금까지 기록한 하루들 : </p>
+                <p className='text-haru-gray-5'>지금까지 기록한 하루들 : </p>
                 <p className='font-bold text-haru-green'>
                   {statistics.totalDayCount}일
                 </p>
