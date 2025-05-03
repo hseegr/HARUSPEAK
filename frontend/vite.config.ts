@@ -5,6 +5,10 @@ import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  // 로그인 후 리다이렉트를 위한 포트 설정
+  server: {
+    port: 3000,
+  },
   plugins: [
     react(),
     tsconfigPaths(), // 경로 별칭 지원
