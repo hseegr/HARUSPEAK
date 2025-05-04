@@ -1,6 +1,6 @@
-import { axiosInstance } from './core';
+import { axiosInstance } from '@/apis/core';
 
-interface GetMomentsParams {
+export interface GetMomentsParams {
   before?: string;
   limit?: number;
   startDate?: string;
@@ -8,7 +8,7 @@ interface GetMomentsParams {
   userTags?: string;
 }
 
-interface Moment {
+export interface Moment {
   summaryId: number;
   momentId: number;
   momentTime: string;
@@ -19,7 +19,7 @@ interface Moment {
   tags: string[];
 }
 
-interface MomentsResponse {
+export interface MomentsResponse {
   data: Moment[];
   resInfo: {
     dataCount: number;

@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
       {
         path: 'moments',
         element: <Library />,
-        handle: { title: '필터링된 순간 일기들' },
+        handle: { title: '나의 순간 일기들' },
       },
       {
         path: 'diary/:summaryId',

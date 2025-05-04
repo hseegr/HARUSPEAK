@@ -1,6 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { deleteDiaries, editDiary, getLibrary } from '@/apis/libraryApi';
+import { mockGetLibrary } from '@/mock/mockLibraryApi';
+
+// 테스트를 위해 mock 데이터 사용 여부를 설정하는 상수
+const useMockData = true;
 
 export interface Diary {
   summaryId: number;
@@ -14,21 +22,51 @@ export interface Diary {
   momentCount: number;
 }
 
-interface ResInfo {
+export interface ResInfo {
   dataCount: number;
   nextCursor: string;
   hasMore: boolean;
 }
 
-interface LibraryResponse {
+export interface LibraryResponse {
   data: Diary[];
   resInfo: ResInfo;
 }
 
-export const useGetLibrary = () =>
-  useQuery<LibraryResponse>({
-    queryKey: ['library'],
-    queryFn: () => getLibrary(),
+export interface LibraryParams {
+  limit?: number;
+  before?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+// useInfiniteQuery를 사용하여 무한 스크롤 구현
+export const useGetLibrary = ({
+  limit = 30,
+  startDate,
+  endDate,
+}: LibraryParams = {}) =>
+  useInfiniteQuery<LibraryResponse, Error>({
+    queryKey: ['library', limit, startDate, endDate],
+    queryFn: ({ pageParam }) =>
+      useMockData
+        ? mockGetLibrary({
+            limit,
+            before: pageParam as string,
+            startDate,
+            endDate,
+          })
+        : getLibrary({
+            limit,
+            before: pageParam as string,
+            startDate,
+            endDate,
+          }),
+    initialPageParam: undefined,
+    getNextPageParam: lastPage => {
+      if (!lastPage?.resInfo?.hasMore) return undefined;
+      return lastPage.resInfo.nextCursor;
+    },
   });
 
 export const useEditDiary = () => {

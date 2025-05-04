@@ -1,15 +1,36 @@
 import { axiosInstance } from '@/apis/core';
 
-interface GetLibraryParams {
-  before?: string;
+export interface GetLibraryParams {
   limit?: number;
+  before?: string;
   startDate?: string;
   endDate?: string;
 }
 
-// 하루 요약 일기 모아보기 - 최신순/검색
-export const getLibrary = async (params?: GetLibraryParams) => {
-  const response = await axiosInstance.get('/api/summary', { params });
+export interface LibraryResponse {
+  data: {
+    summaryId: number;
+    diaryDate: string;
+    imageUrl: string;
+    title: string;
+    content: string;
+    isImageGenerating: boolean;
+    imageGenerateCount: number;
+    contentGenerateCount: number;
+    momentCount: number;
+  }[];
+  resInfo: {
+    dataCount: number;
+    nextCursor: string;
+    hasMore: boolean;
+  };
+}
+
+// 하루 요약 일기 모아보기 - 최신순
+export const getLibrary = async (params: GetLibraryParams) => {
+  const response = await axiosInstance.get<LibraryResponse>('/api/summary', {
+    params,
+  });
   return response.data;
 };
 
