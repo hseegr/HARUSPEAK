@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { deleteDiaries, editDiary, getLibrary } from '@/apis/libraryApi';
+import { deleteDiaries, getLibrary } from '@/apis/libraryApi';
 import { mockGetLibrary } from '@/mock/mockLibraryApi';
 
 // 테스트를 위해 mock 데이터 사용 여부를 설정하는 상수
@@ -68,21 +68,6 @@ export const useGetLibrary = ({
       return lastPage.resInfo.nextCursor;
     },
   });
-
-export const useEditDiary = () => {
-  const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
-    mutationFn: editDiary,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['library'] });
-    },
-    onError: error => {
-      console.log(error);
-    },
-  });
-  return mutate;
-};
 
 export const useDeleteDiaries = () => {
   const queryClient = useQueryClient();
