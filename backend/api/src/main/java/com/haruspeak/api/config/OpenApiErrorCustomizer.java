@@ -1,5 +1,6 @@
 package com.haruspeak.api.config;
 
+import com.haruspeak.api.common.exception.ErrorResponse;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDateTime;
 
 /**
  * Swagger 문서에 작성할 에러 커스텀

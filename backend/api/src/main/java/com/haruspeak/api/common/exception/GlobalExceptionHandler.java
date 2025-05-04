@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -68,6 +64,6 @@ public class GlobalExceptionHandler {
      * @return ErrorResponse 에러 응답
      */
     private ErrorResponse createErrorResponse(int errorCode, String message, String details) {
-        return new ErrorResponse(errorCode, message, LocalDateTime.now(), details);
+        return new ErrorResponse(errorCode, message, LocalDateTime.now().toString(), details);
     }
 }

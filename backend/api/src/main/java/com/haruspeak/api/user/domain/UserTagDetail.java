@@ -20,4 +20,6 @@ public class UserTagDetail {
     private Integer tagId;
 
     private String name;
+
+    private int totalUsageCount;
 }
