@@ -62,9 +62,9 @@ class OAuthLoginServiceTest {
         User user = User.create("snsId123", "test@example.com", "홍길동");
         when(userRepository.findBySnsId("snsId123")).thenReturn(Optional.of(user));
 
-        Integer userId = oAuthLoginService.processLoginOrRegister("snsId123", "test@example.com", "홍길동");
+        User loginUser = oAuthLoginService.processLoginOrRegister("snsId123", "test@example.com", "홍길동");
 
-        assertThat(userId).isEqualTo(user.getUserId());
+        assertThat(loginUser.getUserId()).isEqualTo(user.getUserId());
         verify(userRepository, never()).save(any());
     }
 
@@ -88,9 +88,9 @@ class OAuthLoginServiceTest {
         User savedUser = User.create("newSnsId", "new@example.com", "신규유저");
         when(userRepository.save(any())).thenReturn(savedUser);
 
-        Integer userId = oAuthLoginService.processLoginOrRegister("newSnsId", "new@example.com", "신규유저");
+        User loginUser = oAuthLoginService.processLoginOrRegister("newSnsId", "new@example.com", "신규유저");
 
-        assertThat(userId).isEqualTo(savedUser.getUserId());
+        assertThat(loginUser.getUserId()).isEqualTo(savedUser.getUserId());
         verify(userRepository).save(any());
     }
 

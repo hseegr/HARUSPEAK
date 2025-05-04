@@ -1,14 +1,12 @@
 package com.haruspeak.api.user.application;
 
-import com.haruspeak.api.common.exception.ErrorCode;
-import com.haruspeak.api.common.exception.user.InvalidTokenException;
+import com.haruspeak.api.common.exception.user.TokenSaveErrorException;
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import com.haruspeak.api.common.security.JwtTokenProvider;
 import com.haruspeak.api.common.util.CookieUtil;
 import com.haruspeak.api.user.domain.repository.RefreshTokenRepositoryImpl;
 import com.haruspeak.api.user.dto.TokenIssueResult;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -36,8 +34,14 @@ public class AuthTokenService {
         ResponseCookie accessCookie = CookieUtil.createTokenCookie("accessToken", accessToken, jwtTokenProvider.getAccessTokenExpiration());
         ResponseCookie refreshCookie = CookieUtil.createTokenCookie("refreshToken", refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
 
-        // Redis에 리프레시 토큰 저장
-        refreshTokenRepository.saveRefreshToken(userId, refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
+        try {
+            // Redis에 리프레시 토큰 저장
+            refreshTokenRepository.saveRefreshToken(userId, refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
+            log.debug("✅ refreshToken 저장 완료 (userId: {})", userId);
+        } catch (Exception e) {
+            log.error("⛔ refreshToken 저장 실패 (userId: {}, token: {})", userId, refreshToken, e);
+            throw new TokenSaveErrorException();
+        }
 
         return new TokenIssueResult(accessCookie, refreshCookie);
     }
@@ -50,46 +54,75 @@ public class AuthTokenService {
      * - TokenIssueResult : 발급된 토큰
      */
     public TokenIssueResult reissueTokens(Cookie[] cookies) {
-        if(cookies == null) {
-            throw new UnauthorizedException();
-        }
-
-        // 쿠키에서 리프레시 토큰 추출
-        String refreshToken = CookieUtil.extractTokenFromCookie(cookies, "refreshToken");
-        if(refreshToken == null) {
-            throw new UnauthorizedException();
-        }
-
+        String refreshToken = extractRefreshTokenOrThrow(cookies); // 쿠키에서 리프레시 토큰 추출
         jwtTokenProvider.validateTokenOrThrow(refreshToken);  // 유효성 검사
 
         Integer userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
         String name = jwtTokenProvider.getNameFromToken(refreshToken);
 
+        if(!refreshTokenRepository.getRefreshToken(userId).equals(refreshToken)) {
+            log.debug("⛔ 리프레시 토큰 정보 불일치 (userId: {})", userId);
+            throw new UnauthorizedException();
+        }
+
         return issueToken(userId, name);
     }
 
     /**
-     * 토큰 만료 처리 (로그아웃)
+     * 로그아웃
      * - filter 예외
      * @param cookies 쿠키
      * @return
-     * - TokenIssueResult : 만료된 토큰
+     * - TokenIssueResult : 만료된 토큰⚠️
      */
-    public TokenIssueResult expireToken(Cookie[] cookies) {
-        if (cookies != null) {
-            String refreshToken = CookieUtil.extractTokenFromCookie(cookies, "refreshToken");
-            if (refreshToken != null) {
-                Integer userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
-                if(userId != null) {
-                    refreshTokenRepository.deleteRefreshToken(userId);
-                }
+    public TokenIssueResult logout(Cookie[] cookies) {
+        try {
+            String refreshToken = extractRefreshTokenOrThrow(cookies);
+            Integer userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+            if(userId != null) {
+                refreshTokenRepository.deleteRefreshToken(userId);
             }
+        } catch (UnauthorizedException e) {
+            log.debug("⚠️ 로그아웃 - 유효한 토큰 없음");
+        } catch (Exception e) {
+            log.warn("⚠️ refreshToken 삭제 실패", e);
         }
 
-        ResponseCookie expiredAccess = CookieUtil.clearCookie("accessToken");
-        ResponseCookie expiredRefresh = CookieUtil.clearCookie("refreshToken");
+        return expireToken();
+    }
 
-        return new TokenIssueResult(expiredAccess, expiredRefresh);
+
+    /**
+     * 리프레시 토큰 추출
+     * @param cookies 쿠키
+     * @return 리프레시 토큰
+     * @exception UnauthorizedException 쿠키: null OR refreshToken: null
+     */
+    private String extractRefreshTokenOrThrow(Cookie[] cookies) {
+        if (cookies == null) {
+            log.debug("⛔ 쿠키 없음");
+            throw new UnauthorizedException();
+        }
+
+        String refreshToken = CookieUtil.extractTokenFromCookie(cookies, "refreshToken");
+        if (refreshToken == null) {
+            log.debug("⛔ refreshToken 없음");
+            throw new UnauthorizedException();
+        }
+
+        return refreshToken;
+    }
+
+
+    /**
+     * 토큰 만료
+     * @return TokenIssueResult 만료처리된 토큰
+     */
+    private TokenIssueResult expireToken(){
+        return new TokenIssueResult(
+                CookieUtil.clearCookie("accessToken"),
+                CookieUtil.clearCookie("refreshToken")
+        );
     }
 
 }

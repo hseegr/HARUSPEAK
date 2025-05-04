@@ -1,16 +1,20 @@
 package com.haruspeak.api.user.presentation;
 
-import com.haruspeak.api.common.util.CookieUtil;
+import com.haruspeak.api.common.exception.ErrorResponse;
 import com.haruspeak.api.user.application.AuthTokenService;
 import com.haruspeak.api.user.dto.TokenIssueResult;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
+@Slf4j
 @RestController()
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(
-        name = "사용자 로그인 관련 API",
-        description = "SNS 로그인 및 회원가입, 로그아웃, 토큰 재발급"
+        name = "Auth",
+        description = "사용자 로그인 관련 API"
 )
+// filter 제외
 public class OAuthLoginController {
 
     @Value("${app.oauth2.google.authorization-uri}")
@@ -47,6 +53,7 @@ public class OAuthLoginController {
                         "요청 시 사용자는 구글 로그인 화면으로 리다이렉트되며, 로그인 완료 후 서버로 콜백됩니다."
     )
     public ResponseEntity<Void> redirectToGoogle() {
+        log.info("[GET] api/auth/google/login 로그인 요청");
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(authorizationUri));
         return ResponseEntity.status(HttpStatus.FOUND)
@@ -64,11 +71,18 @@ public class OAuthLoginController {
     @PostMapping("/token/refresh")
     @Operation(
             summary = "Access Token 재발급",
-            description = "쿠키에 저장된 refreshToken을 통해 accessToken을 재발급합니다."
+            description = "쿠키에 저장된 refreshToken을 통해 accessToken을 재발급합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "401", 
+                            description = "인증 실패",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    )
+            }
     )
     public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request) {
-        TokenIssueResult tokens = tokenService.reissueTokens(request.getCookies());
-        return buildTokenResponse(tokens);
+        log.info("[POST] api/auth/token/refresh 토큰 재발급 요청");
+        return buildTokenResponse(tokenService.reissueTokens(request.getCookies()));
     }
 
 
@@ -84,8 +98,8 @@ public class OAuthLoginController {
             description = "클라이언트에 저장된 accessToken, refreshToken 쿠키를 삭제(만료)합니다."
     )
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        TokenIssueResult tokens = tokenService.expireToken(request.getCookies());
-        return buildTokenResponse(tokens);
+        log.info("[POST] api/auth/logout 로그아웃 요청");
+        return buildTokenResponse(tokenService.logout(request.getCookies()));
     }
 
 
@@ -100,14 +114,15 @@ public class OAuthLoginController {
                 .header(HttpHeaders.SET_COOKIE, tokens.refreshCookie().toString())
                 .build();
     }
-    
 
+
+    /**
+     * 필터 제외 테스트를 진행하기 위한 임시 api
+     */
+    @Hidden
     @GetMapping("/test/filter")
-    @Operation(
-            summary = "filter 테스트",
-            description = "필터 제외 테스트를 진행하기 위한 임시 api입니다."
-    )
     public ResponseEntity<Void> filterTest() {
+        log.info("🧪[GET] api/auth/test/filter FILTER TEST");
         return ResponseEntity.ok().build();
     }
 

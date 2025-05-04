@@ -1,8 +1,10 @@
 package com.haruspeak.api.user.application;
 
+import com.haruspeak.api.common.exception.user.UserRegisterException;
 import com.haruspeak.api.user.domain.User;
 import com.haruspeak.api.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuthLoginService {
 
     private final UserRepository userRepository;
@@ -24,9 +27,22 @@ public class OAuthLoginService {
      * @return 사용자 ID
      */
     @Transactional
-    public Integer processLoginOrRegister(String snsId, String email, String name) {
+    public User processLoginOrRegister(String snsId, String email, String name) {
         return userRepository.findBySnsId(snsId)
-                .orElseGet(() -> userRepository.save(User.create(snsId, email, name)))
-                .getUserId();
+                .map(user -> {
+                    log.debug("✅ 기존 사용자 로그인");
+                    return user;
+                })
+                .orElseGet(() -> {
+                    try {
+                        log.info("🎉 신규 사용자 회원가입 (snsId: {}, email: {})", snsId, email);
+                        return userRepository.save(User.create(snsId, email, name));
+                    } catch (Exception e) {
+                        log.error("❌ 회원가입 실패 (snsId: {}, email: {})", snsId, email, e);
+                        throw new UserRegisterException();
+                    }
+                })
+                ;
+
     }
 }
