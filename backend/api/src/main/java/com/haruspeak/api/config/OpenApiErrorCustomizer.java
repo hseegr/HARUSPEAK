@@ -39,8 +39,8 @@ public class OpenApiErrorCustomizer {
                                 addErrorResponse(operation.getResponses(), "401", "인증 실패");
                             }
 
-                            // 403: 특정 컨트롤러에만 적용
-                            if (controllerClass.equals("AdminController") || controllerClass.equals("UserController")) {
+                            // 403: 특정 컨트롤러에만 적용 // Moment(특정), Today, Summary (User, Auth 제외)
+                            if ( controllerClass.equals("Today")) {
                                 addErrorResponse(operation.getResponses(), "403", "권한 없음");
                             }
 
