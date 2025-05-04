@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  editDiary,
   getDiary,
   getImage,
   regenerateContent,
@@ -62,3 +63,18 @@ export const useGetImage = (summaryId: string) =>
     queryKey: ['image', summaryId],
     queryFn: () => getImage(summaryId),
   });
+
+export const useEditDiary = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: editDiary,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['library'] });
+    },
+    onError: error => {
+      console.log(error);
+    },
+  });
+  return mutate;
+};

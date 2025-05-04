@@ -1,7 +1,5 @@
 import { useGetImage } from '@/hooks/useDiaryQuery';
 
-import ResetBtn from './ResetBtn';
-
 interface ThumbnailProps {
   summaryId: string;
 }
@@ -13,7 +11,6 @@ const Thumbnail = ({ summaryId }: ThumbnailProps) => {
   return (
     <div>
       <img src={imageUrl} alt='thumbnail' />
-      <ResetBtn />
     </div>
   );
 };

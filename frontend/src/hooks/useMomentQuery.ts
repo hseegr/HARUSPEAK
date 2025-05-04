@@ -1,14 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import { getMoment, getMoments } from '@/apis/momentApi';
-
-interface GetMomentsParams {
-  before?: string;
-  limit?: number;
-  startDate?: string;
-  endDate?: string;
-  userTags?: string;
-}
+import type { GetMomentsParams, MomentsResponse } from '@/apis/momentApi';
 
 interface MomentResponse {
   momentId: number;
@@ -18,14 +11,18 @@ interface MomentResponse {
   tags: string[];
 }
 
+export const useGetMoments = (params: GetMomentsParams = {}) =>
+  useInfiniteQuery<MomentsResponse>({
+    queryKey: ['moments', params],
+    queryFn: ({ pageParam }) =>
+      getMoments({ ...params, before: pageParam as string | undefined }),
+    getNextPageParam: lastPage =>
+      lastPage.resInfo.hasMore ? lastPage.resInfo.nextCursor : undefined,
+    initialPageParam: undefined,
+  });
+
 export const useGetMoment = (momentId: string) =>
   useQuery<MomentResponse>({
     queryKey: ['moment', momentId],
     queryFn: () => getMoment(momentId),
-  });
-
-export const useGetMoments = (params?: GetMomentsParams) =>
-  useQuery({
-    queryKey: ['moments', params],
-    queryFn: () => getMoments(params),
   });

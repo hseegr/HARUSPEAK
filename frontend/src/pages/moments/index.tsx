@@ -1,8 +1,8 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 
-import { getMoments } from '@/apis/momentApi';
+import { MomentsResponse } from '@/apis/momentApi';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { useGetMoments } from '@/hooks/useMomentQuery';
 
 import MomentFrame from './components/MomentFrame';
 
@@ -21,29 +21,22 @@ const Moments = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ['moments', location.search],
-      queryFn: ({ pageParam }) =>
-        getMoments({
-          before: pageParam as string,
-          limit: 30,
-          startDate: searchParams.get('startDate') || undefined,
-          endDate: searchParams.get('endDate') || undefined,
-          userTags: searchParams.get('userTags') || undefined,
-        }),
-      initialPageParam: undefined,
-      getNextPageParam: lastPage =>
-        lastPage.resInfo.hasMore ? lastPage.resInfo.nextCursor : undefined,
-    });
+  const params = {
+    limit: 30,
+    startDate: searchParams.get('startDate') || undefined,
+    endDate: searchParams.get('endDate') || undefined,
+    userTags: searchParams.get('userTags') || undefined,
+  };
 
-  // Intersection Observer를 사용한 자동 무한 스크롤
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetMoments(params);
+
   const observerRef = useIntersectionObserver({
     onIntersect: fetchNextPage,
     enabled: hasNextPage && !isFetchingNextPage,
   });
 
-  // 더 좋은 방법이 있지 않을까
+  // 타입 추론 최적화 고민
   const hasData = Boolean(data?.pages?.[0]?.data?.length);
 
   return (
@@ -58,7 +51,7 @@ const Moments = () => {
       </div>
 
       <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-        {data?.pages?.map(page =>
+        {data?.pages?.map((page: MomentsResponse) =>
           page.data?.map((moment: Moment) => (
             <MomentFrame
               key={moment.momentId}

@@ -5,6 +5,8 @@ import Diary from './pages/diary';
 import Home from './pages/home';
 import Library from './pages/library';
 import LoginPage from './pages/login';
+import Moment from './pages/moment';
+import Moments from './pages/moments';
 import NotFound from './pages/notFound';
 import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
@@ -53,13 +55,18 @@ export const router = createBrowserRouter([
       },
       {
         path: 'moments',
-        element: <Library />,
-        handle: { title: '나의 순간 일기들' },
+        element: <Moments />,
+        handle: { title: '순간 일기 모아 보기' },
+      },
+      {
+        path: 'moments/:momentId',
+        element: <Moment />,
+        handle: { title: '순간 일기 상세 보기' },
       },
       {
         path: 'diary/:summaryId',
         element: <Diary />,
-        handle: { title: '일기 상세' },
+        handle: { title: '일기 상세 보기' },
       },
       // 예시
       // { index: true, element: <OnboardingPage /> },

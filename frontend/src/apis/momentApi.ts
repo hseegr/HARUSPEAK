@@ -35,7 +35,7 @@ export const getMoment = async (momentId: string) => {
 };
 
 // 순간일기 목록조회
-export const getMoments = async (params?: GetMomentsParams) => {
+export const getMoments = async (params: GetMomentsParams) => {
   const response = await axiosInstance.get('/api/moment', { params });
   return response.data as MomentsResponse;
 };
