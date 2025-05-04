@@ -5,10 +5,23 @@ import {
   getImage,
   regenerateContent,
   regenerateImage,
-} from '@/apis/myDiaryApi';
+} from '@/apis/diaryApi';
+import { MomentContent } from '@/types/common';
+
+interface DiaryResponse {
+  summaryId: number;
+  diaryDate: string;
+  imageUrl: string;
+  title: string;
+  content: string;
+  isImageGenerating: boolean;
+  imageGenerateCount: number;
+  contentGenerateCount: number;
+  moments: MomentContent[];
+}
 
 export const useGetDiary = (summaryId: string) =>
-  useQuery({
+  useQuery<DiaryResponse>({
     queryKey: ['diary', summaryId],
     queryFn: () => getDiary(summaryId),
   });
