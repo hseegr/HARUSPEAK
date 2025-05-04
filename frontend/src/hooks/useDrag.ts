@@ -10,9 +10,11 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
     velocity: { x: 0, y: 0 },
   });
 
+  // 이전 마우스 위치와 시간을 저장하는 ref
   const prevMousePosRef = useRef({ x: 0, y: 0 });
   const prevTimeRef = useRef(0);
 
+  // 마우스 다운 핸들러 : 드래그 시작 시 이모지의 초기 위치와 오프셋 설정
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, emoji: EmojiParticle) => {
       e.preventDefault();
@@ -42,6 +44,7 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
     [containerRef],
   );
 
+  // 마우스 이동 핸들러 : 드래그 중 이모지의 위치와 속도 업데이트
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!dragState.emoji || !containerRef.current) return;
@@ -81,6 +84,7 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
     [containerRef, dragState.emoji],
   );
 
+  // 마우스 업 핸들러 : 드래그 종료 시 이모지의 최종 속도 설정 및 드래그 상태 초기화
   const handleMouseUp = useCallback(() => {
     if (dragState.emoji) {
       setDragState(prev => ({
@@ -95,6 +99,7 @@ export const useDrag = (containerRef: React.RefObject<HTMLDivElement>) => {
     setDragState(prev => ({ ...prev, emoji: null }));
   }, [dragState.emoji]);
 
+  // 이벤트 리스너 설정 : 드래그 중일 때만 마우스 이동과 업 이벤트를 감지
   useEffect(() => {
     if (!containerRef.current) return;
 

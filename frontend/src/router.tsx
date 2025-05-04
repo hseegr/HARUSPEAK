@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
-import Home from './pages/Home';
 import Diary from './pages/diary/index';
+import Home from './pages/home';
 import Library from './pages/library/index';
 import LoginPage from './pages/login';
 import NotFound from './pages/notFound/index';

@@ -1,6 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-
-import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import {
   Dialog,
@@ -10,15 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  convert24To12HourFormat,
-  get24HourFormat,
-  parseMomentTime,
-  updateMomentTime,
-} from '@/lib/timeUtils';
-import { updateMoment } from '@/mock/mockTodayApi';
+import { useMomentEdit } from '@/hooks/useMomentEdit';
 import { MomentContent } from '@/types/common';
-import { UpdateMomentRequest } from '@/types/today';
 
 interface MomentEditDialogProps {
   open: boolean;
@@ -31,107 +22,34 @@ const MomentEditDialog = ({
   onOpenChange,
   moment,
 }: MomentEditDialogProps) => {
-  const queryClient = useQueryClient();
-  const [editedMoment, setEditedMoment] = useState<MomentContent>(moment);
-  const [newTag, setNewTag] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [deleteImages, setDeleteImages] = useState<string[]>([]);
+  const {
+    editedMoment,
+    newTag,
+    setNewTag,
+    isSaving,
+    date,
+    currentTime,
+    isSaveDisabled,
+    handleTimeChange,
+    handleContentChange,
+    handleDeleteImage,
+    handleDeleteTag,
+    handleAddTag,
+    handleSave,
+    resetState,
+  } = useMomentEdit(moment, () => onOpenChange(false));
 
   // Dialog가 열릴 때마다 상태 초기화
   useEffect(() => {
     if (open) {
-      setEditedMoment(moment);
-      setNewTag('');
-      setDeleteImages([]);
+      resetState();
     }
-  }, [open, moment]);
+  }, [open, resetState]); // resetState가 useCallback으로 memoized되어 있어서 안전함
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
-    setEditedMoment(moment);
-    setNewTag('');
+    resetState();
     onOpenChange(false);
-  };
-
-  // 저장 버튼 비활성화 조건
-  const isSaveDisabled =
-    editedMoment.content.trim() === '' && editedMoment.images.length === 0;
-
-  // momentTime 파싱 및 포맷팅
-  const { date } = parseMomentTime(editedMoment.momentTime);
-  const currentTime = get24HourFormat(
-    parseMomentTime(editedMoment.momentTime).time,
-  );
-
-  // 시간 입력 핸들러
-  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputTime = e.target.value;
-    const formattedTime = convert24To12HourFormat(inputTime);
-    setEditedMoment(prev => {
-      const updatedMomentTime = updateMomentTime(
-        prev.momentTime,
-        formattedTime,
-      );
-      return {
-        ...prev,
-        momentTime: updatedMomentTime,
-      };
-    });
-  };
-
-  // 이미지 삭제
-  const handleDeleteImage = (index: number) => {
-    const deletedImage = editedMoment.images[index];
-    setEditedMoment(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-    setDeleteImages(prev => [...prev, deletedImage]);
-  };
-
-  // 태그 삭제
-  const handleDeleteTag = (index: number) => {
-    setEditedMoment(prev => ({
-      ...prev,
-      tags: prev.tags.filter((_, i) => i !== index),
-    }));
-  };
-
-  // 태그 추가
-  const handleAddTag = () => {
-    if (newTag.trim() !== '') {
-      setEditedMoment(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()],
-      }));
-      setNewTag('');
-    }
-  };
-
-  // 저장
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-
-      const updateData: UpdateMomentRequest = {
-        momentTime: editedMoment.momentTime,
-        content: editedMoment.content,
-        images: editedMoment.images,
-        tags: editedMoment.tags,
-        deleteImages,
-      };
-
-      await updateMoment(updateData);
-
-      // 저장 성공 후 리페칭
-      await queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
-      onOpenChange(false);
-    } catch (error) {
-      console.error('저장 실패:', error);
-      // TODO: 에러 처리 UI 추가
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   return (
@@ -155,15 +73,15 @@ const MomentEditDialog = ({
             disabled={isSaving || isSaveDisabled}
             className={`rounded-full px-3 py-1.5 text-sm ${
               isSaving || isSaveDisabled
-                ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                : 'bg-[#41644A] text-white'
+                ? 'cursor-not-allowed bg-gray-300 text-haru-gray-5'
+                : 'bg-haru-green text-white'
             }`}
           >
             {isSaving ? '저장 중...' : '저장'}
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
-          <div className='text-end text-sm text-gray-600'>{date}</div>
+          <div className='text-end text-sm text-haru-gray-5'>{date}</div>
         </div>
         <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
           {/* 날짜 & 시간 */}
@@ -172,7 +90,7 @@ const MomentEditDialog = ({
               type='time'
               value={currentTime}
               onChange={handleTimeChange}
-              className='rounded-full border bg-haru-yellow p-2 text-sm focus:outline-[#41644A]'
+              className='rounded-full border bg-haru-yellow p-2 text-sm focus:outline-haru-green'
             />
           </div>
 
@@ -182,7 +100,7 @@ const MomentEditDialog = ({
               (_, idx) => (
                 <div
                   key={idx}
-                  className='relative h-24 w-full rounded-lg bg-gray-100'
+                  className='relative h-24 w-full rounded-lg bg-haru-gray-2'
                 >
                   {editedMoment.images[idx] ? (
                     <>
@@ -193,7 +111,7 @@ const MomentEditDialog = ({
                       />
                       <button
                         onClick={() => handleDeleteImage(idx)}
-                        className='absolute right-1 top-1 rounded-full bg-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
+                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
                       >
                         ✕
                       </button>
@@ -208,9 +126,7 @@ const MomentEditDialog = ({
           <div className='flex flex-col gap-1'>
             <textarea
               value={editedMoment.content}
-              onChange={e =>
-                setEditedMoment(prev => ({ ...prev, content: e.target.value }))
-              }
+              onChange={e => handleContentChange(e.target.value)}
               rows={4}
               className='w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
               placeholder='순간의 기록을 입력하세요'

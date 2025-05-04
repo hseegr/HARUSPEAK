@@ -1,6 +1,6 @@
 import { MomentContent } from '@/types/common';
 
-export type Moments = Record<string, MomentContent>;
+export type Moments = MomentContent[];
 
 // 오늘의 일기 불러오기 API 응답 타입
 export interface TodayDiaryResponse {
