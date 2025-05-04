@@ -4,10 +4,12 @@ import com.haruspeak.api.common.security.JwtTokenProvider;
 import com.haruspeak.api.common.util.CookieUtil;
 import com.haruspeak.api.user.application.AuthTokenService;
 import com.haruspeak.api.user.application.OAuthLoginService;
+import com.haruspeak.api.user.domain.User;
 import com.haruspeak.api.user.dto.TokenIssueResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,7 @@ import java.util.Map;
  */
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final OAuthLoginService oAuthLoginService;
@@ -77,12 +80,14 @@ public class SecurityConfig {
         String sub = String.valueOf(attributes.get("sub"));
         String email = String.valueOf(attributes.get("email"));
         String name = String.valueOf(attributes.get("name"));
+        log.debug("✅ 구글 로그인 성공(subject: {}, email: {}, name: {}) ", sub, email, name);
 
         // 로그인 / 회원가입 후 로그인 진행
-        Integer userId = oAuthLoginService.processLoginOrRegister(sub, email, name);
+        User user = oAuthLoginService.processLoginOrRegister(sub, email, name);
+        log.debug("로그인 사용자: {}", user);
 
-        // 토큰 발급
-        TokenIssueResult token = authTokenService.issueToken(userId, name);
+        // 토큰 발급 - DB에 저장된 이름으로 토큰에 저장
+        TokenIssueResult token = authTokenService.issueToken(user.getUserId(), user.getName());
 
         response.addHeader(HttpHeaders.SET_COOKIE, token.accessCookie().toString());
         response.addHeader(HttpHeaders.SET_COOKIE, token.refreshCookie().toString());

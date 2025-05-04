@@ -32,6 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private static final List<String> TEST_PATTERNS = List.of(
+            "/api/moment/**",
+            "/api/today/**",
+            "/api/summary/**"
+    );
+
     private static final List<String> EXCLUDED_PATTERNS = List.of(
             "/favicon.ico",
             "/swagger-ui/**",
@@ -47,18 +53,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        log.debug("필터 진입 요청 경로 : {}", path);
 
-        log.info("필터 진입 : {}", request.getRequestURI());
         // request에서 쿠키 추출
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
+            log.debug("⛔ 인증 불가 - 쿠키 없음 (요청 경로: {})", path);
             throw new UnauthorizedException();
         }
 
         // accessToken 쿠키에서 토큰 추출
         String token = CookieUtil.extractTokenFromCookie(request.getCookies(), "accessToken");
-        log.debug("accessToken: {}", token);
         if(token == null) {
+            log.debug("⛔ 인증 불가 - accessToken 없음 (요청 경로: {})", path);
             throw new UnauthorizedException();
         }
 
@@ -79,21 +87,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 로그아웃 로그인, 토큰 재발급 필터 제외
-     * @param request
-     * @return
+     * @param request 요청
+     * @return 필터 제외 여부
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        log.info("필터 체크 중 요청 경로: {}", path); // 여기서도 경로를 확인하여 필터가 적용되기 전 체크
-
         // 경로 매칭 확인
-        boolean shouldFilter = EXCLUDED_PATTERNS.stream()
+        boolean isExcluded = EXCLUDED_PATTERNS.stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, path));  // 패턴과 경로를 매칭
 
-        log.info("필터 적용 여부: {}", !shouldFilter); // 필터가 적용될지 여부를 확인
+        log.debug("🔍필터 적용: {}, 요청 경로: {}", !isExcluded, path); // 필터가 적용될지 여부를 확인 : true:적용 / false :미적용
+        
+        if(!isExcluded) { // 미적용일 때, TEST ROOT 는 빠져나가게 함
+            boolean isTestExcluded = TEST_PATTERNS.stream()
+                    .anyMatch(pattern -> pathMatcher.match(pattern, path));
+            log.debug("⌛ 테스트 제외 경로 여부: {}", isTestExcluded);
+            isExcluded = isTestExcluded;
+        }
 
-        return shouldFilter;
+        return isExcluded;
     }
 }
 

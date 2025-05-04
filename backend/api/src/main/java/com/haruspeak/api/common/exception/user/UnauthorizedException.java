@@ -7,4 +7,10 @@ public class UnauthorizedException extends HaruspeakException {
     public UnauthorizedException() {
         super(ErrorCode.UNAUTHORIZED);
     }
+
+    public UnauthorizedException(String message) {
+        super(ErrorCode.UNAUTHORIZED, message);
+    }
+
+
 }

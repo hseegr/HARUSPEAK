@@ -1,22 +1,13 @@
-package com.haruspeak.api.user.dto;
+package com.haruspeak.api.common.security;
 
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-@Getter
-public class CustomUserPrincipal implements UserDetails {
-    private final Integer userId;
-    private final String name;
-
+public record CustomUserPrincipal(Integer userId, String name) implements UserDetails {
     // 기존 생성자, getter 유지
-    public CustomUserPrincipal(final Integer userId, final String name) {
-        this.userId = userId;
-        this.name = name;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -30,7 +21,7 @@ public class CustomUserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return String.valueOf(name);
+        return String.valueOf(userId);
     }
 
     @Override
