@@ -60,6 +60,11 @@ public class AuthTokenService {
         Integer userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
         String name = jwtTokenProvider.getNameFromToken(refreshToken);
 
+        if(!refreshTokenRepository.getRefreshToken(userId).equals(refreshToken)) {
+            log.debug("⛔ 리프레시 토큰 정보 불일치 (userId: {})", userId);
+            throw new UnauthorizedException();
+        }
+
         return issueToken(userId, name);
     }
 
