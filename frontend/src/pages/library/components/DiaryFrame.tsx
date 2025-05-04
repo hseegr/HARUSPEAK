@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
-interface DiaryFrameProps {
+export interface DiaryFrameProps {
   summaryId: number;
   diaryDate: string;
   imageUrl: string;
   title: string;
-  // content: string;
+  // content: string; // 하루 AI 요약 내용을 props로 할 필요가?
   momentCount: number;
 }
 
@@ -14,11 +14,12 @@ const DiaryFrame = ({
   diaryDate,
   imageUrl,
   title,
-  // content, // 하루 요약 내용
+  // content,
   momentCount,
 }: DiaryFrameProps) => {
   const navigate = useNavigate();
 
+  // 클릭 시 하루 일기 상세 조회 페이지로 이동
   const handleClick = () => {
     navigate(`/diary/${summaryId}`);
   };
