@@ -3,7 +3,6 @@ package com.haruspeak.api.common.security;
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.user.InvalidJwtInputException;
 import com.haruspeak.api.common.exception.user.InvalidTokenException;
-import com.haruspeak.api.user.dto.CustomUserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

@@ -2,7 +2,7 @@ package com.haruspeak.api.user.presentation;
 
 import com.haruspeak.api.common.security.JwtAuthenticationFilter;
 import com.haruspeak.api.common.security.JwtTokenProvider;
-import com.haruspeak.api.user.dto.CustomUserPrincipal;
+import com.haruspeak.api.common.security.CustomUserPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

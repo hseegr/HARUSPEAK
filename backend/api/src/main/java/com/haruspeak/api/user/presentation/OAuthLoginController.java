@@ -81,7 +81,7 @@ public class OAuthLoginController {
     @PostMapping("/logout")
     @Operation(
             summary = "로그아웃 요청",
-            description = "클라이언트에 저장된 accessToken, refreshToken 쿠키를 삭제(만료)합니다."
+            description = "accessToken, refreshToken 쿠키를 삭제(만료)합니다."
     )
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         TokenIssueResult tokens = tokenService.expireToken(request.getCookies());
