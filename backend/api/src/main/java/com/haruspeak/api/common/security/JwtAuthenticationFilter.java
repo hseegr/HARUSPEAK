@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final List<String> TEST_PATTERNS = List.of(
-//            "/api/moment/**",
+            "/api/moment/**",
             "/api/today/**",
             "/api/summary/**"
     );

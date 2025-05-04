@@ -2,7 +2,7 @@ package com.haruspeak.api.moment.presentation;
 
 import com.haruspeak.api.HaruspeakApiApplication;
 import com.haruspeak.api.common.security.JwtTokenProvider;
-import com.haruspeak.api.moment.application.ActiveDailyMomentService;
+import com.haruspeak.api.moment.application.MomentService;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +36,7 @@ class MomentControllerTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @MockitoBean
-    private ActiveDailyMomentService activeDailyMomentService;
+    private MomentService activeDailyMomentService;
 
     @Test
     @DisplayName("성공: 인증된 사용자가 momentId로 조회")

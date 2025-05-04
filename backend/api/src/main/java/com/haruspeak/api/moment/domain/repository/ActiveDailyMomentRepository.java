@@ -22,6 +22,6 @@ public class ActiveDailyMomentRepository {
     }
 
     public List<MomentListDetailRaw> findMomentList(Integer userId, MomentListRequest request){
-        return activeDailyMomentJpaRepositoryCustomImpl.findMomentList(userId, request);
+        return activeDailyMomentJpaRepositoryCustomImpl.findMomentListDetailRawList(userId, request);
     }
 }

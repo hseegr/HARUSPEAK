@@ -36,7 +36,7 @@ class ActiveDailyMomentServiceTest {
     private ActiveDailyMomentRepository activeDailyMomentRepository;
 
     @InjectMocks
-    private ActiveDailyMomentService activeDailyMomentService;
+    private MomentService activeDailyMomentService;
 
     private MomentDetailRaw createMomentDetailRaw(Integer momentId, List<String> images, String content, List<String> tags) {
         return new MomentDetailRaw(
