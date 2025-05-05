@@ -23,7 +23,7 @@ export interface MomentsResponse {
   data: Moment[];
   resInfo: {
     dataCount: number;
-    nextCursor: string;
+    nextCursor: string | null; // mock data 활용을 위한 타입 수정
     hasMore: boolean;
   };
 }
