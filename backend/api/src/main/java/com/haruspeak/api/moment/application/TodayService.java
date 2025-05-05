@@ -3,31 +3,31 @@ package com.haruspeak.api.moment.application;
 
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
-import com.haruspeak.api.common.s3.FileConverter;
 import com.haruspeak.api.common.s3.S3Service;
-import com.haruspeak.api.common.s3.S3Uploader;
 import com.haruspeak.api.moment.dto.TodayMoment;
 import com.haruspeak.api.moment.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.moment.dto.request.MomentWriteRequest;
 import com.haruspeak.api.moment.dto.response.TodayMomentListResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.haruspeak.api.today.domain.repository.TodayMomentRedisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.RedisConnectionFailureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static java.util.Optional.*;
+import static java.util.Optional.ofNullable;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TodayService {
 
+    private final TodayMomentRedisRepository todayRedisRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final S3Service s3Service;
 
@@ -66,6 +66,7 @@ public class TodayService {
      */
     public void updateMoment(String time, MomentUpdateRequest request, Integer userId){
         String date = LocalDate.now().toString();
+
         String key = "user:" + userId + ":moment:" + date;
 
         try {
@@ -149,4 +150,17 @@ public class TodayService {
             throw new HaruspeakException(ErrorCode.MOMENT_READ_ERROR);
         }
     }
+
+
+    /**
+     * Date 날짜에 작성한 일기 개수
+     * @param userId 사용자 ID
+     * @param date 날짜
+     * @return count
+     */
+    public int getTodayMomentCount(int userId, LocalDate date) {
+        return todayRedisRepository.countByUserAndDate(userId, date);
+    }
+
+
 }

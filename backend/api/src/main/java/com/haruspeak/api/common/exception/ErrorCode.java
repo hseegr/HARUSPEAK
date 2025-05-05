@@ -44,12 +44,14 @@ public enum ErrorCode  {
     USER_REGISTER_ERROR(50010, "회원가입 처리 중 오류가 발생했습니다."),
     TOKEN_SAVE_ERROR(50011, "토큰 저장 중 오류가 발생했습니다."),
     IMAGE_UPLOAD_ERROR(50020, "이미지 업로드 중 오류가 발생했습니다. 다시 시도해 주세요."), // S3 업로드 에러 세분화 시 50으로 따로
+    TODAY_READ_ERROR(50021, "오늘의 일기를 불러오는 중 오류가 발생했습니다."),
+    TODAY_SAVE_ERROR(50022, "오늘의 일기 저장 중 오류가 발생했습니다."),
+    IMAGE_DELETE_ERROR(50023, "이미지 삭제 중 오류가 발생했습니다."),
     SUMMARY_CONTENT_REGENERATION_FAILED(50030, "일기 요약 재생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     MOMENT_SAVE_ERROR(50040, "순간 일기 저장 중 오류가 발생했습니다."),
-    MOMENT_UPDATE_ERROR(50040,"순간 일기 업데이트 중 오류가 발생했습니다."),
-    MOMENT_DELETE_ERROR(50040,"순간 일기 삭제 중 오류가 발생했습니다."),
-    MOMENT_READ_ERROR(50040, "순간 일기들 불러오기 중 오류가 발생했습니다."),
-    IMAGE_DELETE_ERROR(50000, "이미지 삭제 중 오류가 발생했습니다."),
+    MOMENT_UPDATE_ERROR(50041,"순간 일기 업데이트 중 오류가 발생했습니다."),
+    MOMENT_DELETE_ERROR(50042,"순간 일기 삭제 중 오류가 발생했습니다."),
+    MOMENT_READ_ERROR(50043, "순간 일기를 불러오는 중 오류가 발생했습니다."),
     ;
 
     private final int code;
