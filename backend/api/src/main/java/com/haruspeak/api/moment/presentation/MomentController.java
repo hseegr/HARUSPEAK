@@ -1,6 +1,7 @@
 package com.haruspeak.api.moment.presentation;
 
 import com.haruspeak.api.common.exception.ErrorResponse;
+import com.haruspeak.api.common.exception.ValidErrorResponse;
 import com.haruspeak.api.common.security.AuthenticatedUser;
 import com.haruspeak.api.moment.application.MomentService;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class MomentController {
             responses = {
                     @ApiResponse(
                             responseCode = "403",
-                            description = "권한 없음",
+                            description = "Forbidden",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
                     )
             }
@@ -68,8 +68,8 @@ public class MomentController {
             responses = {
                     @ApiResponse(
                             responseCode = "400",
-                            description = "잘못된 요청",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                            description = "Bad Request",
+                            content = @Content(schema = @Schema(implementation = ValidErrorResponse.class))
                     )
             }
     )
@@ -77,7 +77,7 @@ public class MomentController {
             @Valid @ModelAttribute MomentListRequest request,
             @AuthenticatedUser Integer userId
     ){
-        log.info("[GET] api/moment/ 순간 일기 목록 조회 요청 (request={}, userId={})", request, userId);
+        log.info("[GET] api/moment/ 순간 일기 목록 조회 요청 (request={}, userId={})", request.toString(), userId);
         return ResponseEntity.ok(activeDailyMomentService.getMomentList(request,userId));
     }
 }

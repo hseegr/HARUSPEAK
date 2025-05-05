@@ -1,8 +1,6 @@
 package com.haruspeak.api.moment.domain.repository;
 
-import com.haruspeak.api.moment.domain.ActiveDailyMoment;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
-import com.haruspeak.api.moment.dto.MomentListDetailRaw;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,7 +19,7 @@ public class ActiveDailyMomentRepository {
         return activeDailyMomentJpaRepositoryCustomImpl.findMomentDetailRaw(userId, momentId);
     }
 
-    public List<MomentListDetailRaw> findMomentList(Integer userId, MomentListRequest request){
+    public List<MomentDetailRaw> findMomentList(Integer userId, MomentListRequest request){
         return activeDailyMomentJpaRepositoryCustomImpl.findMomentListDetailRawList(userId, request);
     }
 }

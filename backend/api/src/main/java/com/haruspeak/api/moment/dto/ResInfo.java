@@ -10,7 +10,6 @@ public record ResInfo(
         Integer dataCount,
         @Schema(description = "다음 커서", example = "2025-05-01T11:22:33")
         LocalDateTime nextCursor,
-//        String nextCursor,
         @Schema(description = "다음 데이터 존재 여부", example = "true")
         Boolean hasMore
 ) {}

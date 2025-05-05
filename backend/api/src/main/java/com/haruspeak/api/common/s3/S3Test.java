@@ -1,5 +1,6 @@
 package com.haruspeak.api.common.s3;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ public class S3Test {
     private final S3Uploader s3Uploader;
 
 
+    @Hidden
     @PostMapping("/upload-base64")
     public ResponseEntity<String> uploadBase64(@RequestBody Base64UploadRequest request) {
         MultipartFile file = FileConverter.fromBase64(request.base64());

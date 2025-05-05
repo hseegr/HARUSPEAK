@@ -42,7 +42,7 @@ public class UserController {
             description = "인증(로그인)된 사용자의 userId, name을 반환합니다."
     )
     public ResponseEntity<LoginUserResponse> getCurrentUser(@AuthenticationPrincipal CustomUserPrincipal user) {
-        log.info("[GET] api/user/me 로그인 사용자 정보 요청 user={}", user);
+        log.info("[GET] api/user/me 로그인 사용자 정보 요청 (user={})", user);
         return ResponseEntity.ok(new LoginUserResponse(user.userId(), user.name()));
     }
 
@@ -57,7 +57,7 @@ public class UserController {
             description = "사용자가 일기에 사용했던 태그 목록을 불러옵니다."
     )
     public ResponseEntity<UserTagResponse> getUserTags(@AuthenticatedUser int userId) {
-        log.info("[GET] api/user/tags 사용자 태그 목록 요청");
+        log.info("[GET] api/user/tags 사용자 태그 목록 요청 (userId={})", userId);
         List<UserTag> list = userService.getUserTags(userId);
         return ResponseEntity.ok(new UserTagResponse(list, list.size()));
     }
