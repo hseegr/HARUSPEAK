@@ -75,7 +75,7 @@ public class OAuthLoginController {
             responses = {
                     @ApiResponse(
                             responseCode = "401", 
-                            description = "인증 실패",
+                            description = "Unauthorized",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
                     )
             }

@@ -5,18 +5,19 @@ import com.haruspeak.api.moment.domain.QMomentImage;
 import com.haruspeak.api.moment.domain.QMomentTag;
 import com.haruspeak.api.moment.domain.QMomentTagName;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
-import com.haruspeak.api.moment.dto.MomentListDetailRaw;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,29 +55,37 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentListDetailRaw> findMomentListDetailRawList(Integer userId, MomentListRequest request) {
+    public List<MomentDetailRaw> findMomentListDetailRawList(Integer userId, MomentListRequest request) {
         log.debug("✅ 순간 일기 목록 조회 실행 (userId={}, request={})", userId, request);
 
         BooleanBuilder conditions = buildSearchConditions(userId, request);
 
-        List<Tuple> baseResults = queryFactory.select(
-                        moment.summaryId,
-                        moment.momentId,
-                        moment.momentTime,
-                        moment.imageCount,
-                        moment.content,
-                        moment.tagCount
-                )
+        List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
                 .from(moment)
                 .leftJoin(tag).on(moment.momentId.eq(tag.momentId)) // inner join tag가 있는 row만 조회하기 위해
                 .where(conditions)
                 .groupBy(moment.momentId)
                 .orderBy(moment.momentTime.desc())
-                .limit(request.limit()+1)// 1개 더 조회해서 마지막 tuple로 커서 AND hasMore 체크
+                .limit(request.getLimit()+1)// 1개 더 조회해서 마지막 tuple로 커서 AND hasMore 체크
                 .fetch();
 
         // 이미지/태그 보강
         return toMomentDetailList(baseResults);
+    }
+
+    /**
+     * select 공통 구문
+     * @return List<Expression<?>>
+     */
+    private List<Expression<?>> selectMomentFields() {
+        return List.of(
+                moment.summaryId,
+                moment.momentId,
+                moment.momentTime,
+                moment.imageCount,
+                moment.content,
+                moment.tagCount
+        );
     }
 
 
@@ -87,7 +96,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @return ActiveDailyMoment Tuple
      */
     private Tuple fetchBaseMomentInfo(Integer userId, Integer momentId) {
-        return queryFactory.select(moment.momentId, moment.momentTime, moment.content)
+        return queryFactory.select(selectMomentFields().toArray(new Expression[0]))
                 .from(moment)
                 .where(
                         moment.userId.eq(userId),
@@ -104,10 +113,13 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
     private MomentDetailRaw toMomentDetailRaw(Tuple tuple) {
         Integer momentId = tuple.get(moment.momentId);
         return new MomentDetailRaw(
+                tuple.get(moment.summaryId),
                 momentId,
                 tuple.get(moment.momentTime),
+                tuple.get(moment.imageCount),
                 getImages(momentId),
                 tuple.get(moment.content),
+                tuple.get(moment.tagCount),
                 getUserTagNames(momentId)
         );
     }
@@ -117,7 +129,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @param baseResults Moment 튜플 목록
      * @return List<MomentDetailRaw>
      */
-    private List<MomentListDetailRaw> toMomentDetailList(List<Tuple> baseResults) {
+    private List<MomentDetailRaw> toMomentDetailList(List<Tuple> baseResults) {
         List<Integer> momentIds = baseResults.stream()
                 .map(t -> t.get(moment.momentId))
                 .toList();
@@ -126,7 +138,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
         Map<Integer, List<String>> tagMap = getTagsFor(momentIds);
 
         return baseResults.stream()
-                .map(tuple -> toMomentListDetailRaw(tuple, imageMap, tagMap))
+                .map(tuple -> toMomentDetailRawList(tuple, imageMap, tagMap))
                 .toList();
     }
 
@@ -136,12 +148,12 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @param tuple Moment row
      * @return MomentDetailRaw
      */
-    private MomentListDetailRaw toMomentListDetailRaw(Tuple tuple,
+    private MomentDetailRaw toMomentDetailRawList(Tuple tuple,
                                                       Map<Integer, List<String>> imageMap,
                                                       Map<Integer, List<String>> tagMap) {
         Integer momentId = tuple.get(moment.momentId);
 
-        return new MomentListDetailRaw(
+        return new MomentDetailRaw(
                 tuple.get(moment.summaryId),
                 momentId,
                 tuple.get(moment.momentTime),
@@ -164,19 +176,19 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(moment.userId.eq(userId));
 
-        if (request.before() != null) {
-            builder.and(moment.momentTime.loe(request.before()));
+        if (request.getBefore() != null) {
+            builder.and(moment.momentTime.loe(request.getBefore()));
         }
 
-        if (request.startDate() != null && request.endDate() != null) {
+        if (request.getStartDate() != null && request.getEndDate() != null) {
             builder.and(moment.momentTime.between(
-                    request.startDate().atStartOfDay(),
-                    request.endDate().atTime(23, 59, 59)
+                    request.getStartDate().atStartOfDay(),
+                    request.getEndDate().atTime(23, 59, 59)
             ));
         }
 
-        if (request.userTags() != null && !request.userTags().isEmpty()) {
-            builder.and(tag.userTagId.in(request.userTags()));
+        if (request.getUserTags() != null && !request.getUserTags().isEmpty()) {
+            builder.and(tag.userTagId.in(request.getUserTags()));
         }
 
         return builder;

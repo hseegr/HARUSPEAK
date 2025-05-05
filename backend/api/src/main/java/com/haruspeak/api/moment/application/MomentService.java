@@ -4,8 +4,7 @@ import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.exception.user.AccessDeniedException;
 import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentRepository;
-import com.haruspeak.api.moment.dto.MomentListDetail;
-import com.haruspeak.api.moment.dto.MomentListDetailRaw;
+import com.haruspeak.api.moment.dto.MomentDetailRaw;
 import com.haruspeak.api.moment.dto.ResInfo;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
@@ -38,13 +37,7 @@ public class MomentService {
         return momentRepository.findMomentDetailRaw(userId, momentId)
                 .map(raw -> {
                     log.debug("✅ 순간 일기 조회 성공 (momentId={}, userId={})", momentId, userId);
-                    return new MomentDetailResponse(
-                            raw.momentId(),
-                            raw.momentTime(),
-                            raw.imageUrls(),
-                            raw.content(),
-                            raw.tags()
-                    );
+                    return toMomentListDetail(raw);
                 })
                 .orElseThrow(() -> {
                     log.warn("⚠️ 조회 실패 - 접근 권한 없거나 존재하지 않음 (momentId={}, userId={})", momentId, userId);
@@ -62,25 +55,25 @@ public class MomentService {
      */
     @Transactional(readOnly = true)
     public MomentListResponse getMomentList(MomentListRequest request, Integer userId){
-        if (request.startDate() != null && request.endDate() != null) {
-            if (request.startDate().isAfter(request.endDate())) {
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            if (request.getStartDate().isAfter(request.getEndDate())) {
                 throw new HaruspeakException(ErrorCode.INVALID_CONDITION_FORMAT);
             }
         }
 
-        List<MomentListDetailRaw> results = momentRepository.findMomentList(userId,request);
+        List<MomentDetailRaw> results = momentRepository.findMomentList(userId,request);
 
-        List<MomentListDetail> detailList = results.stream()
+        List<MomentDetailResponse> detailList = results.stream()
                 .map(this::toMomentListDetail)
                 .toList();
 
 
         // 더 조회할 게 남았는지 : 1개 더 조회해서 다 조회 됐으면 hasNext
-        boolean hasNext = results.size() > request.limit();
+        boolean hasNext = results.size() > request.getLimit();
         // 커서 : 마지막꺼 ( 다음 조회 시작할 것 )
         LocalDateTime nextCursor = hasNext ? detailList.get(detailList.size() - 1).momentTime() : null;
         // 최종 리스트,
-        List<MomentListDetail> finalList = detailList.subList(0, Math.min(request.limit(), results.size()));
+        List<MomentDetailResponse> finalList = detailList.subList(0, Math.min(request.getLimit(), results.size()));
 
         ResInfo resInfo = new ResInfo(
                 finalList.size(),
@@ -97,8 +90,8 @@ public class MomentService {
      * @param raw 목록 한 줄
      * @return MomentListDetail
      */
-    private MomentListDetail toMomentListDetail(MomentListDetailRaw raw) {
-        return new MomentListDetail(
+    private MomentDetailResponse toMomentListDetail(MomentDetailRaw raw) {
+        return new MomentDetailResponse(
                 raw.summaryId(),
                 raw.momentId(),
                 raw.momentTime(),

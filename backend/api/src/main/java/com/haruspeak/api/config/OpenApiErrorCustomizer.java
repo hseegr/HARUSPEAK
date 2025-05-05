@@ -29,23 +29,22 @@ public class OpenApiErrorCustomizer {
                     openApi.getPaths().values().forEach(pathItem -> {
                         pathItem.readOperations().forEach(operation -> {
                             String controllerClass = operation.getTags().stream().findFirst().orElse("");
-                            log.debug("🧪 controllerClass: {}", controllerClass);
 
                             // 200: 전체에 적용
                             addErrorResponse(operation.getResponses(), "200", "OK");
 
                             // 401: 모든 컨트롤러에 적용(OAuthLoginController 제외 - 비인증 클래스: refreshToken 따로 적용)
                             if (!controllerClass.equals("Auth")) {
-                                addErrorResponse(operation.getResponses(), "401", "인증 실패");
+                                addErrorResponse(operation.getResponses(), "401", "Unauthorized");
                             }
 
                             // 403: 특정 컨트롤러에만 적용 // Moment(특정), Today, Summary (User, Auth 제외)
                             if ( controllerClass.equals("Today")) {
-                                addErrorResponse(operation.getResponses(), "403", "권한 없음");
+                                addErrorResponse(operation.getResponses(), "403", "Forbidden");
                             }
 
                             // 500: 전체에 적용
-                            addErrorResponse(operation.getResponses(), "500", "서버 내부 오류");
+                            addErrorResponse(operation.getResponses(), "500", "Internal Server Error");
                         });
                     });
                 })
