@@ -53,11 +53,11 @@ class ActiveDailyMomentServiceTest {
     void findMomentDetail_success() {
         // given
         MomentDetailRaw fakeRaw = createMomentDetailRaw(VALID_MOMENT_ID, IMAGES, CONTENT, TAGS);
-        when(activeDailyMomentRepository.findMomentDetailRaw(USER_ID, VALID_MOMENT_ID))
+        when(activeDailyMomentRepository.findMomentDetail(USER_ID, VALID_MOMENT_ID))
                 .thenReturn(Optional.of(fakeRaw));
 
         // when
-        MomentDetailResponse result = activeDailyMomentService.getMomentDetail(USER_ID, VALID_MOMENT_ID);
+        MomentDetailResponse result = activeDailyMomentService.getMomentDetailByMomentId(USER_ID, VALID_MOMENT_ID);
 
         // then
         assertThat(result).isNotNull();
@@ -65,7 +65,7 @@ class ActiveDailyMomentServiceTest {
         assertThat(result.content()).isEqualTo(CONTENT);
         assertThat(result.images()).containsExactly("https://example.com/image1.jpg", "https://example.com/image2.jpg");
         assertThat(result.tags()).containsExactly("태그1", "태그2");
-        verify(activeDailyMomentRepository, times(1)).findMomentDetailRaw(USER_ID, VALID_MOMENT_ID);
+        verify(activeDailyMomentRepository, times(1)).findMomentDetail(USER_ID, VALID_MOMENT_ID);
     }
 
     @Test
@@ -73,29 +73,29 @@ class ActiveDailyMomentServiceTest {
     void findMomentDetail_emptyTags_success() {
         // given
         MomentDetailRaw fakeRaw = createMomentDetailRaw(VALID_MOMENT_ID, IMAGES, CONTENT, Collections.emptyList());
-        when(activeDailyMomentRepository.findMomentDetailRaw(USER_ID, VALID_MOMENT_ID))
+        when(activeDailyMomentRepository.findMomentDetail(USER_ID, VALID_MOMENT_ID))
                 .thenReturn(Optional.of(fakeRaw));
 
         // when
-        MomentDetailResponse result = activeDailyMomentService.getMomentDetail(USER_ID, VALID_MOMENT_ID);
+        MomentDetailResponse result = activeDailyMomentService.getMomentDetailByMomentId(USER_ID, VALID_MOMENT_ID);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result.tags()).isEmpty();
-        verify(activeDailyMomentRepository, times(1)).findMomentDetailRaw(USER_ID, VALID_MOMENT_ID);
+        verify(activeDailyMomentRepository, times(1)).findMomentDetail(USER_ID, VALID_MOMENT_ID);
     }
 
     @Test
     @DisplayName("존재하지 않는 momentId 조회 시 예외 발생")
     void findMomentDetail_notFound() {
         // given
-        when(activeDailyMomentRepository.findMomentDetailRaw(USER_ID, INVALID_MOMENT_ID))
+        when(activeDailyMomentRepository.findMomentDetail(USER_ID, INVALID_MOMENT_ID))
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> activeDailyMomentService.getMomentDetail(USER_ID, INVALID_MOMENT_ID))
+        assertThatThrownBy(() -> activeDailyMomentService.getMomentDetailByMomentId(USER_ID, INVALID_MOMENT_ID))
                 .isInstanceOf(HaruspeakException.class)
                 .hasMessage(ErrorCode.ACCESS_DENIED.getMessage());
-        verify(activeDailyMomentRepository, times(1)).findMomentDetailRaw(USER_ID, INVALID_MOMENT_ID);
+        verify(activeDailyMomentRepository, times(1)).findMomentDetail(USER_ID, INVALID_MOMENT_ID);
     }
 }

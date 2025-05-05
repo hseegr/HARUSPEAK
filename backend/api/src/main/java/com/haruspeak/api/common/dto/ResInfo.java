@@ -1,4 +1,4 @@
-package com.haruspeak.api.moment.dto;
+package com.haruspeak.api.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
