@@ -17,10 +17,18 @@ const MomentFrame = ({
 }: MomentFrameProps) => {
   const navigate = useNavigate();
 
+  const handleClick = () => {
+    // 콘솔에 로그 추가하여 디버깅
+    console.log(`이동: /moment/${momentId}`);
+
+    // 페이지 이동
+    navigate(`/moment/${momentId}`);
+  };
+
   return (
     <div
       className='cursor-pointer rounded border p-4 hover:shadow'
-      onClick={() => navigate(`/moment/${momentId}`)}
+      onClick={handleClick}
     >
       <div className='mb-1 text-xs text-gray-500'>{momentTime}</div>
       <div className='mb-2 font-semibold'>{content}</div>

@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
         handle: { title: '순간 일기 모아 보기' },
       },
       {
-        path: 'moments/:momentId',
+        path: 'moment/:momentId',
         element: <Moment />,
         handle: { title: '순간 일기 상세 보기' },
       },
