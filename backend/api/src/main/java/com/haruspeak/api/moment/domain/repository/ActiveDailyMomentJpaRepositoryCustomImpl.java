@@ -40,7 +40,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      */
     @Override
     public Optional<MomentDetailRaw> findMomentDetailRaw(Integer userId, Integer momentId) {
-        log.debug("✅ 순간 일기 상세 조회 실행 (userId={}, momentId={})", userId, momentId);
+        log.debug("순간 일기 상세 조회 실행 (userId={}, momentId={})", userId, momentId);
 
         Tuple base = fetchBaseMomentInfo(userId, momentId);
         if (base == null) return Optional.empty();
@@ -56,7 +56,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      */
     @Override
     public List<MomentDetailRaw> findMomentListDetailRawList(Integer userId, MomentListRequest request) {
-        log.debug("✅ 순간 일기 목록 조회 실행 (userId={}, request={})", userId, request);
+        log.debug("순간 일기 목록 조회 실행 (userId={}, request={})", userId, request);
 
         BooleanBuilder conditions = buildSearchConditions(userId, request);
 

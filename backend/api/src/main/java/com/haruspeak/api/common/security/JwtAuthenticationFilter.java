@@ -35,7 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> TEST_PATTERNS = List.of(
             "/api/moment/**",
             "/api/today/**",
-            "/api/summary/**"
+            "/api/summary/**",
+            "/api/main",
+            "/api/user/tags"
     );
 
     private static final List<String> EXCLUDED_PATTERNS = List.of(

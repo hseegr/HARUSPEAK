@@ -4,7 +4,7 @@ import com.haruspeak.api.common.exception.user.TokenSaveErrorException;
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import com.haruspeak.api.common.security.JwtTokenProvider;
 import com.haruspeak.api.common.util.CookieUtil;
-import com.haruspeak.api.user.domain.repository.RefreshTokenRepositoryImpl;
+import com.haruspeak.api.user.domain.repository.RefreshTokenRedisRepository;
 import com.haruspeak.api.user.dto.TokenIssueResult;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class AuthTokenService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepositoryImpl refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRepository;
 
     /**
      * 토큰 발급
