@@ -14,7 +14,7 @@ import java.time.Duration;
 */
 @Repository
 @RequiredArgsConstructor
-public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
+public class RefreshTokenRedisRepository implements RefreshTokenRepository {
 
     private final StringRedisTemplate redisTemplate;
 
