@@ -2,7 +2,7 @@ package com.haruspeak.api.user.application;
 
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import com.haruspeak.api.common.security.JwtTokenProvider;
-import com.haruspeak.api.user.domain.repository.RefreshTokenRepositoryImpl;
+import com.haruspeak.api.user.domain.repository.RefreshTokenRedisRepository;
 import com.haruspeak.api.user.dto.TokenIssueResult;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ class AuthTokenServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Mock
-    private RefreshTokenRepositoryImpl refreshTokenRepository;
+    private RefreshTokenRedisRepository refreshTokenRepository;
 
     @InjectMocks
     private AuthTokenService authTokenService;

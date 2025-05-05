@@ -56,7 +56,7 @@ public class UserController {
             summary = "사용자 태그 정보 요청",
             description = "사용자가 일기에 사용했던 태그 목록을 불러옵니다."
     )
-    public ResponseEntity<UserTagResponse> getUserTags(@AuthenticatedUser int userId) {
+    public ResponseEntity<UserTagResponse> getUserTags(@AuthenticatedUser Integer userId) {
         log.info("[GET] api/user/tags 사용자 태그 목록 요청 (userId={})", userId);
         List<UserTag> list = userService.getUserTags(userId);
         return ResponseEntity.ok(new UserTagResponse(list, list.size()));
