@@ -1,4 +1,4 @@
-package com.haruspeak.api.moment.dto.request;
+package com.haruspeak.api.today.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -1,6 +1,6 @@
-package com.haruspeak.api.moment.dto.response;
+package com.haruspeak.api.today.dto.response;
 
-import com.haruspeak.api.moment.dto.TodayMoment;
+import com.haruspeak.api.today.dto.TodayMoment;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

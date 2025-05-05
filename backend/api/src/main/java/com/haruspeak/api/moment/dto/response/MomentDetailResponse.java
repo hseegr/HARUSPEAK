@@ -8,16 +8,16 @@ import java.util.List;
 
 @Schema(description = "순간 일기 상세 정보")
 public record MomentDetailResponse(
-        @Schema(description = "순하루일기ID", example = "1")
-        Integer summaryId,
+        @Schema(description = "하루일기ID", example = "1")
+        int summaryId,
         @Schema(description = "순간일기ID", example = "1")
-        Integer momentId,
-        @Schema(description = "작성시각", example = "2025-05-01:T11:22:33")
+        int momentId,
+        @Schema(description = "작성시각", example = "2025-05-01T11:22:33")
         @JsonFormat(timezone = "Asia/Seoul")
         LocalDateTime momentTime,
         @Schema(description = "이미지 개수", example = "1")
-        Integer imageCount,
-        @Schema(description = "이미지 주소 목록", example = "[\"이미지URL\"]")
+        int imageCount,
+        @Schema(description = "이미지 주소 목록", example = "[\"https://s3.example.com/image.png\"]")
         List<String> images,
         @Schema(description = "일기 내용", example = "일기 내용입니다.")
         String content,

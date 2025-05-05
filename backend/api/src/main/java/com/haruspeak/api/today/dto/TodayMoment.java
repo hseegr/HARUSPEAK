@@ -1,4 +1,4 @@
-package com.haruspeak.api.moment.dto;
+package com.haruspeak.api.today.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -10,7 +10,7 @@ public record TodayMoment(
         String createdAt,
         @Schema(description = "작성 시각", example = "2025-05-01T00:00:00")
         String momentTime,
-        @Schema(description = "이미지 목록", example = "[\"이미지 주소\"]")
+        @Schema(description = "이미지 목록", example = "[\"https://s3.example.com/image.png\"]")
         List<String> images,
         @Schema(description = "일기 내용", example = "일기 내용입니다.")
         String content,
