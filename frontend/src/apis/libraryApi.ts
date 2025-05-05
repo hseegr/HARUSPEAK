@@ -35,7 +35,7 @@ export const getLibrary = async (params: GetLibraryParams) => {
 };
 
 // 하루일기 삭제(오늘 제외)
-export const deleteDiaries = async (summaryIds: string[]) => {
+export const deleteDiaries = async (summaryIds: number[]) => {
   const response = await axiosInstance.delete('/api/summary', {
     data: { summaryIds },
   });

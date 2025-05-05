@@ -23,7 +23,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetUserTags } from '@/hooks/useTagQuery';
 import { cn } from '@/lib/utils';
 
-interface FilterModalProps {
+interface FilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onApply: (filters: {
@@ -33,7 +33,7 @@ interface FilterModalProps {
   }) => void;
 }
 
-const FilterModal = ({ open, onOpenChange, onApply }: FilterModalProps) => {
+const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -214,4 +214,4 @@ const FilterModal = ({ open, onOpenChange, onApply }: FilterModalProps) => {
   );
 };
 
-export default FilterModal;
+export default FilterDialog;
