@@ -1,7 +1,7 @@
 package com.haruspeak.api.summary.dto;
 
 public record UserSummaryStat (
-        int totalDiaryCount,
+        long totalDiaryCount,
         int totalMomentCount
 ) {
 }

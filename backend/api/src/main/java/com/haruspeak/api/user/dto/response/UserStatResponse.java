@@ -9,6 +9,6 @@ public record UserStatResponse (
         @Schema(description = "총 하루 일기 수")
         long totalMomentCount,
         @Schema(description = "총 순간 일기 수")
-        long totalDiaryCount
+        int totalDiaryCount
 ) {
 }
