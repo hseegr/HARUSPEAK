@@ -49,14 +49,17 @@ class MomentControllerTest {
         Integer momentId = 1;
 
         MomentDetailResponse fakeResponse = new MomentDetailResponse(
+                1,
                 momentId,
                 LocalDateTime.now(),
+                2,
                 List.of("https://image1.com", "https://image2.com"),
                 "오늘 하루 내용",
+                2,
                 List.of("태그1", "태그2")
         );
 
-        when(activeDailyMomentService.getMomentDetail(USER_ID, momentId))
+        when(activeDailyMomentService.getMomentDetailByMomentId(USER_ID, momentId))
                 .thenReturn(fakeResponse);
 
         // when & then

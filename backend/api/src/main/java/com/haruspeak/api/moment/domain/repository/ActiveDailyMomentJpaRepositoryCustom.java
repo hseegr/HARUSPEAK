@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActiveDailyMomentJpaRepositoryCustom {
-    Optional<MomentDetailRaw> findMomentDetailRaw(Integer userId, Integer momentId);
-    List<MomentDetailRaw> findMomentListDetailRawList(Integer userId, MomentListRequest request);
+    Optional<MomentDetailRaw> findMomentDetail(int userId, int momentId);
+    List<MomentDetailRaw> findMomentListByCondition(int userId, MomentListRequest request);
+    List<MomentDetailRaw> findMomentListBySummaryId(int userId, int summaryId);
 }
 

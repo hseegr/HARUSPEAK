@@ -1,6 +1,6 @@
 package com.haruspeak.api.user.application;
 
-import com.haruspeak.api.moment.application.TodayService;
+import com.haruspeak.api.today.application.TodayService;
 import com.haruspeak.api.summary.application.DailySummaryService;
 import com.haruspeak.api.summary.dto.UserSummaryStat;
 import com.haruspeak.api.user.dto.response.UserStatResponse;

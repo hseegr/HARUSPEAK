@@ -6,14 +6,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MomentDetailRaw(
-        Integer summaryId,
-        Integer momentId,
+        int summaryId,
+        int momentId,
         @JsonFormat(timezone = "Asia/Seoul")
         LocalDateTime momentTime,
-        Integer imageCount,
+        int imageCount,
         List<String> images,
         String content,
-        Integer tagCount,
+        int tagCount,
         List<String> tags
 ) {
 }

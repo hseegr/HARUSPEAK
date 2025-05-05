@@ -39,7 +39,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @return MomentDetailRaw
      */
     @Override
-    public Optional<MomentDetailRaw> findMomentDetailRaw(Integer userId, Integer momentId) {
+    public Optional<MomentDetailRaw> findMomentDetail(int userId, int momentId) {
         log.debug("순간 일기 상세 조회 실행 (userId={}, momentId={})", userId, momentId);
 
         Tuple base = fetchBaseMomentInfo(userId, momentId);
@@ -49,14 +49,14 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
     }
 
     /**
-     *
-     * @param userId 사용자ID
+     * 조건에 맞는 순간 일기 목록 조회
+     * @param userId 사용자 ID
      * @param request 조건
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentDetailRaw> findMomentListDetailRawList(Integer userId, MomentListRequest request) {
-        log.debug("순간 일기 목록 조회 실행 (userId={}, request={})", userId, request);
+    public List<MomentDetailRaw> findMomentListByCondition(int userId, MomentListRequest request) {
+        log.debug("순간 일기 목록 검색 실행 (userId={}, request={})", userId, request);
 
         BooleanBuilder conditions = buildSearchConditions(userId, request);
 
@@ -72,6 +72,28 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
         // 이미지/태그 보강
         return toMomentDetailList(baseResults);
     }
+
+    /**
+     * 특정 일기의 순간 일기 목록 조회
+     * @param userId 사용자 ID
+     * @param summaryId 하루 일기 ID
+     * @return List<MomentListDetailRaw>
+     */
+    @Override
+    public List<MomentDetailRaw> findMomentListBySummaryId(int userId, int summaryId) {
+        log.debug("순간 일기 목록 조회 실행 (userId={}, summaryId={})", userId, summaryId);
+
+        List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
+                .from(moment)
+                .where(
+                        moment.userId.eq(userId),
+                        moment.summaryId.eq(summaryId)
+                )
+                .fetch();
+        
+        return toMomentDetailList(baseResults);
+    }
+
 
     /**
      * select 공통 구문
@@ -138,7 +160,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
         Map<Integer, List<String>> tagMap = getTagsFor(momentIds);
 
         return baseResults.stream()
-                .map(tuple -> toMomentDetailRawList(tuple, imageMap, tagMap))
+                .map(tuple -> toMomentDetailRaw(tuple, imageMap, tagMap))
                 .toList();
     }
 
@@ -148,7 +170,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
      * @param tuple Moment row
      * @return MomentDetailRaw
      */
-    private MomentDetailRaw toMomentDetailRawList(Tuple tuple,
+    private MomentDetailRaw toMomentDetailRaw(Tuple tuple,
                                                       Map<Integer, List<String>> imageMap,
                                                       Map<Integer, List<String>> tagMap) {
         Integer momentId = tuple.get(moment.momentId);

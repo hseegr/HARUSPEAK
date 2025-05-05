@@ -1,6 +1,7 @@
 package com.haruspeak.api.user.dto.response;
 
 import com.haruspeak.api.user.dto.UserTag;
+import com.haruspeak.api.user.dto.UserTagRaw;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
