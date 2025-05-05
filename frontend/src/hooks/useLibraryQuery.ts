@@ -72,7 +72,7 @@ export const useGetLibrary = ({
 export const useDeleteDiaries = () => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: deleteDiaries,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['library'] });
@@ -81,5 +81,5 @@ export const useDeleteDiaries = () => {
       console.log(error);
     },
   });
-  return mutate;
+  return mutateAsync;
 };
