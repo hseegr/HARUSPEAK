@@ -47,5 +47,5 @@ public interface TodayMomentRepository {
      * @param date 오늘 날짜
      * @return count
      */
-    int countByUserAndDate(Integer userId, LocalDate date);
+    long countByUserAndDate(Integer userId, LocalDate date);
 }
