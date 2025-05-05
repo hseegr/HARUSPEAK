@@ -33,7 +33,7 @@ public class UserStatController {
             summary = "사용자 메인 스탯 요청",
             description = "사용자의 오늘 작성 일기 수, 삭제되지 않은 총 순간 일기 수, 총 하루 일기 수를 조회합니다."
     )
-    public ResponseEntity<UserStatResponse> getUserTags(@AuthenticatedUser int userId) {
+    public ResponseEntity<UserStatResponse> getUserTags(@AuthenticatedUser Integer userId) {
         log.info("[GET] api/main 사용자 스탯 조회 (userId={})", userId);
         return ResponseEntity.ok(userStatService.getUserStat(userId));
     }

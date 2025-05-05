@@ -95,7 +95,7 @@ public class TodayController {
             description = "오늘 작성한 모든 순간 일기를 조회합니다."
     )
     public ResponseEntity<TodayMomentListResponse> getTodayMoments(@AuthenticatedUser Integer userId){
-        log.info("[GET] api/today 오늘의 순간 일기 전체 조회 (userId={}",userId);
+        log.info("[GET] api/today 오늘의 순간 일기 전체 조회 (userId={})",userId);
         TodayMomentListResponse result = todayService.getTodayMoments(userId);
         return ResponseEntity.ok(result);
     }

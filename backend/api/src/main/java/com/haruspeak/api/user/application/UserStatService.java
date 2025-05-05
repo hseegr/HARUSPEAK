@@ -27,7 +27,7 @@ public class UserStatService {
         int todayCount = todayService.getTodayMomentCount(userId, LocalDate.now());
         UserSummaryStat summaryStat = summaryService.getUserSummaryStat(userId);
 
-        log.debug("오늘 작성한 moment 수 = {}, 전체 통계 = {}", todayCount, summaryStat);
+        log.debug("✅ 오늘 작성한 moment 수 = {}, 전체 통계 = {}", todayCount, summaryStat);
 
         return new UserStatResponse(
                 todayCount,
