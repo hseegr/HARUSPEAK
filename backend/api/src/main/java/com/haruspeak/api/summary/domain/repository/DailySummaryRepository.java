@@ -1,6 +1,6 @@
-package com.haruspeak.api.diary.domain.repository;
+package com.haruspeak.api.summary.domain.repository;
 
-import com.haruspeak.api.diary.domain.DailySummary;
+import com.haruspeak.api.summary.domain.DailySummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
