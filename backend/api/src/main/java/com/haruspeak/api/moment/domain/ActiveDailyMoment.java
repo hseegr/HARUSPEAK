@@ -18,23 +18,19 @@ import java.time.LocalDateTime;
 @Getter
 public class ActiveDailyMoment {
     @Id
-    private Integer momentId;
+    private int momentId;
 
-    private Integer summaryId;
+    private int summaryId;
 
-    private Integer userId;
+    private int userId;
 
     private String content;
 
     private LocalDateTime momentTime;
 
-    private Integer imageCount;
+    private int imageCount;
 
-    private Integer tagCount;
+    private int tagCount;
 
-    private Integer viewCount;
-
-//    private String imageUrls;
-//
-//    private String tags;
+    private int viewCount;
 }

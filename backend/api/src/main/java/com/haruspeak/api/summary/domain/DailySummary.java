@@ -20,7 +20,7 @@ public class DailySummary {
     private Integer summaryId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private int userId;
 
     @Column(name = "write_date", nullable = false)
     private LocalDate writeDate;
@@ -35,22 +35,22 @@ public class DailySummary {
     private String content;
 
     @Column(name = "image_generate_count", nullable = false)
-    private Integer imageGenerateCount;
+    private int imageGenerateCount;
 
     @Column(name = "content_generate_count", nullable = false)
-    private Integer contentGenerateCount;
+    private int contentGenerateCount;
 
     @Column(name = "moment_count", nullable = false)
-    private Integer momentCount;
+    private int momentCount;
 
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
+    private int viewCount;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     public void updateSummary(String title, String content){
         this.title = title;
