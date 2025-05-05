@@ -1,4 +1,4 @@
-package com.haruspeak.api.diary.domain;
+package com.haruspeak.api.summary.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

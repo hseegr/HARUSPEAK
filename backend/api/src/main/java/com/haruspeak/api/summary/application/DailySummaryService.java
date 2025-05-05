@@ -1,15 +1,13 @@
-package com.haruspeak.api.diary.application;
+package com.haruspeak.api.summary.application;
 
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
-import com.haruspeak.api.diary.domain.DailySummary;
-import com.haruspeak.api.diary.domain.repository.DailySummaryRepository;
-import com.haruspeak.api.diary.dto.request.DailySummaryUpdateRequest;
+import com.haruspeak.api.summary.domain.DailySummary;
+import com.haruspeak.api.summary.domain.repository.DailySummaryRepository;
+import com.haruspeak.api.summary.dto.request.DailySummaryUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
