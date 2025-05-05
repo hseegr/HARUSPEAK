@@ -7,6 +7,7 @@ import com.haruspeak.api.moment.application.MomentService;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
 import com.haruspeak.api.moment.dto.response.MomentListResponse;
+import com.haruspeak.api.summary.dto.response.DiaryDetailResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,15 +45,20 @@ public class MomentController {
             description = "순간 일기 상세 정보(ID, 작성시각, 이미지주소목록, 일기내용, 태그목록)를 조회합니다.",
             responses = {
                     @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(schema = @Schema(implementation = MomentDetailResponse.class))
+                    ),
+                    @ApiResponse(
                             responseCode = "403",
                             description = "Forbidden",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
                     )
             }
     )
-    public ResponseEntity<MomentDetailResponse> getMomentDetail(@PathVariable Integer momentId, @AuthenticatedUser Integer userId) {
+    public ResponseEntity<MomentDetailResponse> getMomentDetailByMomentId(@PathVariable Integer momentId, @AuthenticatedUser Integer userId) {
         log.info("[GET] api/moment/{} 순간 일기 상세 조회 요청 (userId={})", momentId, userId);
-        return ResponseEntity.ok(activeDailyMomentService.getMomentDetail(userId, momentId));
+        return ResponseEntity.ok(activeDailyMomentService.getMomentDetailByMomentId(userId, momentId));
     }
 
     /**
@@ -67,17 +73,22 @@ public class MomentController {
             description = "순간 일기 목록(ID, 작성시각, 이미지주소목록, 일기내용, 태그목록)을 조회합니다.",
             responses = {
                     @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(schema = @Schema(implementation = MomentListResponse.class))
+                    ),
+                    @ApiResponse(
                             responseCode = "400",
                             description = "Bad Request",
                             content = @Content(schema = @Schema(implementation = ValidErrorResponse.class))
                     )
             }
     )
-    public ResponseEntity<MomentListResponse> getMomentList(
+    public ResponseEntity<MomentListResponse> searchMomentListByCondition(
             @Valid @ModelAttribute MomentListRequest request,
             @AuthenticatedUser Integer userId
     ){
         log.info("[GET] api/moment/ 순간 일기 목록 조회 요청 (request={}, userId={})", request.toString(), userId);
-        return ResponseEntity.ok(activeDailyMomentService.getMomentList(request,userId));
+        return ResponseEntity.ok(activeDailyMomentService.searchMomentListByCondition(request,userId));
     }
 }

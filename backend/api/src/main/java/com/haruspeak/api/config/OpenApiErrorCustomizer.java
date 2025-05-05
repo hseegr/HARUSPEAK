@@ -31,7 +31,10 @@ public class OpenApiErrorCustomizer {
                             String controllerClass = operation.getTags().stream().findFirst().orElse("");
 
                             // 200: 전체에 적용
-                            addErrorResponse(operation.getResponses(), "200", "OK");
+                            if (!operation.getResponses().containsKey("200")) {
+                                operation.getResponses().addApiResponse("200", new ApiResponse()
+                                        .description("OK"));
+                            }
 
                             // 401: 모든 컨트롤러에 적용(OAuthLoginController 제외 - 비인증 클래스: refreshToken 따로 적용)
                             if (!controllerClass.equals("Auth")) {
@@ -39,7 +42,7 @@ public class OpenApiErrorCustomizer {
                             }
 
                             // 403: 특정 컨트롤러에만 적용 // Moment(특정), Today, Summary (User, Auth 제외)
-                            if ( controllerClass.equals("Today")) {
+                            if (controllerClass.equals("Today") || controllerClass.equals("Summary")) {
                                 addErrorResponse(operation.getResponses(), "403", "Forbidden");
                             }
 
