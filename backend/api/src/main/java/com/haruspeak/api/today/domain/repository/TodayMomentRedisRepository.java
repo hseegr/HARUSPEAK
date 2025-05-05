@@ -110,9 +110,8 @@ public class TodayMomentRedisRepository implements TodayMomentRepository {
      * @return count
      */
     @Override
-    public int countByUserAndDate(Integer userId, LocalDate date) {
-        Long count = redisTemplate.opsForHash().size(redisKey(userId, date)); // key 값에 해당하는 게 없으면 0 반환
-        return count.intValue();
+    public long countByUserAndDate(Integer userId, LocalDate date) {
+        return redisTemplate.opsForHash().size(redisKey(userId, date));
     }
 
     /**

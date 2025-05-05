@@ -158,7 +158,7 @@ public class TodayService {
      * @param date 날짜
      * @return count
      */
-    public int getTodayMomentCount(int userId, LocalDate date) {
+    public long getTodayMomentCount(int userId, LocalDate date) {
         return todayRedisRepository.countByUserAndDate(userId, date);
     }
 
