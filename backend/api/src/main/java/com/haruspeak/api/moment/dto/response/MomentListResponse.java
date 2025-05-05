@@ -1,6 +1,6 @@
 package com.haruspeak.api.moment.dto.response;
 
-import com.haruspeak.api.moment.dto.ResInfo;
+import com.haruspeak.api.common.dto.ResInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

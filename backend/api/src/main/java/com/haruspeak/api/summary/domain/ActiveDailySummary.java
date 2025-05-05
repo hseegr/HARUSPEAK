@@ -21,7 +21,7 @@ public class ActiveDailySummary {
 
     private int userId;
 
-    private LocalDate write_date;
+    private LocalDate writeDate;
 
     private String title;
 

@@ -1,12 +1,13 @@
-package com.haruspeak.api.moment.presentation;
+package com.haruspeak.api.today.presentation;
 
 import com.haruspeak.api.common.exception.ErrorResponse;
 import com.haruspeak.api.common.exception.ValidErrorResponse;
 import com.haruspeak.api.common.security.AuthenticatedUser;
-import com.haruspeak.api.moment.application.TodayService;
-import com.haruspeak.api.moment.dto.request.MomentUpdateRequest;
-import com.haruspeak.api.moment.dto.request.MomentWriteRequest;
-import com.haruspeak.api.moment.dto.response.TodayMomentListResponse;
+import com.haruspeak.api.today.application.TodayService;
+import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
+import com.haruspeak.api.today.dto.request.MomentWriteRequest;
+import com.haruspeak.api.today.dto.response.TodayMomentListResponse;
+import com.haruspeak.api.user.dto.response.UserStatResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -92,7 +93,14 @@ public class TodayController {
     @GetMapping("")
     @Operation(
             summary = "오늘의 순간 일기 조회",
-            description = "오늘 작성한 모든 순간 일기를 조회합니다."
+            description = "오늘 작성한 모든 순간 일기를 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(schema = @Schema(implementation = TodayMomentListResponse.class))
+                    )
+            }
     )
     public ResponseEntity<TodayMomentListResponse> getTodayMoments(@AuthenticatedUser Integer userId){
         log.info("[GET] api/today 오늘의 순간 일기 전체 조회 (userId={})",userId);

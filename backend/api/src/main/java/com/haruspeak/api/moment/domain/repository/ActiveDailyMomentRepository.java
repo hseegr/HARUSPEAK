@@ -15,11 +15,15 @@ public class ActiveDailyMomentRepository {
     private final ActiveDailyMomentJpaRepository activeDailyMomentJpaRepository;
     private final ActiveDailyMomentJpaRepositoryCustomImpl activeDailyMomentJpaRepositoryCustomImpl;
 
-    public Optional<MomentDetailRaw> findMomentDetailRaw(Integer userId, Integer momentId){
-        return activeDailyMomentJpaRepositoryCustomImpl.findMomentDetailRaw(userId, momentId);
+    public Optional<MomentDetailRaw> findMomentDetail(int userId, int momentId){
+        return activeDailyMomentJpaRepositoryCustomImpl.findMomentDetail(userId, momentId);
     }
 
-    public List<MomentDetailRaw> findMomentList(Integer userId, MomentListRequest request){
-        return activeDailyMomentJpaRepositoryCustomImpl.findMomentListDetailRawList(userId, request);
+    public List<MomentDetailRaw> findMomentListByCondition(int userId, MomentListRequest request){
+        return activeDailyMomentJpaRepositoryCustomImpl.findMomentListByCondition(userId, request);
+    }
+
+    public List<MomentDetailRaw> findMomentListBySummaryId(int userId, int summaryId){
+        return activeDailyMomentJpaRepositoryCustomImpl.findMomentListBySummaryId(userId, summaryId);
     }
 }
