@@ -11,7 +11,7 @@ const ImageList = ({ images, onRemove }: ImageListProps) => {
       {images.map((file, index) => (
         <div
           key={index}
-          className='flex items-center justify-between rounded-lg border bg-white px-3 py-2 text-sm text-gray-700'
+          className='flex items-center justify-between rounded-lg border bg-white px-2 py-2 text-sm text-gray-700'
         >
           {/* 파일 이름 */}
           <span className='max-w-[80%] truncate'>{file.name}</span>

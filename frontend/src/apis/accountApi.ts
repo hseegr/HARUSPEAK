@@ -1,6 +1,4 @@
-import { axiosInstance } from './core';
-
-const DOMAIN = import.meta.env.VITE_API_DOMAIN;
+import { DOMAIN, axiosInstance } from './core';
 
 // 구글 로그인
 // 리다이렉트 -> 브라우저가 직접 이동해야 함
