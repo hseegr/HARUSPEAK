@@ -21,7 +21,7 @@ export const useMomentEdit = (
     useState<MomentContent>(initialMoment);
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [deleteImages, setDeleteImages] = useState<string[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const createdAt = initialMoment.createdAt;
 
   // 순간 기록의 날짜와 시간 파싱
@@ -62,7 +62,7 @@ export const useMomentEdit = (
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }));
-    setDeleteImages(prev => [...prev, deletedImage]);
+    setDeletedImages(prev => [...prev, deletedImage]);
   };
 
   // 태그 삭제 핸들러 : 선택한 인덱스의 태그를 목록에서 제거
@@ -94,7 +94,7 @@ export const useMomentEdit = (
         content: editedMoment.content,
         images: editedMoment.images,
         tags: editedMoment.tags,
-        deleteImages,
+        deletedImages,
       };
 
       if (!createdAt) {
@@ -115,7 +115,7 @@ export const useMomentEdit = (
   const resetState = useCallback(() => {
     setEditedMoment(initialMoment);
     setNewTag('');
-    setDeleteImages([]);
+    setDeletedImages([]);
   }, [initialMoment]);
 
   return {
@@ -123,7 +123,7 @@ export const useMomentEdit = (
     newTag,
     setNewTag,
     isSaving,
-    deleteImages,
+    deletedImages,
     date,
     currentTime,
     isSaveDisabled,
