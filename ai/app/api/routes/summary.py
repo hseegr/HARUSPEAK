@@ -6,12 +6,12 @@ from pydantic import BaseModel  # BaseModel을 import 추가
 summary_router = APIRouter()
 
 
-class TagRequest(BaseModel):
+class SummaryRequest(BaseModel):
     content: str
 
 
 @summary_router.post("/daily-summary")
-async def generate_summary(request: TagRequest):
+async def generate_summary(request: SummaryRequest):
     content = request.content
     try:
         summary = await oa_generate_summary(content)

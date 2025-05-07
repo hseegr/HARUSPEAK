@@ -6,12 +6,12 @@ from pydantic import BaseModel  # BaseModel을 import 추가
 thumbnail_router = APIRouter()
 
 
-class TagRequest(BaseModel):
+class ThumbnailRequest(BaseModel):
     content: str
 
 
 @thumbnail_router.post("/daily-thumbnail")
-async def generate_thumnail(request: TagRequest):
+async def generate_thumnail(request: ThumbnailRequest):
     content = request.content
     try:
         thumbnail_base64 = await oa_generate_thumbnail(content)
