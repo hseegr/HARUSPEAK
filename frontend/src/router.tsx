@@ -1,9 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import BaseLayout from './components/layout/BaseLayout';
+import Diary from './pages/diary';
 import Home from './pages/home';
+import Library from './pages/library';
 import LoginPage from './pages/login';
-import NotFound from './pages/notFound/index';
+import Moment from './pages/moment';
+import Moments from './pages/moments';
+import NotFound from './pages/notFound';
 import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
 import ImageUploadPage from './pages/todayWritePage/ImageUploadPage';
@@ -44,6 +48,30 @@ export const router = createBrowserRouter([
         element: <ImageUploadPage />,
         handle: { title: '이미지 업로드하기' },
       },
+      {
+        path: 'library',
+        element: <Library />,
+        handle: { title: '내 서재' },
+      },
+      {
+        path: 'moments',
+        element: <Moments />,
+        handle: { title: '순간 일기 모아 보기' },
+      },
+      {
+        path: 'moment/:momentId',
+        element: <Moment />,
+        handle: { title: '순간 일기 상세 보기' },
+      },
+      {
+        path: 'diary/:summaryId',
+        element: <Diary />,
+        handle: { title: '일기 상세 보기' },
+      },
+      // 예시
+      // { index: true, element: <OnboardingPage /> },
+      // { path: 'main', element: <MainPage /> },
+      // { path: 'account/login', element: <Login /> },
     ],
   },
 ]);

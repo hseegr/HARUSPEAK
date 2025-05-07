@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import ImageDialog from '@/components/ImageDialog';
 import TagBadge from '@/components/TagBadge';
+import { useMomentDelete, useMomentTagRecommend } from '@/hooks/useTodayQuery';
 import { formatMomentTime } from '@/lib/timeUtils';
-import { createTags, deleteMoment } from '@/mock/mockTodayApi';
 import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
@@ -16,21 +16,31 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const formattedTime = formatMomentTime(moment.momentTime);
+  const { mutate: deleteMomentMutation } = useMomentDelete();
+  const { mutate: recommendTagMutation } = useMomentTagRecommend();
 
   const handleGenerateTags = async () => {
     try {
       setIsLoading(true);
-      const response = await createTags({
-        tags,
-        createdAt: moment.momentTime,
-        content: moment.content,
-      });
-
-      setTags(prevTags => {
-        const spaceLeft = 3 - prevTags.length;
-        const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
-        return [...prevTags, ...tagsToAdd];
-      });
+      recommendTagMutation(
+        {
+          tags,
+          createdAt: moment.momentTime,
+          content: moment.content,
+        },
+        {
+          onSuccess: response => {
+            setTags(prevTags => {
+              const spaceLeft = 3 - prevTags.length;
+              const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
+              return [...prevTags, ...tagsToAdd];
+            });
+          },
+          onError: error => {
+            console.error('태그 생성 실패:', error);
+          },
+        },
+      );
     } catch (error) {
       console.error('태그 생성 실패:', error);
     } finally {
@@ -40,9 +50,14 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
   const handleDelete = async () => {
     try {
-      await deleteMoment(moment.momentTime);
-      setIsDeleteDialogOpen(false);
-      // TODO: 삭제 후 리스트 갱신 로직 추가
+      deleteMomentMutation(moment.momentTime, {
+        onSuccess: () => {
+          setIsDeleteDialogOpen(false);
+        },
+        onError: error => {
+          console.error('삭제 실패:', error);
+        },
+      });
     } catch (error) {
       console.error('삭제 실패:', error);
     }

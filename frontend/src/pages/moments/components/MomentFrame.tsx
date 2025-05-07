@@ -1,0 +1,56 @@
+import { useNavigate } from 'react-router-dom';
+
+interface MomentFrameProps {
+  momentId: number;
+  momentTime: string;
+  images: string[];
+  content: string;
+  tags: string[];
+}
+
+const MomentFrame = ({
+  momentId,
+  momentTime,
+  images,
+  content,
+  tags,
+}: MomentFrameProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // 콘솔에 로그 추가하여 디버깅
+    console.log(`이동: /moment/${momentId}`);
+
+    // 페이지 이동
+    navigate(`/moment/${momentId}`);
+  };
+
+  return (
+    <div
+      className='cursor-pointer rounded border p-4 hover:shadow'
+      onClick={handleClick}
+    >
+      <div className='mb-1 text-xs text-gray-500'>{momentTime}</div>
+      <div className='mb-2 font-semibold'>{content}</div>
+      <div className='mb-2 flex gap-2'>
+        {images.map((img, idx) => (
+          <img
+            key={idx}
+            src={img}
+            alt={`moment-${momentId}-img-${idx}`}
+            className='h-16 w-16 rounded object-cover'
+          />
+        ))}
+      </div>
+      <div className='flex flex-wrap gap-1'>
+        {tags.map(tag => (
+          <span key={tag} className='rounded bg-gray-200 px-2 py-1 text-xs'>
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default MomentFrame;
