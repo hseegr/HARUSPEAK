@@ -1,4 +1,4 @@
-import { UserTag } from '@/apis/tagApi';
+import { UserTag } from '@/types/tag';
 
 export const mockUserTags: UserTag[] = [
   { userTagId: 1, name: '여행', count: 15 },
