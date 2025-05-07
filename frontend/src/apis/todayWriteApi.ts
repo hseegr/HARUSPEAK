@@ -4,7 +4,7 @@ import { axiosInstance } from './core';
 
 // 일기 작성하기 -> 데이터 보내기
 export const todayWriteSend = async (data: TodayWrite) => {
-  const response = await axiosInstance.post('/today', data);
+  const response = await axiosInstance.post('/api/today', data);
   return response.data;
 };
 
@@ -21,5 +21,64 @@ export const imageToBase64 = (file: File): Promise<string> => {
       }
     };
     reader.onerror = error => reject(error);
+  });
+};
+
+// canvas 이미지 변환 함수 -> 이미지 크기 압축하기
+export const compressImage = (
+  file: File,
+  maxWidth = 600,
+  quality = 0.6,
+): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      // 파일 이미지로 읽기
+      const img = new Image();
+      img.src = reader.result as string;
+
+      // canvas로 이미지 그리면서 압축
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = maxWidth / img.width;
+        const width = maxWidth;
+        const height = img.height * scale;
+
+        // 최종 이미지 사이즈
+        canvas.width = width;
+        canvas.height = height;
+
+        // canvas의 2d 컨텍스트를 가져옴
+        // 2d 컨텍스트는 drawImage, fillRect 등 2차원 그래픽 작업을 위한 메서드 제공
+        const ctx = canvas.getContext('2d');
+
+        // 컨텍스트를 가져오지 못한 경우 에러 처리
+        if (!ctx) return reject(new Error('Canvas context not available'));
+
+        // 위에서 설정한 크기로 이미지 그리기
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // 압축한 이미지를 blob로 변환
+        // blob -> 브라우저에서 압축 + 리사이징된 이미지를 파일 형태로 서버에 전송
+        canvas.toBlob(
+          blob => {
+            if (!blob) return reject(new Error('Blob compression failed'));
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          quality,
+        );
+      };
+
+      img.onerror = e => reject(e);
+    };
+
+    reader.onerror = e => reject(e);
+    reader.readAsDataURL(file);
   });
 };
