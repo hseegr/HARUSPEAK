@@ -2,73 +2,30 @@ import { useState } from 'react';
 
 import ImageDialog from '@/components/ImageDialog';
 import TagBadge from '@/components/TagBadge';
-import { useMomentDelete, useMomentTagRecommend } from '@/hooks/useTodayQuery';
+import { useMomentTagRecommend } from '@/hooks/useMomentTagRecommend';
 import { formatMomentTime } from '@/lib/timeUtils';
 import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
 
 const MomentCard = ({ moment, isToday }: MomentCardProps) => {
-  const [tags, setTags] = useState<string[]>(moment.tags);
-  const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const formattedTime = formatMomentTime(moment.momentTime);
-  const { mutate: deleteMomentMutation } = useMomentDelete();
-  const { mutate: recommendTagMutation } = useMomentTagRecommend();
 
-  const handleGenerateTags = async () => {
-    try {
-      setIsLoading(true);
-      recommendTagMutation(
-        {
-          tags,
-          createdAt: moment.momentTime,
-          content: moment.content,
-        },
-        {
-          onSuccess: response => {
-            setTags(prevTags => {
-              const spaceLeft = 3 - prevTags.length;
-              const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
-              return [...prevTags, ...tagsToAdd];
-            });
-          },
-          onError: error => {
-            console.error('태그 생성 실패:', error);
-          },
-        },
-      );
-    } catch (error) {
-      console.error('태그 생성 실패:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      deleteMomentMutation(moment.momentTime, {
-        onSuccess: () => {
-          setIsDeleteDialogOpen(false);
-        },
-        onError: error => {
-          console.error('삭제 실패:', error);
-        },
-      });
-    } catch (error) {
-      console.error('삭제 실패:', error);
-    }
-  };
+  const { tags, isLoading, handleGenerateTags } = useMomentTagRecommend({
+    moment,
+    initialTags: moment.tags,
+  });
 
   return (
     <>
       <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3'>
         {/* 상단 */}
         <section className='flex justify-between'>
-          <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
+          <div className='font-mont rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
             {formattedTime}
           </div>
           {isToday && (
@@ -81,7 +38,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='mb-3 flex w-full justify-between'>
+          <div className='mb-3 flex w-full gap-3'>
             {moment.images.slice(0, 3).map((image, idx) => {
               const remainingCount = moment.images.length - 3;
 
@@ -111,18 +68,20 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
               );
             })}
           </div>
-          <div>{moment.content}</div>
+          <div className='font-leeseyoon' style={{ whiteSpace: 'pre-wrap' }}>
+            {moment.content}
+          </div>
         </section>
 
         {/* 하단 */}
         <section className='flex items-start'>
           <div className='flex flex-1 flex-wrap items-center gap-2'>
-            {tags.map((tag, idx) => (
+            {tags.map((tag: string, idx: number) => (
               <TagBadge key={`${tag}-${idx}`} tag={tag} />
             ))}
           </div>
 
-          {isToday && tags.length < 3 && (
+          {isToday && tags.length < 3 && moment.content !== '' && (
             <div className='flex-shrink-0 pl-1'>
               <button
                 onClick={handleGenerateTags}
@@ -148,12 +107,14 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         momentTime={moment.momentTime}
       />
 
-      <MomentDeleteDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        momentTime={moment.momentTime}
-        onDelete={handleDelete}
-      />
+      {isToday && (
+        <MomentDeleteDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          momentTime={moment.momentTime}
+          createdAt={moment.createdAt}
+        />
+      )}
     </>
   );
 };

@@ -77,7 +77,7 @@ const MomentEditDialog = ({
                 : 'bg-haru-green text-white'
             }`}
           >
-            {isSaving ? '저장 중...' : '저장'}
+            {isSaving ? '...' : '저장'}
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
