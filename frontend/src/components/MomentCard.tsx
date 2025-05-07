@@ -38,7 +38,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='mb-3 flex w-full justify-between'>
+          <div className='mb-3 flex w-full gap-3'>
             {moment.images.slice(0, 3).map((image, idx) => {
               const remainingCount = moment.images.length - 3;
 
@@ -68,7 +68,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
               );
             })}
           </div>
-          <div>{moment.content}</div>
+          <div style={{ whiteSpace: 'pre-wrap' }}>{moment.content}</div>
         </section>
 
         {/* 하단 */}
@@ -79,7 +79,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
             ))}
           </div>
 
-          {isToday && tags.length < 3 && (
+          {isToday && tags.length < 3 && moment.content !== '' && (
             <div className='flex-shrink-0 pl-1'>
               <button
                 onClick={handleGenerateTags}
