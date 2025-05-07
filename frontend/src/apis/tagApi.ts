@@ -1,15 +1,5 @@
 import { axiosInstance } from '@/apis/core';
-
-export interface UserTag {
-  userTagId: number;
-  name: string;
-  count: number;
-}
-
-export interface UserTagsResponse {
-  tags: UserTag[];
-  tagCount: number;
-}
+import { UserTagsResponse } from '@/types/tag';
 
 // 사용자 태그 조회 - 모달창에서 사용
 export const getUserTags = async () => {

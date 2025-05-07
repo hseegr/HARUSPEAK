@@ -1,3 +1,5 @@
+import { MomentContent } from './common';
+
 export interface EmojiParticle {
   id: string;
   emoji: string;
@@ -17,4 +19,32 @@ export interface DragState {
 export interface Dimensions {
   width: number;
   height: number;
+}
+
+// 순간일기 목록조회 파라미터
+export interface GetMomentsParams {
+  before?: string;
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+  userTags?: string;
+}
+
+// 순간일기 목록조회 응답
+export interface MomentsResponse {
+  data: MomentContent[];
+  resInfo: {
+    dataCount: number;
+    nextCursor: string | null; // mock data 활용을 위한 타입 수정
+    hasMore: boolean;
+  };
+}
+
+// 순간일기 상세조회 응답
+export interface MomentResponse {
+  momentId: number;
+  momentTime: string;
+  images: string[];
+  // content: string;
+  tags: string[];
 }

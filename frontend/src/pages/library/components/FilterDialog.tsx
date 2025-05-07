@@ -4,7 +4,6 @@ import { CalendarIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-import { UserTag } from '@/apis/tagApi';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -22,6 +21,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetUserTags } from '@/hooks/useTagQuery';
 import { cn } from '@/lib/utils';
+import { UserTag } from '@/types/tag';
 
 interface FilterDialogProps {
   open: boolean;

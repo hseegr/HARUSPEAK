@@ -1,7 +1,8 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { UserTagsResponse, getUserTags } from '@/apis/tagApi';
+import { getUserTags } from '@/apis/tagApi';
 import { mockGetUserTags, mockGetUserTagsInfinite } from '@/mock/mockTagApi';
+import { UserTagsResponse } from '@/types/tag';
 
 // 테스트를 위해 mock 데이터 사용 여부를 설정하는 상수
 const useMockData = true;

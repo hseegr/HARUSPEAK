@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
 interface MomentFrameProps {
-  momentId: number;
+  momentId?: number;
+  summaryId?: number;
   momentTime: string;
   images: string[];
   content: string;
@@ -10,6 +11,7 @@ interface MomentFrameProps {
 
 const MomentFrame = ({
   momentId,
+  summaryId,
   momentTime,
   images,
   content,
@@ -18,11 +20,15 @@ const MomentFrame = ({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // 콘솔에 로그 추가하여 디버깅
-    console.log(`이동: /moment/${momentId}`);
-
-    // 페이지 이동
-    navigate(`/moment/${momentId}`);
+    if (summaryId) {
+      // summaryId가 있을 경우 diary 상세 페이지로 이동
+      console.log(`이동: /diary/${summaryId}`);
+      navigate(`/diary/${summaryId}`);
+    } else if (momentId) {
+      // summaryId가 없을 경우 기존 moment 상세 페이지로 이동
+      console.log(`이동: /moment/${momentId}`);
+      navigate(`/moment/${momentId}`);
+    }
   };
 
   return (
