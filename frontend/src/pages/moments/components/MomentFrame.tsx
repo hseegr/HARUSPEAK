@@ -20,12 +20,16 @@ const MomentFrame = ({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (summaryId) {
-      // summaryId가 있을 경우 diary 상세 페이지로 이동
+    if (summaryId && momentId) {
+      // summaryId와 momentId가 모두 있을 경우 diary 상세 페이지로 이동하면서 해당 moment 위치 전달
+      console.log(`이동: /diary/${summaryId}?momentId=${momentId}`);
+      navigate(`/diary/${summaryId}?momentId=${momentId}`);
+    } else if (summaryId) {
+      // summaryId만 있을 경우 diary 상세 페이지로 이동
       console.log(`이동: /diary/${summaryId}`);
       navigate(`/diary/${summaryId}`);
     } else if (momentId) {
-      // summaryId가 없을 경우 기존 moment 상세 페이지로 이동
+      // momentId만 있을 경우 기존 moment 상세 페이지로 이동
       console.log(`이동: /moment/${momentId}`);
       navigate(`/moment/${momentId}`);
     }
