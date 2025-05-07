@@ -28,9 +28,6 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    
 
   api:
     build:
@@ -44,17 +41,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      ai:
-        condition: service_started
-
-  ai:
-    build:
-      context: ./ai/app
-      dockerfile: Dockerfile
-    container_name: ai-server
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
 
 volumes:
   mysql_data:
