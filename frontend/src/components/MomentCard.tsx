@@ -25,7 +25,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
       <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3'>
         {/* 상단 */}
         <section className='flex justify-between'>
-          <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
+          <div className='font-mont rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
             {formattedTime}
           </div>
           {isToday && (
@@ -68,7 +68,9 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
               );
             })}
           </div>
-          <div style={{ whiteSpace: 'pre-wrap' }}>{moment.content}</div>
+          <div className='font-leeseyoon' style={{ whiteSpace: 'pre-wrap' }}>
+            {moment.content}
+          </div>
         </section>
 
         {/* 하단 */}
