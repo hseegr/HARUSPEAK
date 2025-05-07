@@ -23,7 +23,7 @@ import globals from 'globals';
 export default [
   {
     // ESLint가 무시할 디렉토리를 지정합니다.
-    ignores: ['dist', 'dev-dist', 'node_modules', 'src/compoonents/ui'],
+    ignores: ['dist', 'dev-dist', 'node_modules', 'src/components/ui'],
   },
   // ESLint의 기본 권장 설정을 적용합니다.
   js.configs.recommended,
