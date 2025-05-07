@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,24 +38,23 @@ public class TodayService {
      * @param userId
      */
     public void saveMoment(MomentWriteRequest request, Integer userId) {
-        String date = LocalDate.now().toString();
-        String key = "user:" + userId + ":moment:" + date;
-        String now = LocalDateTime.now().toString();
+        LocalDateTime now = LocalDateTime.now();
+        String key = redisKey(userId, now);
 
         List<String> images = request.images().stream()
                 .map(s3Service::uploadImagesAndGetUrls)
                 .toList();
 
         Map<String, Object> momentData = new HashMap<>();
-        momentData.put("momentTime", now);
+        momentData.put("momentTime", now.toString());
         momentData.put("content", request.content());
         momentData.put("images", images);
         momentData.put("tags", List.of());
 
         try {
-            redisTemplate.opsForHash().put(key, now, momentData);
+            redisTemplate.opsForHash().put(key, now.toString(), momentData);
         } catch (Exception e) {
-            throw new HaruspeakException(ErrorCode.MOMENT_SAVE_ERROR);
+            throw new HaruspeakException(ErrorCode.MOMENT_SAVE_ERROR, e.getMessage());
         }
     }
 
@@ -65,9 +65,8 @@ public class TodayService {
      * @param userId
      */
     public void updateMoment(String time, MomentUpdateRequest request, Integer userId){
-        String date = LocalDate.now().toString();
 
-        String key = "user:" + userId + ":moment:" + date;
+        String key = redisKey(userId, LocalDateTime.now());
 
         try {
             request.deletedImages().forEach(s3Service::deleteImages);
@@ -90,7 +89,7 @@ public class TodayService {
             redisTemplate.opsForHash().put(key, time, existingMoment);
 
         } catch (Exception e) {
-            throw new HaruspeakException(ErrorCode.MOMENT_UPDATE_ERROR);
+            throw new HaruspeakException(ErrorCode.MOMENT_UPDATE_ERROR, e.getMessage());
         }
     }
 
@@ -100,8 +99,8 @@ public class TodayService {
      * @param userId
      */
     public void removeMoment(String time, Integer userId){
-        String date = LocalDate.now().toString();
-        String key = "user:" + userId + ":moment:" + date;
+
+        String key = redisKey(userId, LocalDateTime.now());
 
         try {
             Map<String, Object> moment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
@@ -114,7 +113,7 @@ public class TodayService {
             redisTemplate.opsForHash().delete(key, time);
 
         } catch (Exception e) {
-            throw new HaruspeakException(ErrorCode.MOMENT_DELETE_ERROR);
+            throw new HaruspeakException(ErrorCode.MOMENT_DELETE_ERROR, e.getMessage());
         }
     }
 
@@ -124,8 +123,8 @@ public class TodayService {
      * @return
      */
     public TodayMomentListResponse getTodayMoments(Integer userId) {
-        String date = LocalDate.now().toString();
-        String key = "user:" + userId + ":moment:" + date;
+
+        String key = redisKey(userId, LocalDateTime.now());
 
         try{
             Map<Object, Object> todayMoments = redisTemplate.opsForHash().entries(key);
@@ -143,11 +142,12 @@ public class TodayService {
                                 (List<String>) momentData.get("tags")
                         );
                     })
+                    .sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
                     .toList();
 
             return new TodayMomentListResponse(moments, moments.size());
         } catch (Exception e) {
-            throw new HaruspeakException(ErrorCode.MOMENT_READ_ERROR);
+            throw new HaruspeakException(ErrorCode.MOMENT_READ_ERROR, e.getMessage());
         }
     }
 
@@ -160,6 +160,15 @@ public class TodayService {
      */
     public long getTodayMomentCount(int userId, LocalDate date) {
         return todayRedisRepository.countByUserAndDate(userId, date);
+    }
+
+    /**
+     * redis key 반환 함수
+     * @param userId
+     * @return
+     */
+    public String redisKey(Integer userId, LocalDateTime now){
+        return "user:" + userId + ":moment:" + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
 
