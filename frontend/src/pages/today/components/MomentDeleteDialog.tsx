@@ -1,21 +1,37 @@
+import { useMomentDelete } from '@/hooks/useMomentDelete';
 import { formatMomentTime } from '@/lib/timeUtils';
 
 interface MomentDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   momentTime: string;
-  onDelete: () => void;
+  createdAt?: string;
 }
 
 const MomentDeleteDialog = ({
   open,
   onOpenChange,
   momentTime,
-  onDelete,
+  createdAt,
 }: MomentDeleteDialogProps) => {
+  const { mutate: deleteMomentMutation, isPending } = useMomentDelete();
+
   if (!open) return null;
 
   const formattedTime = formatMomentTime(momentTime);
+
+  const handleDelete = () => {
+    if (!createdAt) {
+      console.error('createdAt이 없습니다.');
+      return;
+    }
+
+    deleteMomentMutation(createdAt, {
+      onSuccess: () => {
+        onOpenChange(false);
+      },
+    });
+  };
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-haru-black bg-opacity-50'>
@@ -30,10 +46,11 @@ const MomentDeleteDialog = ({
             취소
           </button>
           <button
-            onClick={onDelete}
-            className='rounded bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green'
+            onClick={handleDelete}
+            disabled={isPending || !createdAt}
+            className='rounded bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green disabled:opacity-50'
           >
-            삭제
+            {isPending ? '삭제 중...' : '삭제'}
           </button>
         </div>
       </div>

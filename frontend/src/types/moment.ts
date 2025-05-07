@@ -47,4 +47,11 @@ export interface MomentResponse {
   images: string[];
   // content: string;
   tags: string[];
+export interface ParticleStyle {
+  left: string;
+  top: string;
+  fontSize: string;
+  transform: string;
+  transition: string;
+  zIndex: number;
 }

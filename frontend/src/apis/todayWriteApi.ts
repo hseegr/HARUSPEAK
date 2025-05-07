@@ -4,7 +4,9 @@ import { axiosInstance } from './core';
 
 // 일기 작성하기 -> 데이터 보내기
 export const todayWriteSend = async (data: TodayWrite) => {
-  const response = await axiosInstance.post('/api/today', data);
+  const response = await axiosInstance.post('/api/today', data, {
+    timeout: 2000,
+  });
   return response.data;
 };
 
