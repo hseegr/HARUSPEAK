@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://k12a607.p.ssafy.io",
                         "https://haruspeak.com"
                 ) // react
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // method
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // method
                 .allowedHeaders("*")
                 .exposedHeaders("*")
                 .allowCredentials(true); // 쿠키 허용
