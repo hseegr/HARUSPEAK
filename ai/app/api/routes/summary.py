@@ -15,6 +15,6 @@ async def generate_summary(request: TagRequest):
     content = request.content
     try:
         summary = await oa_generate_summary(content)
-        return summary
+        return {"content": summary}
     except HTTPException as e:
         raise e

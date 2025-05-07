@@ -57,7 +57,7 @@ def oa_generate_tag(
     tag_len = len(tags)
 
     if tag_len >= 3:
-        return KeywordOutput(recommendTags="")
+        return KeywordOutput(recommendTags=[])
 
     count = 3 - tag_len
     guide_text = f"- 총 {count}개의 키워드를 추출해 주세요."
