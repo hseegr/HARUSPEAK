@@ -22,5 +22,5 @@ export interface TagResponse {
 
 // 오늘의 순간 일기 수정 API 요청 타입
 export interface UpdateMomentRequest extends MomentContent {
-  deleteImages: string[];
+  deletedImages: string[];
 }
