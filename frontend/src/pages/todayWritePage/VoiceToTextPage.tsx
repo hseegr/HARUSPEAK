@@ -77,7 +77,7 @@ const VoiceToTextPage = () => {
           {listening ? (
             <button
               onClick={handleConvert}
-              className='text-xs font-semibold text-haru-green'
+              className='px-3 py-2 text-xs font-semibold text-haru-green'
             >
               중지
             </button>
@@ -85,14 +85,14 @@ const VoiceToTextPage = () => {
             <>
               <button
                 onClick={handleContinue}
-                className='text-xs font-semibold text-haru-gray-4'
+                className='px-1 py-2 text-xs font-semibold text-haru-gray-4'
               >
                 이어서 녹음
               </button>
 
               <button
                 onClick={handleReRecord}
-                className='text-xs font-semibold text-haru-gray-4'
+                className='px-1 py-2 text-xs font-semibold text-haru-gray-4'
               >
                 재녹음
               </button>
