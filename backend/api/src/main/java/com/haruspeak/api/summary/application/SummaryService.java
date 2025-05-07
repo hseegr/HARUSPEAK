@@ -63,7 +63,7 @@ public class SummaryService {
         thumbnailData.put("state", ThumbnailRegenState.QUEUED);
         thumbnailData.put("timestamp", LocalDateTime.now().toString());
         thumbnailData.put("retryCount", 1);
-
+        redisTemplate.opsForHash().put(key, redisField, thumbnailData);
     }
 
     private String redisKey(Integer userId) {
