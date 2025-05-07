@@ -76,6 +76,7 @@ public class TodayMomentRedisRepository implements TodayMomentRepository {
 
     /**
      * 오늘 작성한 모든 순간 일기 조회
+     * + 최신순 정렬
      * @param userId 사용자 ID
      * @param date key(날짜)
      * @return TodayMomentEntry 순간 일기
@@ -89,8 +90,10 @@ public class TodayMomentRedisRepository implements TodayMomentRepository {
                     TodayMoment moment = parse(entry.getValue().toString());
                     return new TodayMomentEntry(createdAt, moment);
                 })
+                .sorted((a, b) -> b.moment().momentTime().compareTo(a.moment().momentTime())) // momentTime 기준 역순 정렬
                 .toList();
     }
+
 
     /**
      * 오늘의 특정 순간 일기 삭제
