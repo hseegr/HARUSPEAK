@@ -2,13 +2,13 @@ import { ChangeEvent, useCallback, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { updateMoment } from '@/apis/todayApi';
 import {
   convert24To12HourFormat,
   get24HourFormat,
   parseMomentTime,
   updateMomentTime,
 } from '@/lib/timeUtils';
-import { updateMoment } from '@/mock/mockTodayApi';
 import { MomentContent } from '@/types/common';
 import { UpdateMomentRequest } from '@/types/today';
 
@@ -22,6 +22,7 @@ export const useMomentEdit = (
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deleteImages, setDeleteImages] = useState<string[]>([]);
+  const createdAt = initialMoment.createdAt;
 
   // 순간 기록의 날짜와 시간 파싱
   const { date } = parseMomentTime(editedMoment.momentTime);
@@ -96,7 +97,11 @@ export const useMomentEdit = (
         deleteImages,
       };
 
-      await updateMoment(updateData);
+      if (!createdAt) {
+        throw new Error('createdAt이 없습니다.');
+      }
+
+      await updateMoment(createdAt, updateData);
       await queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
       onClose();
     } catch (error) {
