@@ -12,12 +12,13 @@ public class FastApiClient {
         this.fastApiWebClient = fastApiWebClient;
     }
 
-    public String getPrediction(String uri, Object request) {
+    public <T> T getPrediction(String uri, Object requestDto, Class<T> responseType) {
+
         return fastApiWebClient.post()
-                .uri(uri)
-                .bodyValue(request)
+                .uri(uri) // "/ai/moment-tag";
+                .bodyValue(requestDto)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(responseType)
                 .block(); // 동기 호출
     }
 }
