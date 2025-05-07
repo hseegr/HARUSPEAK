@@ -16,6 +16,8 @@ public record SummaryDetail(
         String title,
         @Schema(description = "요약 내용", example = "요약 내용입니다.")
         String content,
+        @Schema(description = "이미지 생성중 상태", example = "false")
+        boolean isImageGenerating,
         @Schema(description = "AI 요약 이미지 생성 횟수", example = "1")
         int imageGenerateCount,
         @Schema(description = "AI 요약 내용 생성 횟수", example = "1")
