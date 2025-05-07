@@ -4,7 +4,7 @@ import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.util.FastApiClient;
 import com.haruspeak.api.summary.domain.DailySummary;
-import com.haruspeak.api.summary.domain.ThumbnailRegenState;
+import com.haruspeak.api.summary.domain.DailyThumbnailRegenState;
 import com.haruspeak.api.summary.domain.repository.DailySummaryRepository;
 import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
@@ -60,7 +60,7 @@ public class SummaryService {
 
         // redisData 없으면, 대기열 추가
         Map<String, Object> thumbnailData = new HashMap<>();
-        thumbnailData.put("state", ThumbnailRegenState.QUEUED);
+        thumbnailData.put("state", DailyThumbnailRegenState.QUEUED);
         thumbnailData.put("timestamp", LocalDateTime.now().toString());
         thumbnailData.put("retryCount", 1);
         redisTemplate.opsForHash().put(key, redisField, thumbnailData);
