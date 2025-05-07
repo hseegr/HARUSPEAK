@@ -1,7 +1,7 @@
 package com.haruspeak.api.summary.presentation;
 
 import com.haruspeak.api.common.security.AuthenticatedUser;
-import com.haruspeak.api.summary.application.DailySummaryService;
+import com.haruspeak.api.summary.application.SummaryService;
 import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.request.DailyThumbnailCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
         name = "Summary",
         description = "하루 일기 관련 API"
 )
-public class DailySummaryController {
-    private final DailySummaryService dailySummaryService;
+public class SummaryController {
+    private final SummaryService summaryService;
 
     @PostMapping("/{summaryId}/content/regenerate")
     @Operation(summary = "하루일기 요약 재생성", description = "하루일기 요약 내용을 AI 를 통해 재생성합니다.")
@@ -34,7 +34,7 @@ public class DailySummaryController {
 //            @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/daily-summary";
-        return ResponseEntity.ok(dailySummaryService.regenerateDailySummary(uri, dscr));
+        return ResponseEntity.ok(summaryService.regenerateDailySummary(uri, dscr));
     }
 
     @PostMapping("/{summaryId}/image/regenerate")
@@ -44,7 +44,7 @@ public class DailySummaryController {
 //            @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/daily-thumbnail";
-        return ResponseEntity.ok(dailySummaryService.regenerateDailyThumbnail(uri, dtcr));
+        return ResponseEntity.ok(summaryService.regenerateDailyThumbnail(uri, dtcr));
     }
 }
 
