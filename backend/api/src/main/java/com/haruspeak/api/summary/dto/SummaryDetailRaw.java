@@ -2,7 +2,7 @@ package com.haruspeak.api.summary.dto;
 
 import java.time.LocalDate;
 
-public record SummaryDetailRaw (
+public record SummaryDetailRaw(
         int summaryId,
         LocalDate diaryDate,
         String imageUrl,
