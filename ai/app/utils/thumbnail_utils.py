@@ -6,13 +6,14 @@ import openai
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
 
+client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
+
 
 # openAI 로 썸네일을 받아오는 함수
-async def oa_generate_thumbnail(input: str) -> str:
-    client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
+async def oa_generate_thumbnail(content: str) -> str:
 
     user_prompt = f"""
-- 일기내용 : {input}
+- 일기내용 : {content}
 - 이미지의 목적은 그 날을 한 장의 이미지로만 시각화하고 싶어서입니다.
 - 하루 안에 일기 내용이 여러 개라고 해서 각각의 주제를 분기로 이미지를 만들지 말고,
 그 여러 개의 주제의 전체적인 느낌을 하나로 추출해서 그것을 토대로 이미지를 만들어주세요. 이 부분도 중요해요.

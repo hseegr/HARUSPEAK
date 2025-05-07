@@ -6,10 +6,11 @@ import openai
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
 
+client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
+
 
 # openAI 로 요약을 받아오는 함수
-async def oa_generate_summary(input: str) -> str:
-    client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
+async def oa_generate_summary(content: str) -> str:
 
     instructions = """
 - 전체 내용을 하나의 글로써 요약해야합니다.
@@ -17,10 +18,12 @@ async def oa_generate_summary(input: str) -> str:
 - 요약된 문장들이 서로 유기적으로 잘 연결되게끔 흐름을 자연스럽게 해주세요.
 """
 
-    result = client.responses.create(
+    result = client.chat.completions.create(
         model="gpt-4.1",
-        instructions=instructions,
-        input=input
+        messages=[
+            {"role": "system", "content": instructions},
+            {"role": "user", "content": content}
+        ]
     )
 
-    return result.output_text
+    return result.choices[0].message.content.strip()
