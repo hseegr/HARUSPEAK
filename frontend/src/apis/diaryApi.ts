@@ -30,3 +30,9 @@ export const getImage = async (summaryId: string) => {
   );
   return response.data;
 };
+
+// 하루일기 수정(오늘 제외)
+export const editDiary = async (summaryId: string) => {
+  const response = await axiosInstance.patch(`/api/summary/${summaryId}`);
+  return response.data;
+};
