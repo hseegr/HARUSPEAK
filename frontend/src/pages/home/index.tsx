@@ -1,38 +1,35 @@
-import { useEffect, useState } from 'react';
-
 import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
-import { getHomeStatistics } from '@/mock/mockHomeApi';
-import { HomeStatisticsResponse } from '@/types/home';
+import { useHomeStatistics } from '@/hooks/useHomeStatistics';
 
 const Home = () => {
-  const [statistics, setStatistics] = useState<HomeStatisticsResponse | null>(
-    null,
-  );
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStatistics = async () => {
-      const data = await getHomeStatistics();
-      setStatistics(data);
-    };
-    fetchStatistics();
-  }, []);
-
-  const handleSplashFinish = () => {
-    setIsLoading(false);
-  };
+  const { statistics, isLoading, error, refetch, finishLoading } =
+    useHomeStatistics();
 
   if (isLoading) {
-    return <SplashScreen onFinish={handleSplashFinish} />;
+    return <SplashScreen onFinish={finishLoading} />;
+  }
+
+  if (error) {
+    return (
+      <div className='flex min-h-[80vh] w-full flex-col items-center justify-center p-4'>
+        <p>{error}</p>
+        <button
+          onClick={refetch}
+          className='mt-4 rounded-md bg-haru-green px-4 py-2 text-white hover:bg-haru-green/80'
+        >
+          다시 시도
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div className='flex min-h-80 w-full flex-col'>
-      <div className='flex flex-1 flex-col justify-between gap-8 p-4'>
+    <div className='flex min-h-[80vh] w-full flex-col'>
+      <div className='flex flex-1 flex-col justify-between gap-8'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
-          <p>안녕하세요 [사용자]님</p>
+          <p>안녕하세요</p>
           <p>오늘 하루 잘 보내고 계신가요?</p>
         </section>
 
@@ -40,9 +37,13 @@ const Home = () => {
           <>
             {/* 오늘의 순간 섹션 */}
             <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
-              <TodayMoments momentCount={statistics.todayMomentCount} />
-              <p className='w-full text-center text-haru-gray-5'>
-                오늘 {statistics.todayMomentCount}개의 순간을 기록했어요
+              <TodayMoments momentCount={statistics.todayCount} />
+              <p className='font-leeseyoon w-full text-center text-haru-gray-5'>
+                <span className='mr-1'>오늘</span>
+                <span className='font-bold text-haru-green'>
+                  {statistics.todayCount}
+                </span>
+                <span>개의 순간을 기록했어요</span>
               </p>
             </section>
 
@@ -57,7 +58,7 @@ const Home = () => {
               <div className='flex justify-between'>
                 <p className='text-haru-gray-5'>지금까지 기록한 하루들 : </p>
                 <p className='font-bold text-haru-green'>
-                  {statistics.totalDayCount}일
+                  {statistics.totalDiaryCount}일
                 </p>
               </div>
             </section>

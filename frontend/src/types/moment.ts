@@ -18,3 +18,12 @@ export interface Dimensions {
   width: number;
   height: number;
 }
+
+export interface ParticleStyle {
+  left: string;
+  top: string;
+  fontSize: string;
+  transform: string;
+  transition: string;
+  zIndex: number;
+}
