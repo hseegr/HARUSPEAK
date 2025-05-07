@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import { imageToBase64 } from '@/apis/todayWriteApi';
+import { compressImage, imageToBase64 } from '@/apis/todayWriteApi';
 import { useTodayWriteMutation } from '@/hooks/useTodayWriteQuery';
 import { TodayWriteStore } from '@/store/todayWriteStore';
 
@@ -38,9 +38,12 @@ const TodayWritePage = () => {
     try {
       setIsSaving(true);
 
-      // 이미지 파일을 base64로 변환
+      // 이미지 파일을 canvas로 압축하고 base64로 변환
       const base64Images = await Promise.all(
-        images.map(async file => await imageToBase64(file)),
+        images.map(async file => {
+          const compressed = await compressImage(file);
+          return await imageToBase64(compressed);
+        }),
       );
 
       // 텍스트 블록을 하나의 문자열로 합치기
