@@ -21,6 +21,16 @@ export interface Dimensions {
   height: number;
 }
 
+export interface ParticleStyle {
+  left: string;
+  top: string;
+  fontSize: string;
+  transform: string;
+  transition: string;
+  zIndex: number;
+}
+
+
 // 순간일기 목록조회 파라미터
 export interface GetMomentsParams {
   before?: string;
@@ -47,11 +57,3 @@ export interface MomentResponse {
   images: string[];
   // content: string;
   tags: string[];
-export interface ParticleStyle {
-  left: string;
-  top: string;
-  fontSize: string;
-  transform: string;
-  transition: string;
-  zIndex: number;
-}
