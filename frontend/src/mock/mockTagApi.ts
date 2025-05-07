@@ -1,4 +1,4 @@
-import { UserTagsResponse } from '@/apis/tagApi';
+import { UserTagsResponse } from '@/types/tag';
 
 import { mockUserTags } from './tagMock';
 
