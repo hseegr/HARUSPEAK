@@ -3,6 +3,7 @@ package com.haruspeak.api.moment.presentation;
 import com.haruspeak.api.common.security.AuthenticatedUser;
 import com.haruspeak.api.moment.application.MomentTagService;
 import com.haruspeak.api.moment.dto.request.MomentTagCreateRequest;
+import com.haruspeak.api.moment.dto.response.MomentTagCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class MomentTagController {
 
     @PostMapping("/tags")
     @Operation(summary = "AI 모먼트 태그 자동생성", description = "모먼트 태그를 AI 로부터 추천받아 자동생성합니다.")
-    public ResponseEntity<String> createMomentTag (
+    public ResponseEntity<MomentTagCreateResponse> createMomentTag (
             @RequestBody(required = true) MomentTagCreateRequest mtcr
 //            @AuthenticatedUser Integer userId
     ) {

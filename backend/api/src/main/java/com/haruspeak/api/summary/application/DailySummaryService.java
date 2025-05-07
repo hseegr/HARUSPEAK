@@ -21,16 +21,14 @@ public class DailySummaryService {
     @Transactional
     public DailySummaryCreateResponse regenerateDailySummary (String uri, DailySummaryCreateRequest dscr) {
         // ai 서버에 프론트 요청값 전달 후 반환 받기
-        String summary = fastApiClient.getPrediction(uri, dscr);
-        return new DailySummaryCreateResponse(summary);
+        return fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
     }
 
     // [API] AI 하루일기 썸네일 재생성
     @Transactional
     public DailyThumbnailCreateResponse regenerateDailyThumbnail (String uri, DailyThumbnailCreateRequest dtcr) {
         // ai 서버에 프론트 요청값 전달 후 반환 받기
-        String base64 = fastApiClient.getPrediction(uri, dtcr);
-        return new DailyThumbnailCreateResponse(base64);
+        return fastApiClient.getPrediction(uri, dtcr, DailyThumbnailCreateResponse.class);
     }
 }
 
