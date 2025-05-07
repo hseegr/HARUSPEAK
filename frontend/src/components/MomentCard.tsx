@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import ImageDialog from '@/components/ImageDialog';
 import TagBadge from '@/components/TagBadge';
+import { useMomentDelete, useMomentTagRecommend } from '@/hooks/useTodayQuery';
 import { formatMomentTime } from '@/lib/timeUtils';
-import { createTags, deleteMoment } from '@/mock/mockTodayApi';
 import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
@@ -16,21 +16,31 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const formattedTime = formatMomentTime(moment.momentTime);
+  const { mutate: deleteMomentMutation } = useMomentDelete();
+  const { mutate: recommendTagMutation } = useMomentTagRecommend();
 
   const handleGenerateTags = async () => {
     try {
       setIsLoading(true);
-      const response = await createTags({
-        tags,
-        createdAt: moment.momentTime,
-        content: moment.content,
-      });
-
-      setTags(prevTags => {
-        const spaceLeft = 3 - prevTags.length;
-        const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
-        return [...prevTags, ...tagsToAdd];
-      });
+      recommendTagMutation(
+        {
+          tags,
+          createdAt: moment.momentTime,
+          content: moment.content,
+        },
+        {
+          onSuccess: response => {
+            setTags(prevTags => {
+              const spaceLeft = 3 - prevTags.length;
+              const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
+              return [...prevTags, ...tagsToAdd];
+            });
+          },
+          onError: error => {
+            console.error('태그 생성 실패:', error);
+          },
+        },
+      );
     } catch (error) {
       console.error('태그 생성 실패:', error);
     } finally {
@@ -40,9 +50,14 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
   const handleDelete = async () => {
     try {
-      await deleteMoment(moment.momentTime);
-      setIsDeleteDialogOpen(false);
-      // TODO: 삭제 후 리스트 갱신 로직 추가
+      deleteMomentMutation(moment.momentTime, {
+        onSuccess: () => {
+          setIsDeleteDialogOpen(false);
+        },
+        onError: error => {
+          console.error('삭제 실패:', error);
+        },
+      });
     } catch (error) {
       console.error('삭제 실패:', error);
     }
@@ -66,7 +81,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='mb-3 flex w-full justify-between'>
+          <div className='flex justify-between w-full mb-3'>
             {moment.images.slice(0, 3).map((image, idx) => {
               const remainingCount = moment.images.length - 3;
 
@@ -88,7 +103,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
                     className={`h-full w-full object-cover ${idx === 2 && remainingCount > 0 ? 'blur-sm' : ''}`}
                   />
                   {idx === 2 && remainingCount > 0 && (
-                    <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-bold text-white'>
+                    <div className='absolute inset-0 flex items-center justify-center text-lg font-bold text-white bg-black bg-opacity-50'>
                       +{remainingCount}
                     </div>
                   )}
@@ -101,7 +116,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 하단 */}
         <section className='flex items-start'>
-          <div className='flex flex-1 flex-wrap items-center gap-2'>
+          <div className='flex flex-wrap items-center flex-1 gap-2'>
             {tags.map((tag, idx) => (
               <TagBadge key={`${tag}-${idx}`} tag={tag} />
             ))}

@@ -81,16 +81,16 @@ const MomentEditDialog = ({
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
-          <div className='text-end text-sm text-haru-gray-5'>{date}</div>
+          <div className='text-sm text-end text-haru-gray-5'>{date}</div>
         </div>
-        <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
+        <div className='flex flex-col gap-4 p-3 rounded-xl bg-haru-beige'>
           {/* 날짜 & 시간 */}
           <div>
             <input
               type='time'
               value={currentTime}
               onChange={handleTimeChange}
-              className='rounded-full border bg-haru-yellow p-2 text-sm focus:outline-haru-green'
+              className='p-2 text-sm border rounded-full bg-haru-yellow focus:outline-haru-green'
             />
           </div>
 
@@ -100,14 +100,14 @@ const MomentEditDialog = ({
               (_, idx) => (
                 <div
                   key={idx}
-                  className='relative h-24 w-full rounded-lg bg-haru-gray-2'
+                  className='relative w-full h-24 rounded-lg bg-haru-gray-2'
                 >
                   {editedMoment.images[idx] ? (
                     <>
                       <img
                         src={editedMoment.images[idx]}
                         alt={`image-${idx}`}
-                        className='h-full w-full rounded-lg object-cover'
+                        className='object-cover w-full h-full rounded-lg'
                       />
                       <button
                         onClick={() => handleDeleteImage(idx)}
@@ -156,7 +156,7 @@ const MomentEditDialog = ({
               {editedMoment.tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs'
+                  className='flex items-center gap-1 px-3 py-1 text-xs bg-gray-200 rounded-full'
                 >
                   {tag}
                   <button
@@ -171,7 +171,7 @@ const MomentEditDialog = ({
           </div>
         </div>
         {isSaveDisabled && (
-          <div className='mt-2 text-center text-sm text-red-500'>
+          <div className='mt-2 text-sm text-center text-red-500'>
             내용과 이미지가 모두 비어있어 저장할 수 없습니다.
           </div>
         )}
