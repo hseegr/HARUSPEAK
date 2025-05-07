@@ -26,7 +26,7 @@ const Home = () => {
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
-      <div className='flex flex-1 flex-col justify-between gap-8 p-4'>
+      <div className='flex flex-1 flex-col justify-between gap-8'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
           <p>안녕하세요</p>
@@ -38,8 +38,12 @@ const Home = () => {
             {/* 오늘의 순간 섹션 */}
             <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayCount} />
-              <p className='w-full text-center text-haru-gray-5'>
-                오늘 {statistics.todayCount}개의 순간을 기록했어요
+              <p className='font-leeseyoon w-full text-center text-haru-gray-5'>
+                <span className='mr-1'>오늘</span>
+                <span className='font-bold text-haru-green'>
+                  {statistics.todayCount}
+                </span>
+                <span>개의 순간을 기록했어요</span>
               </p>
             </section>
 
