@@ -64,6 +64,30 @@ public class DailySummaryService {
     }
 
     /**
+     * 일기 삭제
+     * @param summaryId
+     * @param userId
+     */
+    @Transactional
+    public void deleteSummary(Integer summaryId, Integer userId){
+        DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
+                .orElseThrow(()->{
+                    log.warn("⚠️ 조회 실패 - 접근 권한 없거나 존재하지 않음 (userId={}, summaryId={})", userId, summaryId);
+                    return new HaruspeakException(ErrorCode.DIARY_NOT_FOUND);});
+
+        if(dailySummary.isDeleted()){
+            log.warn("⚠️ 이미 삭제 된 하루 일기 (userId={}, summaryId={})", userId, summaryId);
+            throw new HaruspeakException(ErrorCode.DELETED_DIARY);
+        }
+
+        try{
+            dailySummary.deleteSummary();
+        } catch (IllegalArgumentException e) {
+            throw new HaruspeakException(ErrorCode.MISSING_REQUIRED_FIELDS, e.getMessage());
+        }
+    }
+
+    /**
      * Summary 상세 정보 조회
      * @param userId 사용자 ID
      * @param summaryId 하루 일기 ID

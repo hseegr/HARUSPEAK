@@ -57,4 +57,9 @@ public class DailySummary {
         this.content = content;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void deleteSummary(){
+        this.isDeleted = true;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

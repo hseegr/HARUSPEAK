@@ -68,6 +68,30 @@ public class DailySummaryController {
         return ResponseEntity.ok(dailySummaryService.getDiaryDetail(userId, summaryId));
     }
 
+    @DeleteMapping("/{summaryId}")
+    @Operation(
+            summary = "하루 일기 삭제",
+            description = "하루 일기를 삭제합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not Found",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "410",
+                            description = "Gone",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    )
+            }
+    )
+    public ResponseEntity<Void> deleteSummary(@PathVariable Integer summaryId, @AuthenticatedUser Integer userId){
+        log.info("[DELETE] api/summary/{} 하루 일기 삭제 요청 (userId={})", summaryId, userId);
+        dailySummaryService.deleteSummary(summaryId, userId);
+        log.debug("✅ 하루 일기 삭제 성공 (userId={}, summaryId={})", userId, summaryId);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }
