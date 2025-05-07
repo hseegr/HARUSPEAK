@@ -20,9 +20,9 @@ const TodayPage = () => {
     : '';
 
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex w-full flex-col'>
       <div className='mb-4 text-end'>{formattedDate}</div>
-      <div className='flex flex-col w-full gap-5'>
+      <div className='flex w-full flex-col gap-5'>
         {data.data.map((moment: MomentContent, index: number) => (
           <MomentCard
             key={moment.momentTime || `moment-${index}`}
