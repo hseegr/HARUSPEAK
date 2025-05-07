@@ -57,4 +57,8 @@ public class DailySummary {
         this.content = content;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void increaseImageGenerateCount() {
+        this.imageGenerateCount++;
+    }
 }

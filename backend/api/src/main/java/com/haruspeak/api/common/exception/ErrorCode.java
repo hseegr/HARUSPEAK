@@ -35,10 +35,14 @@ public enum ErrorCode  {
 
     // 409 Conflict
     MOMENT_CONFLICT(40920, "해당 시간의 일기가 이미 존재합니다."),
+    THUMBNAIL_REGEN_CONFLICT(40921, "대기 중인 썸네일 재생성 요청이 이미 존재합니다."),
 
     // 410 Gone
     DELETED_DIARY(41030, "요청된 하루 일기는 이미 삭제되었습니다. 더 이상 사용할 수 없습니다."),
     DELETED_MOMENT(41040, "요청된 순간 일기는 이미 삭제되었습니다. 더 이상 사용할 수 없습니다."),
+
+    // 429 Too Many Requests
+    THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED(42920, "하루에 가능한 썸네일 재생성 요청 횟수를 초과하였습니다."),
 
     // 500 Internal Server Error
     USER_REGISTER_ERROR(50010, "회원가입 처리 중 오류가 발생했습니다."),
