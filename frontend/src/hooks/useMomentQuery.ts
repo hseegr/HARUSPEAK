@@ -22,4 +22,5 @@ export const useGetMoment = (momentId: string) =>
   useQuery<MomentResponse>({
     queryKey: ['moment', momentId],
     queryFn: () => getMoment(momentId),
+    enabled: !!momentId,
   });

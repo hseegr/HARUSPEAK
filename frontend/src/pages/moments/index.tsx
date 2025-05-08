@@ -14,7 +14,11 @@ import TagNameDisplay from './components/TagNameDisplay';
 const Moments = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(location.search);
+
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
 
   // useMemo를 사용하여 params 객체 메모이제이션
   const params = useMemo(
