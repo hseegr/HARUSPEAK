@@ -26,9 +26,9 @@ const ResetBtn = ({
       <button
         onClick={onReset}
         disabled={isDisabled || generateCount >= 3}
-        className='flex w-[200px] items-center gap-2 rounded-md px-3 py-2 text-sm disabled:opacity-50'
+        className='flex w-full items-center gap-1 rounded-full bg-haru-light-green px-3 py-1.5 text-sm text-white hover:bg-haru-green hover:bg-opacity-70 disabled:bg-haru-gray-4 disabled:text-haru-gray-2'
       >
-        <RotateCcw size={20} />
+        <RotateCcw size={18} />
         {label} 다시 만들기 ({generateCount}/3)
       </button>
     </div>

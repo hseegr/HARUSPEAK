@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { useDeleteDiaries, useGetLibrary } from '@/hooks/useLibraryQuery';
+import { useDeleteDiary, useGetLibrary } from '@/hooks/useLibraryQuery';
 
 import DeleteBtn from './components/DeleteBtn';
 import DeleteConfirmDialog from './components/DeleteConfirmDialog';
@@ -12,82 +12,116 @@ import FilterBadge from './components/FilterBadge';
 import FilterDialog from './components/FilterDialog';
 
 const Library = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // 검색 파라미터에서 필터 값 추출
+  const startDate = searchParams.get('startDate') || undefined;
+  const endDate = searchParams.get('endDate') || undefined;
+  const userTags = searchParams.get('userTags')?.split(',') || undefined;
+
+  // 상태 관리
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  // 무한 스크롤 데이터 가져오기
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetLibrary({
       limit: 30,
+      startDate,
+      endDate,
+      userTags,
     });
 
+  const deleteDiary = useDeleteDiary();
+
+  // 교차 관찰자 설정
   const observerRef = useIntersectionObserver({
     onIntersect: fetchNextPage,
     enabled: hasNextPage && !isFetchingNextPage,
   });
 
-  const handleFilterClick = () => {
+  const handleFilterClick = useCallback(() => {
     setIsFilterOpen(true);
-  };
+  }, []);
 
-  const handleFilterApply = (filters: {
-    startDate?: string;
-    endDate?: string;
-    userTags?: string[];
-  }) => {
-    const searchParams = new URLSearchParams();
+  const handleFilterApply = useCallback(
+    (filters: {
+      startDate?: string;
+      endDate?: string;
+      userTags?: string[];
+    }) => {
+      const searchParams = new URLSearchParams();
 
-    if (filters.startDate) {
-      searchParams.set('startDate', filters.startDate);
-    }
-    if (filters.endDate) {
-      searchParams.set('endDate', filters.endDate);
-    }
-    if (filters.userTags?.length) {
-      searchParams.set('userTags', filters.userTags.join(','));
-    }
+      if (filters.startDate) {
+        searchParams.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        searchParams.set('endDate', filters.endDate);
+      }
+      if (filters.userTags?.length) {
+        searchParams.set('userTags', filters.userTags.join(','));
+      }
 
-    navigate(`/moments?${searchParams.toString()}`);
-  };
+      navigate(`/moments?${searchParams.toString()}`);
+    },
+    [navigate],
+  );
 
-  const handleToggleSelection = () => {
-    setIsSelectionMode(!isSelectionMode);
+  const handleToggleSelection = useCallback(() => {
+    setIsSelectionMode(prev => !prev);
     setSelectedIds([]);
-  };
+  }, []);
 
-  const handleSelect = (summaryId: number) => {
+  const handleSelect = useCallback((summaryId: number) => {
     setSelectedIds(prev =>
       prev.includes(summaryId)
         ? prev.filter(id => id !== summaryId)
         : [...prev, summaryId],
     );
-  };
+  }, []);
 
-  // 삭제할 일기 선택 초기화
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSelectedIds([]);
-  };
-  const deleteDiaries = useDeleteDiaries();
+  }, []);
 
   // 삭제 버튼 클릭 시 Dialog 열기
-  const handleDeleteClick = () => {
+  const handleDeleteClick = useCallback(() => {
     if (selectedIds.length > 0) {
       setIsDeleteDialogOpen(true);
     }
-  };
+  }, [selectedIds]);
 
   // 실제 삭제 처리 (개별 요청)
-  const handleConfirmDelete = async () => {
-    // 각 일기를 개별적으로 삭제 요청
-    for (const id of selectedIds) {
-      await deleteDiaries([id]);
+  const handleConfirmDelete = useCallback(async () => {
+    if (selectedIds.length === 0) return;
+
+    try {
+      setIsDeleting(true);
+      console.log('삭제 시작:', selectedIds);
+
+      // 각 일기를 순차적으로 개별 삭제 (Promise.all 대신 for문 사용)
+      for (const id of selectedIds) {
+        try {
+          await deleteDiary(id);
+          console.log(`일기 ${id} 삭제 성공`);
+        } catch (error) {
+          console.error(`일기 ${id} 삭제 실패:`, error);
+          // 계속 진행
+        }
+      }
+      setIsSelectionMode(false);
+      setSelectedIds([]);
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error('일기 삭제 중 오류 발생:', error);
+    } finally {
+      setIsDeleting(false);
     }
-    setIsSelectionMode(false);
-    setSelectedIds([]);
-    setIsDeleteDialogOpen(false);
-  };
+  }, [deleteDiary, selectedIds]);
 
   const hasData = (data?.pages?.[0]?.data?.length ?? 0) > 0;
 
@@ -102,6 +136,7 @@ const Library = () => {
           onDelete={handleDeleteClick}
           selectedCount={selectedIds.length}
           onReset={handleReset}
+          isLoading={isDeleting}
         />
       </div>
 

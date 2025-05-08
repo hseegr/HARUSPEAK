@@ -10,6 +10,7 @@ import ImageAttachButton from './components/ImageAttachButton';
 import ImageInputList from './components/ImageInputList';
 import TextInput from './components/TextInput';
 import TextInputList from './components/TextInputList';
+import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
 import VoiceToTextButton from './components/VoiceToTextButton';
 
 const TodayWritePage = () => {
@@ -17,6 +18,14 @@ const TodayWritePage = () => {
   const textBlocks = TodayWriteStore(state => state.textBlocks);
   const clearAll = TodayWriteStore(state => state.clearAll);
   const [isSaving, setIsSaving] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    title: '',
+    message: '',
+    confirmText: '확인',
+    confirmColor: 'bg-haru-green',
+  });
 
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
@@ -60,14 +69,24 @@ const TodayWritePage = () => {
             // 저장 성공 후 스토어 초기화
             clearAll();
             setIsSaving(false);
-            // 테스트용 알럿
-            alert('일기가 저장되었습니다.');
+            setAlertInfo({
+              title: '일기 저장 완료',
+              message: '오늘의 일기가 성공적으로 저장되었습니다.',
+              confirmText: '확인',
+              confirmColor: 'bg-haru-green',
+            });
+            setAlertOpen(true);
           },
           onError: error => {
             console.error('일기 저장 실패:', error);
             setIsSaving(false);
-            // 테스트용 알럿
-            alert('일기 저장에 실패했습니다.');
+            setAlertInfo({
+              title: '저장 실패',
+              message: '일기 저장에 실패했습니다. 다시 시도해주세요.',
+              confirmText: '닫기',
+              confirmColor: 'bg-red-500',
+            });
+            setAlertOpen(true);
           },
         },
       );
@@ -86,22 +105,6 @@ const TodayWritePage = () => {
 
   return (
     <div className='relative h-full w-full'>
-      {hasContent && (
-        <div className='flex flex-row justify-end'>
-          <div
-            onClick={handleSave}
-            className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-green'
-          >
-            {isSaving ? '저장 중' : '저장'}
-          </div>
-          <div
-            onClick={handleClear}
-            className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-gray-4'
-          >
-            초기화
-          </div>
-        </div>
-      )}
       <div className='flex h-full flex-col overflow-y-auto px-2 py-1 pb-[180px]'>
         {/* 이미지 첨부 리스트 */}
         <ImageInputList />
@@ -120,9 +123,29 @@ const TodayWritePage = () => {
         <div className='fixed bottom-[70px] left-0 right-0 mx-auto w-full max-w-96 bg-white px-2 pb-8 pt-2'>
           <div className='flex flex-col gap-4'>
             {/* 버튼들 */}
-            <div className='flex gap-2 px-4'>
-              <ImageAttachButton onClick={handleImageButtonClick} />
-              <VoiceToTextButton onClick={handleVoiceButtonClick} />
+            <div className='flex justify-between px-4'>
+              <div className='flex gap-2'>
+                <ImageAttachButton onClick={handleImageButtonClick} />
+                <VoiceToTextButton onClick={handleVoiceButtonClick} />
+              </div>
+              <div className='flex'>
+                {hasContent && (
+                  <div className='flex flex-row justify-end'>
+                    <div
+                      onClick={handleSave}
+                      className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-green'
+                    >
+                      {isSaving ? '저장 중' : '저장'}
+                    </div>
+                    <div
+                      onClick={handleClear}
+                      className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-gray-4'
+                    >
+                      초기화
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* 텍스트 입력 */}
@@ -132,6 +155,14 @@ const TodayWritePage = () => {
           </div>
         </div>
       </div>
+      <TodayWriteAlertDialog
+        open={alertOpen}
+        onOpenChange={setAlertOpen}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        confirmText={alertInfo.confirmText}
+        confirmColor={alertInfo.confirmColor}
+      />
     </div>
   );
 };

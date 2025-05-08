@@ -1,21 +1,11 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
+import { getMoment, getMoments } from '@/apis/momentApi';
 import {
   GetMomentsParams,
+  MomentResponse,
   MomentsResponse,
-  getMoment,
-  getMoments,
-} from '@/apis/momentApi';
-
-interface MomentResponse {
-  momentId: number;
-  momentTime: string;
-  images: string[];
-  // content: string;
-  tags: string[];
-}
-
-// const useMockData = true; // 이 값이 true인지 확인
+} from '@/types/moment';
 
 export const useGetMoments = (params: GetMomentsParams = {}) =>
   useInfiniteQuery<MomentsResponse>({
@@ -27,8 +17,10 @@ export const useGetMoments = (params: GetMomentsParams = {}) =>
     initialPageParam: undefined,
   });
 
+// 순간일기 상세조회(미사용)
 export const useGetMoment = (momentId: string) =>
   useQuery<MomentResponse>({
     queryKey: ['moment', momentId],
     queryFn: () => getMoment(momentId),
+    enabled: !!momentId,
   });

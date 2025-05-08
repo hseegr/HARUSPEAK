@@ -14,7 +14,7 @@ interface DiaryResponse {
   diaryDate: string;
   imageUrl: string;
   title: string;
-  content: string;
+  content: string; // 요약 내용
   isImageGenerating: boolean;
   imageGenerateCount: number;
   contentGenerateCount: number;

@@ -39,22 +39,30 @@ const Diary = () => {
   };
 
   return (
-    <div>
-      <DiaryHeader title={data.title} date={data.diaryDate} />
-      <div className='relative'>
-        <Thumbnail summaryId={summaryId} />
-        <div className='absolute'>
-          <ResetBtn
-            generateCount={data.imageGenerateCount}
-            onReset={handleImageReset}
-            isDisabled={isPending}
-            type='image'
-          />
+    <div className='flex flex-col gap-5'>
+      {/* 상단 */}
+      <div>
+        <div className=''>
+          <DiaryHeader title={data.title} date={data.diaryDate} />
+        </div>
+
+        <div className='relative'>
+          <Thumbnail summaryId={summaryId} />
+          <div className='absolute bottom-2 right-2'>
+            <ResetBtn
+              generateCount={data.imageGenerateCount}
+              onReset={handleImageReset}
+              isDisabled={isPending}
+              type='image'
+            />
+          </div>
         </div>
       </div>
+
+      {/* 하루 요약 */}
       <div className='relative'>
-        <ContentSummary />
-        <div className='absolute'>
+        <ContentSummary summary={data.content} />
+        <div className='absolute bottom-2 right-2'>
           <ResetBtn
             generateCount={data.contentGenerateCount}
             onReset={handleContentReset}
@@ -63,11 +71,15 @@ const Diary = () => {
           />
         </div>
       </div>
-      {data.moments &&
-        data.moments.length > 0 &&
-        data.moments.map(moment => (
-          <MomentCard key={moment.momentId} moment={moment} isToday={false} />
-        ))}
+
+      <div className='flex flex-col gap-4'>
+        {/* 하단 - 순간 목록 */}
+        {data.moments &&
+          data.moments.length > 0 &&
+          data.moments.map(moment => (
+            <MomentCard key={moment.momentId} moment={moment} isToday={false} />
+          ))}
+      </div>
     </div>
   );
 };
