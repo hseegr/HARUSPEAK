@@ -8,8 +8,13 @@ export const googleLogin = async () => {
 
 // 로그아웃
 export const userLogout = async () => {
-  const response = await axiosInstance.post('/api/auth/logout');
-  return response.data;
+  try {
+    const response = await axiosInstance.post('/api/auth/logout');
+    window.location.href = '/login';
+    return response.data;
+  } catch {
+    throw new Error('로그아웃 처리 중 오류가 발생했습니다');
+  }
 };
 
 // 유저 정보 받아오기
