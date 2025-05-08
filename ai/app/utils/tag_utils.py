@@ -42,14 +42,15 @@ prompt = PromptTemplate(
 
 # LangChain 모델
 llm = ChatOpenAI(
-        model="gpt-4",
+        model="gpt-4.1",
         temperature=0.5,
+        base_url="https://gms.p.ssafy.io/gmsapi/api.openai.com/v1",
         openai_api_key=OPEN_AI_API_KEY
 )
 
 
 # 체인 만들기
-def oa_generate_tag(
+async def oa_generate_tag(
     tags: list[str],
     content: str
 ) -> KeywordOutput:
@@ -66,6 +67,6 @@ def oa_generate_tag(
         content=content,
         guide=guide_text
     )
-    output = llm.invoke(_input)
+    output = await llm.ainvoke(_input)
 
     return parser.parse(output.content)
