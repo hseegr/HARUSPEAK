@@ -22,10 +22,10 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
   return (
     <>
-      <article className='flex w-full flex-col gap-2 rounded-xl bg-[#F1F0E9] p-3'>
+      <article className='flex w-full flex-col gap-2 rounded-xl bg-haru-beige p-3'>
         {/* 상단 */}
         <section className='flex justify-between'>
-          <div className='font-mont rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
+          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 font-mont'>
             {formattedTime}
           </div>
           {isToday && (
