@@ -6,13 +6,13 @@ from langchain_openai import ChatOpenAI
 
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
-
+BASE_URL = os.getenv("BASE_URL")
 
 llm = ChatOpenAI(
     model="gpt-4.1",
     temperature=0.3,
     openai_api_key=OPEN_AI_API_KEY,
-    base_url="https://gms.p.ssafy.io/gmsapi/api.openai.com/v1"
+    base_url=BASE_URL
 )
 
 
