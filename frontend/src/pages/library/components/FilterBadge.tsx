@@ -6,9 +6,9 @@ const FilterBadge = ({ onClick }: FilterBadgeProps) => {
   return (
     <button
       onClick={onClick}
-      className='rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200'
+      className='text-mg rounded-full bg-haru-light-green px-3 py-1.5 font-medium text-white hover:bg-haru-gray-2 hover:text-haru-green'
     >
-      필터링
+      순간 찾기
     </button>
   );
 };

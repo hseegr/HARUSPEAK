@@ -1,30 +1,5 @@
 import { axiosInstance } from '@/apis/core';
-
-export interface GetLibraryParams {
-  limit?: number;
-  before?: string;
-  startDate?: string;
-  endDate?: string;
-}
-
-export interface LibraryResponse {
-  data: {
-    summaryId: number;
-    diaryDate: string;
-    imageUrl: string;
-    title: string;
-    content: string;
-    isImageGenerating: boolean;
-    imageGenerateCount: number;
-    contentGenerateCount: number;
-    momentCount: number;
-  }[];
-  resInfo: {
-    dataCount: number;
-    nextCursor: string;
-    hasMore: boolean;
-  };
-}
+import { GetLibraryParams, LibraryResponse } from '@/types/library';
 
 // 하루 요약 일기 모아보기 - 최신순
 export const getLibrary = async (params: GetLibraryParams) => {
@@ -34,10 +9,8 @@ export const getLibrary = async (params: GetLibraryParams) => {
   return response.data;
 };
 
-// 하루일기 삭제(오늘 제외)
-export const deleteDiaries = async (summaryIds: number[]) => {
-  const response = await axiosInstance.delete('/api/summary', {
-    data: { summaryIds },
-  });
+// 하루일기 삭제(오늘 제외) - 단일 summaryId 삭제
+export const deleteDiary = async (summaryId: number) => {
+  const response = await axiosInstance.delete(`/api/summary/${summaryId}`);
   return response.data;
 };
