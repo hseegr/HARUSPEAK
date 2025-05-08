@@ -55,31 +55,32 @@ const Library = () => {
     setIsDateFilterOpen(true);
   }, []);
 
-  // 태그 필터 적용 핸들러
+  // [여기] 태그 필터 적용 핸들러 - moments 페이지로 이동하며 필터 적용
   const handleTagFilterApply = useCallback(
     (filters: {
       startDate?: string;
       endDate?: string;
       userTags?: string[];
     }) => {
-      const searchParams = new URLSearchParams();
+      const newSearchParams = new URLSearchParams();
 
       if (filters.startDate) {
-        searchParams.set('startDate', filters.startDate);
+        newSearchParams.set('startDate', filters.startDate);
       }
       if (filters.endDate) {
-        searchParams.set('endDate', filters.endDate);
+        newSearchParams.set('endDate', filters.endDate);
       }
       if (filters.userTags?.length) {
-        searchParams.set('userTags', filters.userTags.join(','));
+        newSearchParams.set('userTags', filters.userTags.join(','));
       }
 
-      navigate(`/moments?${searchParams.toString()}`);
+      // moments 페이지로 이동하며 필터 적용
+      navigate(`/moments?${newSearchParams.toString()}`);
     },
     [navigate],
   );
 
-  // 날짜 필터 적용 핸들러
+  // [여기] 날짜 필터 적용 핸들러 - 현재 Library 페이지에서 필터 적용
   const handleDateFilterApply = useCallback(
     (filters: { startDate?: string; endDate?: string }) => {
       // 기존 파라미터 유지하면서 새로운 날짜 필터 적용
@@ -97,7 +98,8 @@ const Library = () => {
         newSearchParams.delete('endDate');
       }
 
-      navigate(`/moments?${newSearchParams.toString()}`);
+      // 현재 페이지에 필터 적용 (라우트 변경 없이 쿼리 파라미터만 업데이트)
+      navigate({ search: newSearchParams.toString() }, { replace: true });
     },
     [navigate, searchParams],
   );
@@ -157,19 +159,8 @@ const Library = () => {
 
   return (
     <div className='w-full'>
-      {/* <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        <FilterBadge onClick={handleFilterClick} />
-        <DeleteBtn
-          isSelectionMode={isSelectionMode}
-          onToggleSelection={handleToggleSelection}
-          onDelete={handleDeleteClick}
-          selectedCount={selectedIds.length}
-          onReset={handleReset}
-          isLoading={isDeleting}
-        />
-      </div> */}
       <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        {/* [여기] 필터 배지들을 플렉스 컨테이너로 묶음 */}
+        {/* 필터 배지들을 플렉스 컨테이너로 묶음 */}
         <div className='flex items-center gap-2'>
           <FilterBadge onClick={handleFilterClick} />
           <DateFilterBadge onClick={handleDateFilterClick} />
