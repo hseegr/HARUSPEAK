@@ -5,7 +5,6 @@ import Diary from './pages/diary';
 import Home from './pages/home';
 import Library from './pages/library';
 import LoginPage from './pages/login';
-import Moment from './pages/moment';
 import Moments from './pages/moments';
 import NotFound from './pages/notFound';
 import TodayPage from './pages/today';
@@ -57,11 +56,6 @@ export const router = createBrowserRouter([
         path: 'moments',
         element: <Moments />,
         handle: { title: '순간 일기 모아 보기' },
-      },
-      {
-        path: 'moment/:momentId',
-        element: <Moment />,
-        handle: { title: '순간 일기 상세 보기' },
       },
       {
         path: 'diary/:summaryId',

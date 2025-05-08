@@ -1,19 +1,24 @@
 import { useMemo } from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import MomentCard from '@/components/MomentCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useGetMoments } from '@/hooks/useMomentQuery';
 import { MomentContent } from '@/types/common';
 import { MomentsResponse } from '@/types/moment';
 
 import DateRangeDisplay from './components/DateRangeDisplay';
-import MomentFrame from './components/MomentFrame';
 import TagNameDisplay from './components/TagNameDisplay';
 
 const Moments = () => {
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const navigate = useNavigate();
+
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
 
   // useMemo를 사용하여 params 객체 메모이제이션
   const params = useMemo(
@@ -33,6 +38,20 @@ const Moments = () => {
     onIntersect: fetchNextPage,
     enabled: hasNextPage && !isFetchingNextPage,
   });
+
+  // [여기] moment 클릭 시 해당 다이어리 또는 모멘트로 이동하는 함수
+  const handleMomentClick = (moment: MomentContent) => {
+    if (moment.summaryId && moment.momentId) {
+      // summaryId와 momentId가 모두 있을 경우 diary 상세 페이지로 이동하면서 해당 moment 위치 전달
+      navigate(`/diary/${moment.summaryId}?momentId=${moment.momentId}`);
+    } else if (moment.summaryId) {
+      // summaryId만 있을 경우 diary 상세 페이지로 이동
+      navigate(`/diary/${moment.summaryId}`);
+    } else if (moment.momentId) {
+      // momentId만 있을 경우 기존 moment 상세 페이지로 이동
+      navigate(`/moment/${moment.momentId}`);
+    }
+  };
 
   // 타입 추론 최적화 고민
   const hasData = Boolean(data?.pages?.[0]?.data?.length);
@@ -58,15 +77,24 @@ const Moments = () => {
       <div className='grid grid-cols-1 gap-6'>
         {data?.pages?.map((page: MomentsResponse) =>
           page.data?.map((moment: MomentContent) => (
-            <MomentFrame
+            <div
               key={moment.momentId}
-              momentId={moment.momentId}
-              summaryId={moment.summaryId}
-              momentTime={moment.momentTime}
-              images={moment.images}
-              content={moment.content}
-              tags={moment.tags}
-            />
+              onClick={() => handleMomentClick(moment)}
+              className='cursor-pointer'
+            >
+              <MomentCard
+                moment={{
+                  momentId: moment.momentId,
+                  summaryId: moment.summaryId,
+                  momentTime: moment.momentTime,
+                  images: moment.images,
+                  content: moment.content,
+                  tags: moment.tags,
+                  createdAt: moment.createdAt || new Date().toISOString(),
+                }}
+                isToday={false}
+              />
+            </div>
           )),
         )}
       </div>
