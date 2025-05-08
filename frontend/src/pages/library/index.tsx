@@ -5,6 +5,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useDeleteDiary, useGetLibrary } from '@/hooks/useLibraryQuery';
 
+import DateFilterBadge from './components/DateFilterBadge';
+import DateFilterDialog from './components/DateFilterDialog';
 import DeleteBtn from './components/DeleteBtn';
 import DeleteConfirmDialog from './components/DeleteConfirmDialog';
 import DiaryFrame from './components/DiaryFrame';
@@ -20,8 +22,8 @@ const Library = () => {
   const endDate = searchParams.get('endDate') || undefined;
   const userTags = searchParams.get('userTags')?.split(',') || undefined;
 
-  // 상태 관리
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -48,7 +50,13 @@ const Library = () => {
     setIsFilterOpen(true);
   }, []);
 
-  const handleFilterApply = useCallback(
+  // 날짜 필터 클릭 핸들러 추가
+  const handleDateFilterClick = useCallback(() => {
+    setIsDateFilterOpen(true);
+  }, []);
+
+  // 태그 필터 적용 핸들러
+  const handleTagFilterApply = useCallback(
     (filters: {
       startDate?: string;
       endDate?: string;
@@ -69,6 +77,29 @@ const Library = () => {
       navigate(`/moments?${searchParams.toString()}`);
     },
     [navigate],
+  );
+
+  // 날짜 필터 적용 핸들러
+  const handleDateFilterApply = useCallback(
+    (filters: { startDate?: string; endDate?: string }) => {
+      // 기존 파라미터 유지하면서 새로운 날짜 필터 적용
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+
+      if (filters.startDate) {
+        newSearchParams.set('startDate', filters.startDate);
+      } else {
+        newSearchParams.delete('startDate');
+      }
+
+      if (filters.endDate) {
+        newSearchParams.set('endDate', filters.endDate);
+      } else {
+        newSearchParams.delete('endDate');
+      }
+
+      navigate(`/moments?${newSearchParams.toString()}`);
+    },
+    [navigate, searchParams],
   );
 
   const handleToggleSelection = useCallback(() => {
@@ -110,7 +141,6 @@ const Library = () => {
           console.log(`일기 ${id} 삭제 성공`);
         } catch (error) {
           console.error(`일기 ${id} 삭제 실패:`, error);
-          // 계속 진행
         }
       }
       setIsSelectionMode(false);
@@ -127,9 +157,23 @@ const Library = () => {
 
   return (
     <div className='w-full'>
-      {/* 고정 헤더 아래에 위치할 컨트롤 바 */}
-      <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
+      {/* <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
         <FilterBadge onClick={handleFilterClick} />
+        <DeleteBtn
+          isSelectionMode={isSelectionMode}
+          onToggleSelection={handleToggleSelection}
+          onDelete={handleDeleteClick}
+          selectedCount={selectedIds.length}
+          onReset={handleReset}
+          isLoading={isDeleting}
+        />
+      </div> */}
+      <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
+        {/* [여기] 필터 배지들을 플렉스 컨테이너로 묶음 */}
+        <div className='flex items-center gap-2'>
+          <FilterBadge onClick={handleFilterClick} />
+          <DateFilterBadge onClick={handleDateFilterClick} />
+        </div>
         <DeleteBtn
           isSelectionMode={isSelectionMode}
           onToggleSelection={handleToggleSelection}
@@ -178,10 +222,18 @@ const Library = () => {
         )}
       </div>
 
+      <DateFilterDialog
+        open={isDateFilterOpen}
+        onOpenChange={setIsDateFilterOpen}
+        onApply={handleDateFilterApply}
+        initialStartDate={startDate}
+        initialEndDate={endDate}
+      />
+
       <FilterDialog
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
-        onApply={handleFilterApply}
+        onApply={handleTagFilterApply}
       />
 
       <DeleteConfirmDialog
