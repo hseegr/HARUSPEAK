@@ -113,3 +113,17 @@
     opacity: 1;
   }
 }
+
+* {
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+::selection {
+  background-color: #41644a;
+  color: white;
+}
