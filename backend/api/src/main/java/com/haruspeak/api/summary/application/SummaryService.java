@@ -51,24 +51,26 @@ public class SummaryService {
             dailySummary.increaseImageGenerateCount(); // imageGenerateCount++
         }
 
-        String key = redisKey(userId); // userId 로 만든 redis key 형식
+        // "상태열"에 관련 요소들(키, 필드) 세팅
+        String stateKey = "user:" + userId + ":image:regeneration"; // userId 로 만든 redis key 형식
         String redisField = String.valueOf(summaryId);
-        Object redisData = redisTemplate.opsForHash().get(key, redisField); // redis 에 key, summaryId 에 해당하는 데이터 찾기
+        Object redisData = redisTemplate.opsForHash().get(stateKey, redisField); // redis 에 key, summaryId 에 해당하는 데이터 찾기
 
         // redis 데이터가 이미 있으면, 대기열에 이미 있으니 재요청 안됨 -> 에러
         if(redisData != null) throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_CONFLICT);
 
-        // redisData 없으면, 대기열 추가
+        // redisData 없으면, "상태열" 추가
         Map<String, Object> thumbnailData = new HashMap<>();
         thumbnailData.put("state", DailyThumbnailRegenState.QUEUED);
         thumbnailData.put("timestamp", LocalDateTime.now().toString());
         thumbnailData.put("retryCount", 1);
-        redisTemplate.opsForHash().put(key, redisField, thumbnailData);
+        redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData);
+
+        // redisData 없으면, "재생성 대기열" 추가
+        String regenerateKey = "thumbnail:regeneration:queue";
+        redisTemplate.opsForList().rightPush(regenerateKey, summaryId);
     }
 
-    private String redisKey(Integer userId) {
-        return "user:" + userId + ":image:regeneration";
-    }
 }
 
 
