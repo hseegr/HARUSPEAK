@@ -19,8 +19,8 @@ export default defineConfig({
         'favicon.svg',
         'robots.txt',
         'apple-touch-icon.png',
-        'pwa-192.png',
-        'pwa-512.png',
+        'pwa-192-v2.png',
+        'pwa-512-v2.png',
       ],
       manifest: {
         name: '하루스픽',
@@ -45,12 +45,12 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192.png',
+            src: 'pwa-192-v2.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-512-v2.png',
             sizes: '512x512',
             type: 'image/png',
           },
