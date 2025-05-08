@@ -4,6 +4,7 @@ interface DeleteBtnProps {
   onDelete: () => void;
   selectedCount: number;
   onReset?: () => void;
+  isLoading?: boolean;
 }
 
 const DeleteBtn = ({
