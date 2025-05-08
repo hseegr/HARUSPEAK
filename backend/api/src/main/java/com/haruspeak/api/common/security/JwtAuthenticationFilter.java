@@ -101,12 +101,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         log.debug("🔍필터 적용: {}, 요청 경로: {}", !isExcluded, path); // 필터가 적용될지 여부를 확인 : true:적용 / false :미적용
         
-        if(!isExcluded) { // 미적용일 때, TEST ROOT 는 빠져나가게 함
-            boolean isTestExcluded = TEST_PATTERNS.stream()
-                    .anyMatch(pattern -> pathMatcher.match(pattern, path));
-            log.debug("⌛ 테스트 제외 경로 여부: {}", isTestExcluded);
-            isExcluded = isTestExcluded;
-        }
+//        if(!isExcluded) { // 미적용일 때, TEST ROOT 는 빠져나가게 함
+//            boolean isTestExcluded = TEST_PATTERNS.stream()
+//                    .anyMatch(pattern -> pathMatcher.match(pattern, path));
+//            log.debug("⌛ 테스트 제외 경로 여부: {}", isTestExcluded);
+//            isExcluded = isTestExcluded;
+//        }
 
         return isExcluded;
     }
