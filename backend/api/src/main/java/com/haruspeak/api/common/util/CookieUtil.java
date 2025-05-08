@@ -28,7 +28,7 @@ public class CookieUtil {
                 .secure(true)
                 .path("/")
                 .maxAge(expirationMs / 1000)  // ms → 초 변환
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
