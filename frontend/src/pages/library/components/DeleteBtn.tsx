@@ -19,7 +19,7 @@ const DeleteBtn = ({
       {isSelectionMode && (
         <button
           onClick={onToggleSelection}
-          className='rounded-full px-2 py-1 text-gray-600'
+          className='rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
         >
           취소
         </button>
@@ -28,18 +28,17 @@ const DeleteBtn = ({
       {isSelectionMode && onReset && (
         <button
           onClick={onReset}
-          className='rounded-full px-2 py-1 text-gray-600'
+          className='rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
         >
           초기화
         </button>
       )}
-
       <button
         onClick={isSelectionMode ? onDelete : onToggleSelection}
-        className={`rounded-full px-2 py-1 ${
+        className={`text-mg px-2 py-1 ${
           isSelectionMode
-            ? 'bg-green-800 text-white hover:bg-green-700'
-            : 'text-gray-600 hover:text-green-800'
+            ? 'text-haru-green hover:text-haru-green'
+            : 'text-haru-gray-4 hover:text-haru-green'
         }`}
       >
         {isSelectionMode ? `삭제 (${selectedCount})` : '삭제'}
