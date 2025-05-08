@@ -13,12 +13,12 @@ class TagRequest(BaseModel):
 
 
 @tag_router.post("/moment-tag")
-def generate_tag(request: TagRequest):
+async def generate_tag(request: TagRequest):
     # 전체 request에서 필요한 데이터 꺼내 사용
     tags = request.tags
     content = request.content
     try:
-        tag = oa_generate_tag(
+        tag = await oa_generate_tag(
             tags,
             content
         )
