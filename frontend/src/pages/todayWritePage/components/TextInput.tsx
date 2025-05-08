@@ -34,6 +34,15 @@ const TextInput = () => {
     setText('');
   };
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <div className='flex min-h-20 w-full rounded-xl border px-2 py-2 focus-within:border-haru-green'>
       {/* 텍스트 입력창 */}
@@ -41,6 +50,7 @@ const TextInput = () => {
         ref={textareaRef}
         value={text}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder='오늘 일기를 작성해주세요'
         rows={1}
         className='flex-grow resize-none bg-transparent text-sm placeholder-gray-400 focus:outline-none'
