@@ -1,12 +1,12 @@
 from dotenv import load_dotenv
 import os
-import openai
+from openai import AsyncOpenAI
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
-OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
+OPEN_AI_API_KEY = os.getenv("KM_OPEN_AI_API_KEY")
 
-client = openai.OpenAI(api_key=OPEN_AI_API_KEY)
+client = AsyncOpenAI(api_key=OPEN_AI_API_KEY)
 
 
 # openAI 로 썸네일을 받아오는 함수
@@ -25,7 +25,7 @@ async def oa_generate_thumbnail(content: str) -> str:
 - 이미지에 글씨는 최대한 들어가지 않도록 해주세요.
 """
 
-    result = client.images.generate(
+    result = await client.images.generate(
         model="gpt-image-1",
         prompt=user_prompt,
         size="1024x1024",
