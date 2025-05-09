@@ -1,8 +1,10 @@
 import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
 import { useHomeStatistics } from '@/hooks/useHomeStatistics';
+import useAuthStore from '@/store/userStore';
 
 const Home = () => {
+  const { user } = useAuthStore();
   const { statistics, isLoading, error, refetch, finishLoading } =
     useHomeStatistics();
 
@@ -29,7 +31,12 @@ const Home = () => {
       <div className='flex flex-1 flex-col justify-between gap-8'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
-          <p>안녕하세요</p>
+          <p>
+            안녕하세요
+            {user?.name && (
+              <span className='ml-1 font-bold'>{user.name}님</span>
+            )}
+          </p>
           <p>오늘 하루 잘 보내고 계신가요?</p>
         </section>
 
@@ -38,7 +45,7 @@ const Home = () => {
             {/* 오늘의 순간 섹션 */}
             <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayCount} />
-              <p className='font-leeseyoon w-full text-center text-haru-gray-5'>
+              <p className='w-full text-center font-leeseyoon text-haru-gray-5'>
                 <span className='mr-1'>오늘</span>
                 <span className='font-bold text-haru-green'>
                   {statistics.todayCount}
