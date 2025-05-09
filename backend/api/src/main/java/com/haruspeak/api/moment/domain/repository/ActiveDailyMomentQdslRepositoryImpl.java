@@ -5,6 +5,8 @@ import com.haruspeak.api.moment.domain.QMomentImage;
 import com.haruspeak.api.moment.domain.QMomentTag;
 import com.haruspeak.api.moment.domain.QMomentTagName;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
+import com.haruspeak.api.moment.dto.MomentListItemRaw;
+import com.haruspeak.api.moment.dto.MomentOrder;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQdslRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final ActiveDailyMomentJpaRepository jpaRepository;
 
     private static final QActiveDailyMoment moment = QActiveDailyMoment.activeDailyMoment;
     private static final QMomentTag tag = QMomentTag.momentTag;
@@ -55,7 +58,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentDetailRaw> findMomentListByCondition(int userId, MomentListRequest request) {
+    public List<MomentListItemRaw> findMomentListByCondition(int userId, MomentListRequest request) {
         log.debug("순간 일기 목록 검색 실행 (userId={}, request={})", userId, request);
 
         List<Integer> filteredMomentIds = null;
@@ -76,7 +79,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
                 .fetch();
 
         // 이미지/태그 보강
-        return toMomentDetailList(baseResults);
+        return toMomentlList(baseResults);
     }
 
     /**
@@ -86,7 +89,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentDetailRaw> findMomentListBySummaryId(int userId, int summaryId) {
+    public List<MomentListItemRaw> findMomentListBySummaryId(int userId, int summaryId) {
         log.debug("순간 일기 목록 조회 실행 (userId={}, summaryId={})", userId, summaryId);
 
         List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
@@ -97,7 +100,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
                 )
                 .fetch();
         
-        return toMomentDetailList(baseResults);
+        return toMomentlList(baseResults);
     }
 
 
@@ -152,21 +155,37 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
         );
     }
 
+    private MomentListItemRaw toMomentListItemRaw(Tuple tuple, int order) {
+        Integer momentId = tuple.get(moment.momentId);
+        return new MomentListItemRaw(
+                tuple.get(moment.summaryId),
+                momentId,
+                order,
+                tuple.get(moment.momentTime),
+                tuple.get(moment.imageCount),
+                getImages(momentId),
+                tuple.get(moment.content),
+                tuple.get(moment.tagCount),
+                getUserTagNames(momentId)
+        );
+    }
+
     /**
      * 튜플 리스트 -> DTO 리스트로 변환
      * @param baseResults Moment 튜플 목록
      * @return List<MomentDetailRaw>
      */
-    private List<MomentDetailRaw> toMomentDetailList(List<Tuple> baseResults) {
+    private List<MomentListItemRaw> toMomentlList(List<Tuple> baseResults) {
         List<Integer> momentIds = baseResults.stream()
                 .map(t -> t.get(moment.momentId))
                 .toList();
 
+        Map<Integer, Integer> orderMap = getOrderInDayFor(momentIds);
         Map<Integer, List<String>> imageMap = getImagesFor(momentIds);
         Map<Integer, List<String>> tagMap = getTagsFor(momentIds);
 
         return baseResults.stream()
-                .map(tuple -> toMomentDetailRaw(tuple, imageMap, tagMap))
+                .map(tuple -> toMomentListItemRaw(tuple, imageMap, tagMap, orderMap))
                 .toList();
     }
 
@@ -176,14 +195,16 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @param tuple Moment row
      * @return MomentDetailRaw
      */
-    private MomentDetailRaw toMomentDetailRaw(Tuple tuple,
-                                                      Map<Integer, List<String>> imageMap,
-                                                      Map<Integer, List<String>> tagMap) {
+    private MomentListItemRaw toMomentListItemRaw(Tuple tuple,
+                                                  Map<Integer, List<String>> imageMap,
+                                                  Map<Integer, List<String>> tagMap,
+                                                  Map<Integer, Integer> orderMap) {
         Integer momentId = tuple.get(moment.momentId);
 
-        return new MomentDetailRaw(
+        return new MomentListItemRaw(
                 tuple.get(moment.summaryId),
                 momentId,
+                orderMap.get(momentId),
                 tuple.get(moment.momentTime),
                 tuple.get(moment.imageCount),
                 imageMap.getOrDefault(momentId, Collections.emptyList()),
@@ -301,7 +322,21 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
                                 tuple -> tuple.get(tagName.name),
                                 Collectors.toList()
                         )
-                ));
+                                   ));
+    }
+
+
+    /**
+     * moment가 하루내에 작성된 몇번째 순번인지
+     * @param momentIds 순간일기 ids
+     * @return momentId 별 order in day
+     */
+    private Map<Integer, Integer> getOrderInDayFor(List<Integer> momentIds) {
+        List<MomentOrder> resultList = jpaRepository.findRanksByMomentIds(momentIds);
+        return resultList.stream().collect(Collectors.toMap(
+                MomentOrder::getMomentId,
+                MomentOrder::getOrderInDay
+        ));
     }
 
 

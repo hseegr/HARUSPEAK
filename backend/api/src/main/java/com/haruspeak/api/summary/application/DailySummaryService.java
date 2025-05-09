@@ -8,6 +8,8 @@ import com.haruspeak.api.common.exception.common.InvalidConditionFormatException
 import com.haruspeak.api.common.exception.summary.DiaryNotFoundException;
 import com.haruspeak.api.moment.application.MomentService;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
+import com.haruspeak.api.moment.dto.MomentListItem;
+import com.haruspeak.api.moment.dto.MomentListItemRaw;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
 import com.haruspeak.api.moment.dto.response.MomentListResponse;
 import com.haruspeak.api.summary.domain.DailySummary;
@@ -68,7 +70,7 @@ public class DailySummaryService {
      */
     @Transactional(readOnly = true)
     public DiaryDetailResponse getDiaryDetail(int userId, int summaryId){
-        return new DiaryDetailResponse(getSummaryDetail(userId, summaryId), getMomentDetails(userId, summaryId));
+        return new DiaryDetailResponse(getSummaryDetail(userId, summaryId), getMomentListBySummaryId(userId, summaryId));
     }
 
     /**
@@ -160,7 +162,7 @@ public class DailySummaryService {
      * @param summaryId 하루 일기 ID
      * @return List<MomentDetailResponse>
      */
-    private List<MomentDetailResponse> getMomentDetails(int userId, int summaryId) {
+    private List<MomentListItem> getMomentListBySummaryId(int userId, int summaryId) {
         return momentService.getMomentListOfSummary(userId, summaryId);
     }
 
