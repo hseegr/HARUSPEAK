@@ -1,11 +1,9 @@
 package com.haruspeak.api.moment.application;
 
 import com.haruspeak.api.common.dto.ResInfo;
-import com.haruspeak.api.common.exception.ErrorCode;
-import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.exception.common.AccessDeniedException;
 import com.haruspeak.api.common.exception.common.InvalidConditionFormatException;
-import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentRepository;
+import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentQdslRepository;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
 import com.haruspeak.api.moment.dto.request.MomentListRequest;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
@@ -25,7 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MomentService {
-    private final ActiveDailyMomentRepository momentRepository;
+    private final ActiveDailyMomentQdslRepository momentRepository;
 
     /**
      * 일기 상세조회
@@ -65,6 +63,7 @@ public class MomentService {
         List<MomentDetailRaw> results = momentRepository.findMomentListByCondition(userId,request);
         List<MomentDetailResponse> detailList = mapToMomentDetailResponse(results);
 
+        setLimitOneMoreForHasMore(request);
         // 더 조회할 게 남았는지 : 1개 더 조회해서 다 조회 됐으면 hasNext
         boolean hasNext = results.size() > request.getLimit();
         // 커서 : 마지막꺼 ( 다음 조회 시작할 것 )
@@ -131,6 +130,10 @@ public class MomentService {
         return results.stream()
                 .map(this::toMomentDetail)
                 .toList();
+    }
+
+    private void setLimitOneMoreForHasMore(MomentListRequest request) {
+        request.setLimit(request.getLimit() + 1);
     }
 
 

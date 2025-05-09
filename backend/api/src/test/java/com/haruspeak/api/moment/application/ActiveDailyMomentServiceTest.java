@@ -2,11 +2,12 @@ package com.haruspeak.api.moment.application;
 
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
-import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentRepository;
+import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentQdslRepository;
 import com.haruspeak.api.moment.dto.MomentDetailRaw;
 import com.haruspeak.api.moment.dto.response.MomentDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 @ExtendWith(MockitoExtension.class)
 class ActiveDailyMomentServiceTest {
 
@@ -33,7 +32,7 @@ class ActiveDailyMomentServiceTest {
     private static final List<String> TAGS = List.of("태그1","태그2");
 
     @Mock
-    private ActiveDailyMomentRepository activeDailyMomentRepository;
+    private ActiveDailyMomentQdslRepository activeDailyMomentRepository;
 
     @InjectMocks
     private MomentService activeDailyMomentService;

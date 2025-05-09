@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMomentJpaRepositoryCustom {
+public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQdslRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -58,7 +58,13 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
     public List<MomentDetailRaw> findMomentListByCondition(int userId, MomentListRequest request) {
         log.debug("순간 일기 목록 검색 실행 (userId={}, request={})", userId, request);
 
-        BooleanBuilder conditions = buildSearchConditions(userId, request);
+        List<Integer> filteredMomentIds = null;
+        if(request.getUserTags() != null && !request.getUserTags().isEmpty()) {
+            filteredMomentIds = findMomentIdsMatchingAllUserTags(request.getUserTags());
+            if(filteredMomentIds.isEmpty()) return List.of();
+        }
+
+        BooleanBuilder conditions = buildSearchConditions(userId, request, filteredMomentIds);
 
         List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
                 .from(moment)
@@ -66,7 +72,7 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
                 .where(conditions)
                 .groupBy(moment.momentId)
                 .orderBy(moment.momentTime.desc())
-                .limit(request.getLimit()+1)// 1개 더 조회해서 마지막 tuple로 커서 AND hasMore 체크
+                .limit(request.getLimit())
                 .fetch();
 
         // 이미지/태그 보강
@@ -187,30 +193,46 @@ public class ActiveDailyMomentJpaRepositoryCustomImpl implements ActiveDailyMome
         );
     }
 
+    /**
+     * 검색할 userTags를 모두 포함하는 momentIds 반환
+     * - userId 필요없는 이유는 userTagId에 user가 포함되기 때문
+     * @param userTagIds 검색 userTags
+     * @return 모두 포함하는 moment ids
+     */
+    private List<Integer> findMomentIdsMatchingAllUserTags(List<Integer> userTagIds) {
+        return queryFactory.select(tag.momentId)
+                .from(tag)
+                .where(tag.userTagId.in(userTagIds))
+                .groupBy(tag.momentId)
+                .having(tag.userTagId.countDistinct().eq((long) userTagIds.size()))
+                .fetch();
+    }
+
 
     /**
      * 검색 조건에 맞춰 Where 구절 생성
      * @param userId 사용자ID
-     * @param request 조건
+     * @param condition 조건
+     * @param momentIdByTagCondition 태그 검색 조건(MomentIds)
      * @return BooleanBuilder
      */
-    private BooleanBuilder buildSearchConditions(Integer userId, MomentListRequest request) {
+    private BooleanBuilder buildSearchConditions(Integer userId, MomentListRequest condition, List<Integer> momentIdByTagCondition) {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(moment.userId.eq(userId));
 
-        if (request.getBefore() != null) {
-            builder.and(moment.momentTime.loe(request.getBefore()));
+        if (condition.getBefore() != null) {
+            builder.and(moment.momentTime.loe(condition.getBefore()));
         }
 
-        if (request.getStartDate() != null && request.getEndDate() != null) {
+        if (condition.getStartDate() != null && condition.getEndDate() != null) {
             builder.and(moment.momentTime.between(
-                    request.getStartDate().atStartOfDay(),
-                    request.getEndDate().atTime(23, 59, 59)
+                    condition.getStartDate().atStartOfDay(),
+                    condition.getEndDate().atTime(23, 59, 59)
             ));
         }
 
-        if (request.getUserTags() != null && !request.getUserTags().isEmpty()) {
-            builder.and(tag.userTagId.in(request.getUserTags()));
+        if (momentIdByTagCondition!= null && !momentIdByTagCondition.isEmpty()) {
+            builder.and(moment.momentId.in(momentIdByTagCondition));
         }
 
         return builder;
