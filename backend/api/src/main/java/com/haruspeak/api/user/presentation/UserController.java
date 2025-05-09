@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/tags")
     @Operation(
             summary = "사용자 태그 정보 요청",
-            description = "사용자가 일기에 사용했던 태그 목록을 불러옵니다.",
+            description = "사용자가 삭제 되지 않은 일기에 사용했던 태그 목록을 불러옵니다.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -72,6 +72,6 @@ public class UserController {
     )
     public ResponseEntity<UserTagResponse> getUserTags(@AuthenticatedUser Integer userId) {
         log.info("[GET] api/user/tags 사용자 태그 목록 요청 (userId={})", userId);
-        return ResponseEntity.ok(userService.getUserTags(userId));
+        return ResponseEntity.ok(userService.getActiveUserTags(userId));
     }
 }

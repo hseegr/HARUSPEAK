@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActiveDailyMomentQdslRepository {
-    Optional<MomentDetailRaw> findMomentDetail(int userId, int momentId);
-    List<MomentListItemRaw> findMomentListByCondition(int userId, MomentListRequest request);
-    List<MomentListItemRaw> findMomentListBySummaryId(int userId, int summaryId);
+    Optional<MomentDetailRaw> findActiveMomentDetail(int userId, int momentId);
+    List<MomentListItemRaw> findActiveMomentListByCondition(int userId, MomentListRequest request);
+    List<MomentListItemRaw> findActiveMomentListBySummaryId(int userId, int summaryId);
 }
 
