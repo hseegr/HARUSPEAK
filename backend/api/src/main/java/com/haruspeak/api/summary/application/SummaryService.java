@@ -29,7 +29,19 @@ public class SummaryService {
 
     // [API] AI 하루일기 요약 재생성
     @Transactional
-    public DailySummaryCreateResponse regenerateDailySummary (String uri, DailySummaryCreateRequest dscr) {
+    public DailySummaryCreateResponse regenerateDailySummary (Integer userId, Integer summaryId, String uri, DailySummaryCreateRequest dscr) {
+
+        // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
+        DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
+                .orElseThrow(() -> new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
+        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED);
+
+        // 요약내용생성횟수가 3회 이상이면 더이상 요청 불가
+        if(dailySummary.getContentGenerateCount() >= 3) throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_GENERATE_COUNT_LIMIT_EXCEEDED);
+
+        // 요약내용재생성횟수 1회 증가
+        dailySummary.increaseContentGenerateCount();
+
         // ai 서버에 프론트 요청값 전달 후 반환 받기
         return fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
     }
