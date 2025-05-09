@@ -1,12 +1,24 @@
+import { useEffect } from 'react';
+
 import { Navigate, Outlet } from 'react-router-dom';
 
+import { useUserInfoQuery } from '@/hooks/useLoginQuery';
 import useAuthStore from '@/store/userStore';
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isLoading, isError, data } = useUserInfoQuery();
+  const { setUser, clearUser } = useAuthStore();
 
-  // 로그인 안한 사용자가 다른 페이지로 이동
-  if (!isAuthenticated) {
+  useEffect(() => {
+    if (data) setUser(data);
+    else if (isError) clearUser();
+  }, [data, isError, setUser, clearUser]);
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isError || !data) {
     return <Navigate to='/login' replace />;
   }
 
