@@ -4,7 +4,7 @@ import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.util.FastApiClient;
 import com.haruspeak.api.summary.domain.DailySummary;
-import com.haruspeak.api.summary.domain.DailyThumbnailRegenState;
+import com.haruspeak.api.summary.domain.ThumbnailRegenState;
 import com.haruspeak.api.summary.domain.repository.DailySummaryRepository;
 import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
@@ -54,14 +54,16 @@ public class SummaryService {
         // "상태열"에 관련 요소들(키, 필드) 세팅
         String stateKey = "user:" + userId + ":image:regeneration"; // userId 로 만든 redis key 형식
         String redisField = String.valueOf(summaryId);
-        Object redisData = redisTemplate.opsForHash().get(stateKey, redisField); // redis 에 key, summaryId 에 해당하는 데이터 찾기
+
+        // redis 에 key, summaryId 에 해당하는 데이터 찾기
+        Object redisData = redisTemplate.opsForHash().get(stateKey, redisField);
 
         // redis 데이터가 이미 있으면, 대기열에 이미 있으니 재요청 안됨 -> 에러
         if(redisData != null) throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_CONFLICT);
 
         // redisData 없으면, "상태열" 추가
         Map<String, Object> thumbnailData = new HashMap<>();
-        thumbnailData.put("state", DailyThumbnailRegenState.QUEUED);
+        thumbnailData.put("state", ThumbnailRegenState.QUEUED);
         thumbnailData.put("timestamp", LocalDateTime.now().toString());
         thumbnailData.put("retryCount", 1);
         redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData);
