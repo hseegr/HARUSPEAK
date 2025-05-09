@@ -26,6 +26,7 @@ const NavigationBar = () => {
       <button
         className={`${baseButtonClasses} ${getActiveColor('/')}`}
         onClick={() => navigate('/')}
+        aria-label='Home으로 이동'
       >
         <Home />
         <span className='mt-1 font-bold'>홈</span>
@@ -34,6 +35,7 @@ const NavigationBar = () => {
       <button
         className={`${baseButtonClasses} pr-10 ${getActiveColor('/today')}`}
         onClick={() => navigate('/today')}
+        aria-label='오늘의 기록 보기'
       >
         <TodayIcon />
         <span className='mt-1 font-bold'>오늘의 기록</span>
@@ -43,6 +45,7 @@ const NavigationBar = () => {
       <button
         className='absolute left-1/2 top-0 flex h-16 w-16 -translate-x-1/2 -translate-y-1/4 items-center justify-center rounded-full bg-haru-green text-white transition-colors duration-200 hover:bg-haru-light-green'
         onClick={() => navigate('/todaywrite')}
+        aria-label='오늘의 기록 추가'
       >
         <Plus />
       </button>
@@ -51,6 +54,7 @@ const NavigationBar = () => {
       <button
         className={`${baseButtonClasses} pl-10 ${getActiveColor('/library')}`}
         onClick={() => navigate('/library')}
+        aria-label='내 서재 가기'
       >
         <LibraryIcon />
         <span className='mt-1 font-bold'>내 서재</span>
@@ -60,6 +64,7 @@ const NavigationBar = () => {
       <button
         className={`${baseButtonClasses} text-haru-gray-4`}
         onClick={handleLogout}
+        aria-label='로그아웃'
       >
         <LogOut />
         <span className='mt-1 font-bold'>로그아웃</span>

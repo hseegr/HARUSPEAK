@@ -16,6 +16,7 @@ const Header = ({ title }: HeaderProps) => {
       <button
         onClick={() => navigate(-1)}
         className='absolute left-2 text-gray-800'
+        aria-label='뒤로가기'
       >
         <ChevronLeft />
       </button>

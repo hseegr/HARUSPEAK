@@ -71,6 +71,7 @@ const MomentEditDialog = ({
           <button
             onClick={handleSave}
             disabled={isSaving || isSaveDisabled}
+            aria-label='순간 기록 수정 확정'
             className={`rounded-full px-3 py-1.5 text-sm ${
               isSaving || isSaveDisabled
                 ? 'cursor-not-allowed bg-gray-300 text-haru-gray-5'
