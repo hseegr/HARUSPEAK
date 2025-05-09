@@ -41,6 +41,7 @@ const MomentDeleteDialog = ({
         <div className='flex justify-end gap-4'>
           <button
             onClick={() => onOpenChange(false)}
+            aria-label='순간 기록 삭제 취소'
             className='px-4 py-2 text-haru-gray-5 hover:text-haru-black'
           >
             취소
@@ -49,6 +50,7 @@ const MomentDeleteDialog = ({
             onClick={handleDelete}
             disabled={isPending || !createdAt}
             className='rounded bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green disabled:opacity-50'
+            aria-label='순간 기록 삭제 진행'
           >
             {isPending ? '삭제 중...' : '삭제'}
           </button>
