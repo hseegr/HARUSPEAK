@@ -7,8 +7,8 @@ public record UserStatResponse (
         @Schema(description = "오늘 작성한 일기 개수")
         long todayCount,
         @Schema(description = "총 하루 일기 수")
-        long totalMomentCount,
+        long totalDiaryCount,
         @Schema(description = "총 순간 일기 수")
-        int totalDiaryCount
+        int totalMomentCount
 ) {
 }

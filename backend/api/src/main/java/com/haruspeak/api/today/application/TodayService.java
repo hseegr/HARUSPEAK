@@ -142,7 +142,7 @@ public class TodayService {
                                 (List<String>) momentData.get("tags")
                         );
                     })
-                    .sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
+                    .sorted((a, b) -> b.momentTime().compareTo(a.momentTime()))
                     .toList();
 
             return new TodayMomentListResponse(moments, moments.size());

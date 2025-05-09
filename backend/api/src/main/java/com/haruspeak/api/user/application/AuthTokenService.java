@@ -31,9 +31,6 @@ public class AuthTokenService {
         String accessToken = jwtTokenProvider.issueAccessToken(userId, name);
         String refreshToken = jwtTokenProvider.issueRefreshToken(userId);
 
-        ResponseCookie accessCookie = CookieUtil.createTokenCookie("accessToken", accessToken, jwtTokenProvider.getAccessTokenExpiration());
-        ResponseCookie refreshCookie = CookieUtil.createTokenCookie("refreshToken", refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
-
         try {
             // Redis에 리프레시 토큰 저장
             refreshTokenRepository.saveRefreshToken(userId, refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
@@ -42,6 +39,9 @@ public class AuthTokenService {
             log.error("⛔ refreshToken 저장 실패 (userId: {}, token: {})", userId, refreshToken, e);
             throw new TokenSaveErrorException();
         }
+
+        ResponseCookie accessCookie = CookieUtil.createTokenCookie("accessToken", accessToken, jwtTokenProvider.getAccessTokenExpiration());
+        ResponseCookie refreshCookie = CookieUtil.createTokenCookie("refreshToken", refreshToken, jwtTokenProvider.getRefreshTokenExpiration());
 
         return new TokenIssueResult(accessCookie, refreshCookie);
     }
