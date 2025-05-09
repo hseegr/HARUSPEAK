@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class MomentTagController {
     private final MomentTagService momentTagService;
 
-    @PostMapping("/tags")
+    // 모먼트 자동생성
+    @PostMapping("/tags/{momentId}")
     @Operation(summary = "AI 모먼트 태그 자동생성", description = "모먼트 태그를 AI 로부터 추천받아 자동생성합니다.")
     public ResponseEntity<MomentTagCreateResponse> createMomentTag (
-            @RequestBody(required = true) MomentTagCreateRequest mtcr
-//            @AuthenticatedUser Integer userId
+            @PathVariable Integer momentId,
+            @RequestBody(required = true) MomentTagCreateRequest mtcr,
+            @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/moment-tag";
         return ResponseEntity.ok(momentTagService.createMomentTag(uri, mtcr));
