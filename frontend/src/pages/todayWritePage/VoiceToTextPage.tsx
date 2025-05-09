@@ -17,30 +17,24 @@ const VoiceToTextPage = () => {
   // 컴포넌트 처음 렌더링 시 실행
   useEffect(() => {
     resetTranscript();
-    SpeechRecognition.startListening({ continuous: true, language: 'ko' });
 
     // 일정 시간 후에도 listening이 false라면 → 마이크 권한 재요청 시도
     const retryTimeout = setTimeout(() => {
-      if (!listening) {
-        // 디버깅용 콘솔
-        console.warn('listening이 false 상태로 유지됨 → 권한 재요청 시도');
-
-        navigator.mediaDevices
-          .getUserMedia({ audio: true }) // 권한 팝업 요청
-          .then(() => {
-            SpeechRecognition.startListening({
-              continuous: true,
-              language: 'ko',
-            });
-            // 디버깅용 콘솔
-            console.log('권한 재허용 후 다시 인식 시작');
-          })
-          .catch(e => {
-            // 디버깅용 콘솔
-            console.error('마이크 권한 요청 실패:', e.name, e.message);
+      navigator.mediaDevices
+        .getUserMedia({ audio: true }) // 권한 팝업 요청
+        .then(() => {
+          SpeechRecognition.startListening({
+            continuous: true,
+            language: 'ko',
           });
-      }
-    }, 1000); // 1초 안에 listening이 true 안 되면 재요청 시도
+          // 디버깅용 콘솔
+          console.log('권한 재허용 후 다시 인식 시작');
+        })
+        .catch(e => {
+          // 디버깅용 콘솔
+          console.error('마이크 권한 요청 실패:', e.name, e.message);
+        });
+    }, 300); // 1초 안에 listening이 true 안 되면 재요청 시도
     // 컴포넌트 사라질 때 자동 중단
     return () => {
       clearTimeout(retryTimeout);

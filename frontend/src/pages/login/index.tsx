@@ -1,7 +1,21 @@
+import { Navigate } from 'react-router-dom';
+
 import { googleLogin } from '@/apis/accountApi';
 import googleLogo from '@/assets/images/googlelogin.png';
+import { useUserInfoQuery } from '@/hooks/useLoginQuery';
 
 const LoginPage = () => {
+  const { isLoading, data } = useUserInfoQuery();
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (data) {
+    // 이미 로그인된 상태라면 홈으로 리다이렉트
+    return <Navigate to='/' replace />;
+  }
+
   const handleGoogleLogin = () => {
     googleLogin();
   };

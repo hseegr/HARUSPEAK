@@ -5,7 +5,6 @@ export interface UserInfo {
 
 export interface AuthState {
   user: UserInfo | null;
-  isAuthenticated: boolean;
   setUser: (user: UserInfo) => void;
   clearUser: () => void;
 }
