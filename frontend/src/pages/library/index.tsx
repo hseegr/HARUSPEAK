@@ -5,6 +5,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useDeleteDiary, useGetLibrary } from '@/hooks/useLibraryQuery';
 
+import DateFilterBadge from './components/DateFilterBadge';
+import DateFilterDialog from './components/DateFilterDialog';
 import DeleteBtn from './components/DeleteBtn';
 import DeleteConfirmDialog from './components/DeleteConfirmDialog';
 import DiaryFrame from './components/DiaryFrame';
@@ -18,10 +20,10 @@ const Library = () => {
   // 검색 파라미터에서 필터 값 추출
   const startDate = searchParams.get('startDate') || undefined;
   const endDate = searchParams.get('endDate') || undefined;
-  const userTags = searchParams.get('userTags')?.split(',') || undefined;
+  const userTags = searchParams.get('userTags') || undefined;
 
-  // 상태 관리
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -48,27 +50,58 @@ const Library = () => {
     setIsFilterOpen(true);
   }, []);
 
-  const handleFilterApply = useCallback(
+  // 날짜 필터 클릭 핸들러 추가
+  const handleDateFilterClick = useCallback(() => {
+    setIsDateFilterOpen(true);
+  }, []);
+
+  // 태그 필터 적용 핸들러 - /moments 페이지로 이동하며 필터 적용
+  const handleTagFilterApply = useCallback(
     (filters: {
       startDate?: string;
       endDate?: string;
-      userTags?: string[];
+      userTags?: number[];
     }) => {
-      const searchParams = new URLSearchParams();
+      const newSearchParams = new URLSearchParams();
 
       if (filters.startDate) {
-        searchParams.set('startDate', filters.startDate);
+        newSearchParams.set('startDate', filters.startDate);
       }
       if (filters.endDate) {
-        searchParams.set('endDate', filters.endDate);
+        newSearchParams.set('endDate', filters.endDate);
       }
       if (filters.userTags?.length) {
-        searchParams.set('userTags', filters.userTags.join(','));
+        newSearchParams.set('userTags', filters.userTags.join(','));
       }
 
-      navigate(`/moments?${searchParams.toString()}`);
+      // moments 페이지로 이동하며 필터 적용
+      navigate(`/moments?${newSearchParams.toString()}`);
     },
     [navigate],
+  );
+
+  // 날짜 필터 적용 핸들러 - 현재 Library 페이지에서 필터 적용
+  const handleDateFilterApply = useCallback(
+    (filters: { startDate?: string; endDate?: string }) => {
+      // 기존 파라미터 유지하면서 새로운 날짜 필터 적용
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+
+      if (filters.startDate) {
+        newSearchParams.set('startDate', filters.startDate);
+      } else {
+        newSearchParams.delete('startDate');
+      }
+
+      if (filters.endDate) {
+        newSearchParams.set('endDate', filters.endDate);
+      } else {
+        newSearchParams.delete('endDate');
+      }
+
+      // 현재 페이지에 필터 적용 (라우트 변경 없이 쿼리 파라미터만 업데이트)
+      navigate({ search: newSearchParams.toString() }, { replace: true });
+    },
+    [navigate, searchParams],
   );
 
   const handleToggleSelection = useCallback(() => {
@@ -110,7 +143,6 @@ const Library = () => {
           console.log(`일기 ${id} 삭제 성공`);
         } catch (error) {
           console.error(`일기 ${id} 삭제 실패:`, error);
-          // 계속 진행
         }
       }
       setIsSelectionMode(false);
@@ -127,9 +159,12 @@ const Library = () => {
 
   return (
     <div className='w-full'>
-      {/* 고정 헤더 아래에 위치할 컨트롤 바 */}
       <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        <FilterBadge onClick={handleFilterClick} />
+        {/* 필터 배지들을 플렉스 컨테이너로 묶음 */}
+        <div className='flex items-center gap-2'>
+          <FilterBadge onClick={handleFilterClick} />
+          <DateFilterBadge onClick={handleDateFilterClick} />
+        </div>
         <DeleteBtn
           isSelectionMode={isSelectionMode}
           onToggleSelection={handleToggleSelection}
@@ -160,6 +195,13 @@ const Library = () => {
           )}
         </div>
 
+        {/* 데이터가 없을 때 */}
+        {hasData === false && !isFetchingNextPage && (
+          <div className='py-4 text-center text-gray-500'>
+            표시할 일기가 없습니다.
+          </div>
+        )}
+
         {/* Intersection Observer 타겟 요소 */}
         <div ref={observerRef} className='h-10' />
 
@@ -178,10 +220,18 @@ const Library = () => {
         )}
       </div>
 
+      <DateFilterDialog
+        open={isDateFilterOpen}
+        onOpenChange={setIsDateFilterOpen}
+        onApply={handleDateFilterApply}
+        initialStartDate={startDate}
+        initialEndDate={endDate}
+      />
+
       <FilterDialog
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
-        onApply={handleFilterApply}
+        onApply={handleTagFilterApply}
       />
 
       <DeleteConfirmDialog

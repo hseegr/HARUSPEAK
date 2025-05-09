@@ -1,10 +1,7 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+// components/DateFilterDialog.tsx
+import { useEffect, useState } from 'react';
 
-import {
-  CalendarIcon,
-  Cross1Icon,
-  MagnifyingGlassIcon,
-} from '@radix-ui/react-icons';
+import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -16,69 +13,63 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useGetUserTags } from '@/hooks/useTagQuery';
+import { formatDate } from '@/lib/timeUtils';
 import { cn } from '@/lib/utils';
-import { UserTag } from '@/types/tag';
 
-// 오늘 날짜 설정 (시간은 00:00:00으로 설정)
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-interface FilterDialogProps {
+interface DateFilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onApply: (filters: {
-    startDate?: string;
-    endDate?: string;
-    userTags?: number[];
-  }) => void;
+  onApply: (filters: { startDate?: string; endDate?: string }) => void;
+  initialStartDate?: string;
+  initialEndDate?: string;
 }
 
-const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
+const DateFilterDialog = ({
+  open,
+  onOpenChange,
+  onApply,
+  initialStartDate,
+  initialEndDate,
+}: DateFilterDialogProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: tagsResponse } = useGetUserTags();
-  const [filteredTags, setFilteredTags] = useState<UserTag[]>([]);
-  const [selectedTagObjects, setSelectedTagObjects] = useState<UserTag[]>([]);
+  // 오늘 날짜 설정 (시간은 00:00:00으로 설정)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // 초기값 설정
+  useEffect(() => {
+    if (initialStartDate) {
+      setStartDate(new Date(initialStartDate));
+    }
+    if (initialEndDate) {
+      setEndDate(new Date(initialEndDate));
+    }
+  }, [initialStartDate, initialEndDate, open]);
 
   // 필터 적용 버튼 활성화 여부 확인
   const isButtonDisabled = () => {
-    // 날짜와 태그 모두 선택되지 않은 경우 비활성화
-    if (!startDate && !endDate && selectedTags.length === 0) {
-      return true;
-    }
-
-    // 날짜를 하나만 선택한 경우 비활성화
-    if ((startDate && !endDate) || (!startDate && endDate)) {
-      return true;
-    }
-
+    // 양쪽 날짜 모두 선택되지 않았거나
+    // 한쪽만 선택되었거나
     // 시작일이 종료일보다 나중이면 비활성화
-    if (startDate && endDate && startDate > endDate) {
-      return true;
-    }
-
-    // 그 외의 경우 활성화
-    return false;
+    return (
+      !startDate || !endDate || (startDate && endDate && startDate > endDate)
+    );
   };
 
   // 오류 메시지 업데이트 (날짜 선택 상태에 따라)
   useEffect(() => {
-    if (!startDate && !endDate && selectedTags.length === 0) {
-      setError('태그 또는 날짜를 선택해주세요');
+    if (!startDate && !endDate) {
+      setError('날짜를 선택해주세요');
     } else if (!startDate && endDate) {
       setError('시작 날짜를 선택해주세요');
     } else if (startDate && !endDate) {
@@ -88,40 +79,16 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
     } else {
       setError(null);
     }
-  }, [startDate, endDate, selectedTags.length]);
-
-  // 태그 검색 처리
-  useEffect(() => {
-    if (!tagsResponse?.tags) return;
-
-    const filtered = tagsResponse.tags.filter(tag =>
-      tag.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-    setFilteredTags(filtered);
-  }, [searchQuery, tagsResponse?.tags]);
-
-  // 선택된 태그 객체 업데이트
-  useEffect(() => {
-    if (!tagsResponse?.tags) return;
-
-    const tagObjects = selectedTags
-      .map(tagId => {
-        return tagsResponse.tags.find(tag => tag.userTagId === tagId);
-      })
-      .filter(tag => tag !== undefined) as UserTag[];
-
-    setSelectedTagObjects(tagObjects);
-  }, [selectedTags, tagsResponse?.tags]);
+  }, [startDate, endDate]);
 
   const handleApply = () => {
     // 버튼이 비활성화되어 있으면 함수 실행 중지
     if (isButtonDisabled()) return;
 
-    // [여기] 제출할 때 parameters가 빈 값이면 undefined로 보내지 않도록 수정
     onApply({
+      // 여기서는 API 요청을 위한 'yyyy-MM-dd' 형식을 유지
       startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
-      userTags: selectedTags.length > 0 ? selectedTags : undefined,
     });
     onOpenChange(false);
   };
@@ -129,29 +96,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   const handleReset = () => {
     setStartDate(null);
     setEndDate(null);
-    setSelectedTags([]);
-    setSearchQuery('');
     setError(null);
-  };
-
-  const toggleTag = (tagId: number) => {
-    setSelectedTags(prev => {
-      if (prev.includes(tagId)) {
-        return prev.filter(id => id !== tagId);
-      }
-      if (prev.length >= 3) {
-        return prev;
-      }
-      return [...prev, tagId];
-    });
-  };
-
-  const removeTag = (tagId: number) => {
-    setSelectedTags(prev => prev.filter(id => id !== tagId));
-  };
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
   };
 
   const handleStartDateSelect = (date: Date | undefined) => {
@@ -168,7 +113,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>순간 일기 찾기</DialogTitle>
+          <DialogTitle>일기 기간 설정</DialogTitle>
         </DialogHeader>
         <div className='space-y-4'>
           {/* 날짜 선택 - 시작/종료 날짜를 한 줄에 표시 */}
@@ -188,7 +133,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                   >
                     <CalendarIcon className='mr-2 h-4 w-4' />
                     {startDate ? (
-                      format(startDate, 'yyyy.MM.dd', { locale: ko })
+                      formatDate(startDate.toISOString())
                     ) : (
                       <span>날짜 선택</span>
                     )}
@@ -224,7 +169,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                   >
                     <CalendarIcon className='mr-2 h-4 w-4' />
                     {endDate ? (
-                      format(endDate, 'yyyy.MM.dd', { locale: ko })
+                      formatDate(endDate.toISOString())
                     ) : (
                       <span>날짜 선택</span>
                     )}
@@ -244,72 +189,6 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
-
-          {/* 태그 선택 부분 */}
-          <div>
-            <label className='mb-2 block text-sm font-medium'>
-              태그 선택 (최대 5개)
-            </label>
-
-            {/* 선택된 태그 표시 */}
-            {selectedTagObjects.length > 0 && (
-              <div className='mb-2 flex flex-wrap gap-1'>
-                {selectedTagObjects.map(tag => (
-                  <div
-                    key={tag.userTagId}
-                    className='flex items-center rounded-full bg-green-100 px-2 py-1 text-xs text-green-800'
-                  >
-                    <span>{tag.name}</span>
-                    <button
-                      className='ml-1 rounded-full p-1 hover:bg-green-200'
-                      onClick={() => removeTag(tag.userTagId)}
-                    >
-                      <Cross1Icon className='h-3 w-3' />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className='relative mb-2'>
-              <MagnifyingGlassIcon className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500' />
-              <Input
-                type='text'
-                placeholder='태그 검색...'
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className='pl-9'
-              />
-            </div>
-            <ScrollArea className='h-32 rounded-md border p-2'>
-              <div className='flex flex-wrap gap-2'>
-                {filteredTags.map(tag => (
-                  <Button
-                    key={tag.userTagId}
-                    variant={
-                      selectedTags.includes(tag.userTagId)
-                        ? 'default'
-                        : 'outline'
-                    }
-                    size='sm'
-                    onClick={() => toggleTag(tag.userTagId)}
-                    disabled={
-                      !selectedTags.includes(tag.userTagId) &&
-                      selectedTags.length >= 5
-                    }
-                  >
-                    {tag.name}
-                    <span className='ml-1 text-xs'>({tag.count})</span>
-                  </Button>
-                ))}
-                {filteredTags.length === 0 && (
-                  <div className='w-full p-2 text-center text-gray-500'>
-                    검색 결과가 없습니다
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
           </div>
 
           {/* 오류 메시지 표시 */}
@@ -337,4 +216,4 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   );
 };
 
-export default FilterDialog;
+export default DateFilterDialog;
