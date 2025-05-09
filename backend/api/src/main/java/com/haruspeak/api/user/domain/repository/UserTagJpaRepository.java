@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UserTagRepository extends JpaRepository<UserTagDetail, Integer> {
-    List<UserTagDetail> findByUserId(Integer userId);
+public interface UserTagJpaRepository extends JpaRepository<UserTagDetail, Integer> {
+    List<UserTagDetail> findByUserIdOrderByScoreDesc(Integer userId);
 }

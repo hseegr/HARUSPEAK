@@ -22,4 +22,6 @@ public class UserTagDetail {
     private String name;
 
     private int totalUsageCount;
+
+    private int score;
 }
