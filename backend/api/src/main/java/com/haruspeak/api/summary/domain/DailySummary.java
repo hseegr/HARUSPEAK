@@ -66,10 +66,10 @@ public class DailySummary {
 
     public void increaseImageGenerateCount() {
         this.imageGenerateCount++;
+    }
 
     public void deleteSummary(){
         this.isDeleted = true;
         this.updatedAt = LocalDateTime.now();
-
     }
 }
