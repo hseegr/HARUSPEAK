@@ -35,7 +35,7 @@ public class UserTagQdslRepositoryImpl implements UserTagQdslRepository {
                 ))
                 .from(userTag)
                 .join(momentTag).on(userTag.userTagId.eq(momentTag.userTagId))
-                .join(moment).on(momentTag.momentId.eq(momentTag.momentId))
+                .join(moment).on(momentTag.momentId.eq(moment.momentId))
                 .where(moment.userId.eq(userId))
                 .distinct()
                 .orderBy(userTag.totalUsageCount.desc())
