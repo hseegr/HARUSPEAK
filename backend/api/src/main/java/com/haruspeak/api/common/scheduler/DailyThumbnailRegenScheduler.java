@@ -88,6 +88,8 @@ public class DailyThumbnailRegenScheduler {
             String uri = "/ai/daily-thumbnail-dalle";
             DailyThumbnailCreateRequest dtcReq = new DailyThumbnailCreateRequest(content); // 요청값 담은 DTO
 
+            log.debug("value for request to fastapi: {}", dtcReq);
+
             try {
                 // 요청 직전 상태변경
                 if(retryCount == 1) {
@@ -98,14 +100,25 @@ public class DailyThumbnailRegenScheduler {
                 thumbnailData.put("retryCount", retryCount+1); // 재생성 시도 1회 증가
                 redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData); // redis 에 변경사항 반영
 
-                DailyThumbnailCreateResponse dtcResp = fastApiClient.getPrediction(
+//                DailyThumbnailCreateResponse dtcResp = fastApiClient.getPrediction(
+//                        uri,
+//                        dtcReq,
+//                        DailyThumbnailCreateResponse.class
+//                );
+
+                Object dtcResp = fastApiClient.getPrediction(
                         uri,
                         dtcReq,
-                        DailyThumbnailCreateResponse.class
-                );
+                        Object.class);
+                log.debug("dtcResp Object: {}", dtcResp.toString());
+                Map<String, Object> temp = (Map<String, Object>) dtcResp;
+
+                log.debug("dtcResp cast Map: {}", temp.toString());
 
                 // S3 업로드
-                String thumbnailImageUrl = s3Service.uploadImagesAndGetUrls("data:image/png;base64," + dtcResp.base64());
+                String thumbnailImageUrl = s3Service.uploadImagesAndGetUrls("data:image/png;base64," + temp.get("base64"));
+
+//                String thumbnailImageUrl = s3Service.uploadImagesAndGetUrls("data:image/png;base64," + dtcResp.base64());
                 dailySummary.updateImageUrl(thumbnailImageUrl); // RDB 반영
 
                 // "상태열" 수정 및 삭제
