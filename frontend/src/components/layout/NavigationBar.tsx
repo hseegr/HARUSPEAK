@@ -15,6 +15,11 @@ const NavigationBar = () => {
   const getActiveColor = (path: string) =>
     location.pathname === path ? 'text-haru-green' : 'text-haru-gray-4';
 
+  const handleLogout = async () => {
+    await userLogout();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <nav className='fixed bottom-0 flex h-[70px] w-full max-w-96 items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
       {/* Home */}
@@ -54,7 +59,7 @@ const NavigationBar = () => {
       {/* 로그아웃 */}
       <button
         className={`${baseButtonClasses} text-haru-gray-4`}
-        onClick={userLogout}
+        onClick={handleLogout}
       >
         <LogOut />
         <span className='mt-1 font-bold'>로그아웃</span>

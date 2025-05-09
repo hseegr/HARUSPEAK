@@ -1,7 +1,16 @@
+import { Navigate } from 'react-router-dom';
+
 import { googleLogin } from '@/apis/accountApi';
 import googleLogo from '@/assets/images/googlelogin.png';
+import useAuthStore from '@/store/userStore';
 
 const LoginPage = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated) {
+    return <Navigate to='/' replace />;
+  }
+
   const handleGoogleLogin = () => {
     googleLogin();
   };
