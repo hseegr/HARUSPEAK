@@ -61,7 +61,7 @@ const ImageDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className='m-0 h-[100dvh] w-full max-w-96 bg-[#F1F0E9] p-0'
+        className='m-0 h-[100dvh] w-full max-w-96 bg-haru-beige p-0'
         showCloseButton={false}
       >
         <style>
@@ -86,11 +86,11 @@ const ImageDialog = ({
 
         {/* 상단 헤더 */}
         <div className='absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-4'>
-          <div className='rounded-full rounded-bl-none bg-[#FCFBF2] px-3 py-1'>
+          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1'>
             <span>{formattedTime}</span>
             <span>의 기록</span>
           </div>
-          <DialogClose className='rounded-full p-2 text-[#41644A] hover:text-[#41644A]/90'>
+          <DialogClose className='rounded-full p-2 text-haru-light-green hover:text-haru-light-green/90'>
             <span className='sr-only'>닫기</span>
             &#x2715;
           </DialogClose>
@@ -101,7 +101,7 @@ const ImageDialog = ({
           {/* 이전 버튼 */}
           <button
             onClick={handlePrevious}
-            className='absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-[#41644A] p-2 text-white'
+            className='absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-haru-light-green p-2 text-white'
             aria-label='이전 이미지'
           >
             &#x2190;
@@ -120,7 +120,7 @@ const ImageDialog = ({
           {/* 다음 버튼 */}
           <button
             onClick={handleNext}
-            className='absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-[#41644A] p-2 text-white'
+            className='absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-haru-light-green p-2 text-white'
             aria-label='다음 이미지'
           >
             &#x2192;
@@ -133,7 +133,7 @@ const ImageDialog = ({
           <div className='flex justify-center'>
             <button
               onClick={toggleAutoPlay}
-              className='rounded-full bg-[#41644A] p-2 text-white'
+              className='rounded-full bg-haru-light-green p-2 text-white'
               aria-label={
                 isAutoPlaying ? '자동 슬라이드 멈춤' : '자동 슬라이드 시작'
               }
@@ -152,12 +152,12 @@ const ImageDialog = ({
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className='relative h-full flex-1 overflow-hidden rounded-full bg-[#41644A]/30'
+                className='relative h-full flex-1 overflow-hidden rounded-full bg-haru-light-green/30'
                 aria-label={`${idx + 1}번째 이미지로 이동`}
               >
                 {currentIndex === idx && (
                   <div
-                    className='absolute inset-0 origin-left bg-[#41644A]'
+                    className='absolute inset-0 origin-left bg-haru-light-green'
                     style={{
                       animation: isAutoPlaying
                         ? 'progressAnimation 3s linear'
