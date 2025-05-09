@@ -46,14 +46,11 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!(principal instanceof CustomUserPrincipal customPrincipal)) {
-            return 1;
-//            throw new UnauthorizedException();
+            throw new UnauthorizedException();
         }
 
         Integer userId = customPrincipal.userId();
-
-        // 테스트용
-        userId = (userId == null ? 1 : userId);
+        log.debug("resolving user id {}", userId);
 
         return userId;
     }
