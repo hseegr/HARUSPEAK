@@ -30,8 +30,18 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           </div>
           {isToday && (
             <div className='flex gap-2'>
-              <button onClick={() => setIsDialogOpen(true)}>수정</button>
-              <button onClick={() => setIsDeleteDialogOpen(true)}>삭제</button>
+              <button
+                onClick={() => setIsDialogOpen(true)}
+                aria-label='순간 기록 수정'
+              >
+                수정
+              </button>
+              <button
+                onClick={() => setIsDeleteDialogOpen(true)}
+                aria-label='순간 기록 삭제'
+              >
+                삭제
+              </button>
             </div>
           )}
         </section>
@@ -86,6 +96,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
               <button
                 onClick={handleGenerateTags}
                 className='rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                aria-label='AI 태그 자동 생성'
                 disabled={isLoading}
               >
                 {isLoading ? '생성 중...' : '태그 자동 생성'}
