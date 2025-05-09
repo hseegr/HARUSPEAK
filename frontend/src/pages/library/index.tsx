@@ -20,7 +20,7 @@ const Library = () => {
   // 검색 파라미터에서 필터 값 추출
   const startDate = searchParams.get('startDate') || undefined;
   const endDate = searchParams.get('endDate') || undefined;
-  const userTags = searchParams.get('userTags')?.split(',') || undefined;
+  const userTags = searchParams.get('userTags') || undefined;
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
@@ -55,12 +55,12 @@ const Library = () => {
     setIsDateFilterOpen(true);
   }, []);
 
-  // [여기] 태그 필터 적용 핸들러 - moments 페이지로 이동하며 필터 적용
+  // 태그 필터 적용 핸들러 - /moments 페이지로 이동하며 필터 적용
   const handleTagFilterApply = useCallback(
     (filters: {
       startDate?: string;
       endDate?: string;
-      userTags?: string[];
+      userTags?: number[];
     }) => {
       const newSearchParams = new URLSearchParams();
 
@@ -80,7 +80,7 @@ const Library = () => {
     [navigate],
   );
 
-  // [여기] 날짜 필터 적용 핸들러 - 현재 Library 페이지에서 필터 적용
+  // 날짜 필터 적용 핸들러 - 현재 Library 페이지에서 필터 적용
   const handleDateFilterApply = useCallback(
     (filters: { startDate?: string; endDate?: string }) => {
       // 기존 파라미터 유지하면서 새로운 날짜 필터 적용
@@ -194,6 +194,13 @@ const Library = () => {
             )),
           )}
         </div>
+
+        {/* 데이터가 없을 때 */}
+        {hasData === false && !isFetchingNextPage && (
+          <div className='py-4 text-center text-gray-500'>
+            표시할 일기가 없습니다.
+          </div>
+        )}
 
         {/* Intersection Observer 타겟 요소 */}
         <div ref={observerRef} className='h-10' />

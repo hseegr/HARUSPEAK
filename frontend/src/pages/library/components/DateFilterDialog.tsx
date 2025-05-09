@@ -5,8 +5,6 @@ import { CalendarIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-// [여기] 기존 유틸리티 추가
-
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -40,6 +38,13 @@ const DateFilterDialog = ({
 }: DateFilterDialogProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 오늘 날짜 설정 (시간은 00:00:00으로 설정)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   // 초기값 설정
   useEffect(() => {
@@ -51,10 +56,37 @@ const DateFilterDialog = ({
     }
   }, [initialStartDate, initialEndDate, open]);
 
+  // 필터 적용 버튼 활성화 여부 확인
+  const isButtonDisabled = () => {
+    // 양쪽 날짜 모두 선택되지 않았거나
+    // 한쪽만 선택되었거나
+    // 시작일이 종료일보다 나중이면 비활성화
+    return (
+      !startDate || !endDate || (startDate && endDate && startDate > endDate)
+    );
+  };
+
+  // 오류 메시지 업데이트 (날짜 선택 상태에 따라)
+  useEffect(() => {
+    if (!startDate && !endDate) {
+      setError('날짜를 선택해주세요');
+    } else if (!startDate && endDate) {
+      setError('시작 날짜를 선택해주세요');
+    } else if (startDate && !endDate) {
+      setError('종료 날짜를 선택해주세요');
+    } else if (startDate && endDate && startDate > endDate) {
+      setError('시작 날짜는 종료 날짜보다 이전이어야 합니다');
+    } else {
+      setError(null);
+    }
+  }, [startDate, endDate]);
+
   const handleApply = () => {
+    // 버튼이 비활성화되어 있으면 함수 실행 중지
+    if (isButtonDisabled()) return;
+
     onApply({
       // 여기서는 API 요청을 위한 'yyyy-MM-dd' 형식을 유지
-      // formatDate는 'yyyy.MM.dd' 형식으로 변환하므로 UI 표시용으로만 사용
       startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
     });
@@ -64,13 +96,17 @@ const DateFilterDialog = ({
   const handleReset = () => {
     setStartDate(null);
     setEndDate(null);
+    setError(null);
   };
 
-  const handleDateSelect = (
-    date: Date | undefined,
-    setDate: (date: Date | null) => void,
-  ) => {
-    setDate(date ?? null);
+  const handleStartDateSelect = (date: Date | undefined) => {
+    setStartDate(date ?? null);
+    setStartDateOpen(false); // 날짜 선택 후 달력 닫기
+  };
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    setEndDate(date ?? null);
+    setEndDateOpen(false); // 날짜 선택 후 달력 닫기
   };
 
   return (
@@ -86,7 +122,7 @@ const DateFilterDialog = ({
               <label className='mb-2 block text-sm font-medium'>
                 시작 날짜
               </label>
-              <Popover>
+              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant='outline'
@@ -107,9 +143,12 @@ const DateFilterDialog = ({
                   <Calendar
                     mode='single'
                     selected={startDate as Date}
-                    onSelect={date => handleDateSelect(date, setStartDate)}
+                    onSelect={handleStartDateSelect}
                     initialFocus
                     locale={ko}
+                    disabled={date => date > today} // 오늘 이후 날짜는 선택 불가
+                    fromDate={undefined} // 가장 빠른 날짜 제한 없음
+                    toDate={today} // 오늘까지만 선택 가능
                   />
                 </PopoverContent>
               </Popover>
@@ -119,7 +158,7 @@ const DateFilterDialog = ({
               <label className='mb-2 block text-sm font-medium'>
                 종료 날짜
               </label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant='outline'
@@ -140,20 +179,36 @@ const DateFilterDialog = ({
                   <Calendar
                     mode='single'
                     selected={endDate as Date}
-                    onSelect={date => handleDateSelect(date, setEndDate)}
+                    onSelect={handleEndDateSelect}
                     initialFocus
                     locale={ko}
+                    disabled={date => date > today} // 오늘 이후 날짜는 선택 불가
+                    fromDate={undefined} // 가장 빠른 날짜 제한 없음
+                    toDate={today} // 오늘까지만 선택 가능
                   />
                 </PopoverContent>
               </Popover>
             </div>
           </div>
 
+          {/* 오류 메시지 표시 */}
+          {error && (
+            <div className='text-sm font-medium text-red-500'>{error}</div>
+          )}
+
           <div className='mt-6 flex justify-end space-x-2'>
             <Button variant='outline' onClick={handleReset}>
               초기화
             </Button>
-            <Button onClick={handleApply}>필터 적용</Button>
+            <Button
+              onClick={handleApply}
+              disabled={isButtonDisabled()}
+              className={
+                isButtonDisabled() ? 'cursor-not-allowed opacity-50' : ''
+              }
+            >
+              필터 적용
+            </Button>
           </div>
         </div>
       </DialogContent>

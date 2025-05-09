@@ -5,7 +5,6 @@ export interface DiaryFrameProps {
   diaryDate: string;
   imageUrl: string;
   title: string;
-  // content: string; // 하루 AI 요약 내용을 props로 할 필요가?
   momentCount: number;
   isSelectionMode: boolean;
   isSelected: boolean;
@@ -17,7 +16,6 @@ const DiaryFrame = ({
   diaryDate,
   imageUrl,
   title,
-  // content,
   momentCount,
   isSelectionMode,
   isSelected,

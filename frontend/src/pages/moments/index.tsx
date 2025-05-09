@@ -39,7 +39,7 @@ const Moments = () => {
     enabled: hasNextPage && !isFetchingNextPage,
   });
 
-  // [여기] moment 클릭 시 해당 다이어리 또는 모멘트로 이동하는 함수
+  // moment 클릭 시 해당 다이어리 또는 모멘트로 이동하는 함수
   const handleMomentClick = (moment: MomentContent) => {
     if (moment.summaryId && moment.momentId) {
       // summaryId와 momentId가 모두 있을 경우 diary 상세 페이지로 이동하면서 해당 moment 위치 전달

@@ -17,6 +17,21 @@ export interface Diary {
   momentCount: number;
 }
 
+// export interface Moment {
+//   summaryId: number;
+//   momentId: number;
+//   momentTime: string;
+//   imageCount: number;
+//   images: string[];
+//   content: string;
+//   tagCount: number;
+//   tags: string[];
+//   diaryDate: string;
+//   imageUrl: string;
+//   title: string;
+//   momentCount: number;
+// }
+
 export interface ResInfo {
   dataCount: number;
   nextCursor: string;
@@ -33,5 +48,5 @@ export interface LibraryParams {
   before?: string;
   startDate?: string;
   endDate?: string;
-  userTags?: string[];
+  userTags?: string;
 }

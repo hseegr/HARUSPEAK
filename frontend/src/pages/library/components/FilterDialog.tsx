@@ -27,25 +27,68 @@ import { useGetUserTags } from '@/hooks/useTagQuery';
 import { cn } from '@/lib/utils';
 import { UserTag } from '@/types/tag';
 
+// 오늘 날짜 설정 (시간은 00:00:00으로 설정)
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
 interface FilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onApply: (filters: {
     startDate?: string;
     endDate?: string;
-    userTags?: string[];
+    userTags?: number[];
   }) => void;
 }
 
 const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: tagsResponse } = useGetUserTags();
   const [filteredTags, setFilteredTags] = useState<UserTag[]>([]);
   const [selectedTagObjects, setSelectedTagObjects] = useState<UserTag[]>([]);
+
+  // 필터 적용 버튼 활성화 여부 확인
+  const isButtonDisabled = () => {
+    // 날짜와 태그 모두 선택되지 않은 경우 비활성화
+    if (!startDate && !endDate && selectedTags.length === 0) {
+      return true;
+    }
+
+    // 날짜를 하나만 선택한 경우 비활성화
+    if ((startDate && !endDate) || (!startDate && endDate)) {
+      return true;
+    }
+
+    // 시작일이 종료일보다 나중이면 비활성화
+    if (startDate && endDate && startDate > endDate) {
+      return true;
+    }
+
+    // 그 외의 경우 활성화
+    return false;
+  };
+
+  // 오류 메시지 업데이트 (날짜 선택 상태에 따라)
+  useEffect(() => {
+    if (!startDate && !endDate && selectedTags.length === 0) {
+      setError('태그 또는 날짜를 선택해주세요');
+    } else if (!startDate && endDate) {
+      setError('시작 날짜를 선택해주세요');
+    } else if (startDate && !endDate) {
+      setError('종료 날짜를 선택해주세요');
+    } else if (startDate && endDate && startDate > endDate) {
+      setError('시작 날짜는 종료 날짜보다 이전이어야 합니다');
+    } else {
+      setError(null);
+    }
+  }, [startDate, endDate, selectedTags.length]);
 
   // 태그 검색 처리
   useEffect(() => {
@@ -63,7 +106,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
 
     const tagObjects = selectedTags
       .map(tagId => {
-        return tagsResponse.tags.find(tag => String(tag.userTagId) === tagId);
+        return tagsResponse.tags.find(tag => tag.userTagId === tagId);
       })
       .filter(tag => tag !== undefined) as UserTag[];
 
@@ -71,6 +114,10 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   }, [selectedTags, tagsResponse?.tags]);
 
   const handleApply = () => {
+    // 버튼이 비활성화되어 있으면 함수 실행 중지
+    if (isButtonDisabled()) return;
+
+    // [여기] 제출할 때 parameters가 빈 값이면 undefined로 보내지 않도록 수정
     onApply({
       startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
@@ -84,22 +131,22 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
     setEndDate(null);
     setSelectedTags([]);
     setSearchQuery('');
+    setError(null);
   };
 
   const toggleTag = (tagId: number) => {
     setSelectedTags(prev => {
-      const stringId = String(tagId);
-      if (prev.includes(stringId)) {
-        return prev.filter(id => id !== stringId);
+      if (prev.includes(tagId)) {
+        return prev.filter(id => id !== tagId);
       }
-      if (prev.length >= 5) {
+      if (prev.length >= 3) {
         return prev;
       }
-      return [...prev, stringId];
+      return [...prev, tagId];
     });
   };
 
-  const removeTag = (tagId: string) => {
+  const removeTag = (tagId: number) => {
     setSelectedTags(prev => prev.filter(id => id !== tagId));
   };
 
@@ -107,11 +154,14 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleDateSelect = (
-    date: Date | undefined,
-    setDate: (date: Date | null) => void,
-  ) => {
-    setDate(date ?? null);
+  const handleStartDateSelect = (date: Date | undefined) => {
+    setStartDate(date ?? null);
+    setStartDateOpen(false); // 날짜 선택 후 달력 닫기
+  };
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    setEndDate(date ?? null);
+    setEndDateOpen(false); // 날짜 선택 후 달력 닫기
   };
 
   return (
@@ -127,7 +177,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
               <label className='mb-2 block text-sm font-medium'>
                 시작 날짜
               </label>
-              <Popover>
+              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant='outline'
@@ -148,9 +198,12 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                   <Calendar
                     mode='single'
                     selected={startDate as Date}
-                    onSelect={date => handleDateSelect(date, setStartDate)}
+                    onSelect={handleStartDateSelect}
                     initialFocus
                     locale={ko}
+                    disabled={date => date > today} // 오늘 이후 날짜는 선택 불가
+                    fromDate={undefined} // 가장 빠른 날짜 제한 없음
+                    toDate={today} // 오늘까지만 선택 가능
                   />
                 </PopoverContent>
               </Popover>
@@ -160,7 +213,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
               <label className='mb-2 block text-sm font-medium'>
                 종료 날짜
               </label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant='outline'
@@ -181,9 +234,12 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                   <Calendar
                     mode='single'
                     selected={endDate as Date}
-                    onSelect={date => handleDateSelect(date, setEndDate)}
+                    onSelect={handleEndDateSelect}
                     initialFocus
                     locale={ko}
+                    disabled={date => date > today} // 오늘 이후 날짜는 선택 불가
+                    fromDate={undefined} // 가장 빠른 날짜 제한 없음
+                    toDate={today} // 오늘까지만 선택 가능
                   />
                 </PopoverContent>
               </Popover>
@@ -207,7 +263,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                     <span>{tag.name}</span>
                     <button
                       className='ml-1 rounded-full p-1 hover:bg-green-200'
-                      onClick={() => removeTag(String(tag.userTagId))}
+                      onClick={() => removeTag(tag.userTagId)}
                     >
                       <Cross1Icon className='h-3 w-3' />
                     </button>
@@ -232,14 +288,14 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                   <Button
                     key={tag.userTagId}
                     variant={
-                      selectedTags.includes(String(tag.userTagId))
+                      selectedTags.includes(tag.userTagId)
                         ? 'default'
                         : 'outline'
                     }
                     size='sm'
                     onClick={() => toggleTag(tag.userTagId)}
                     disabled={
-                      !selectedTags.includes(String(tag.userTagId)) &&
+                      !selectedTags.includes(tag.userTagId) &&
                       selectedTags.length >= 5
                     }
                   >
@@ -247,15 +303,33 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
                     <span className='ml-1 text-xs'>({tag.count})</span>
                   </Button>
                 ))}
+                {filteredTags.length === 0 && (
+                  <div className='w-full p-2 text-center text-gray-500'>
+                    검색 결과가 없습니다
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </div>
+
+          {/* 오류 메시지 표시 */}
+          {error && (
+            <div className='text-sm font-medium text-red-500'>{error}</div>
+          )}
 
           <div className='mt-6 flex justify-end space-x-2'>
             <Button variant='outline' onClick={handleReset}>
               초기화
             </Button>
-            <Button onClick={handleApply}>필터 적용</Button>
+            <Button
+              onClick={handleApply}
+              disabled={isButtonDisabled()}
+              className={
+                isButtonDisabled() ? 'cursor-not-allowed opacity-50' : ''
+              }
+            >
+              필터 적용
+            </Button>
           </div>
         </div>
       </DialogContent>

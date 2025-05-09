@@ -36,7 +36,7 @@ export interface GetMomentsParams {
   limit?: number;
   startDate?: string;
   endDate?: string;
-  userTags?: string;
+  userTags?: string; // 1,2,3
 }
 
 // 순간일기 목록조회 응답
@@ -44,16 +44,7 @@ export interface MomentsResponse {
   data: MomentContent[];
   resInfo: {
     dataCount: number;
-    nextCursor: string | null; // mock data 활용을 위한 타입 수정
+    nextCursor: string;
     hasMore: boolean;
   };
-}
-
-// 순간일기 상세조회 응답
-export interface MomentResponse {
-  momentId: number;
-  momentTime: string;
-  images: string[];
-  // content: string;
-  tags: string[];
 }
