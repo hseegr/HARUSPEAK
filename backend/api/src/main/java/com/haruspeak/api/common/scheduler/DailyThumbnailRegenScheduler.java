@@ -34,7 +34,7 @@ public class DailyThumbnailRegenScheduler {
     @Scheduled(cron = "*/20 * * * * *")
     public void regenerateDailyThumbnail() {
 
-        System.out.println("Thumbnail Regen Scheduler Start !!");
+//        System.out.println("Thumbnail Regen Scheduler Start !!");
 
         // 재생성 대기열 모두 꺼내 담은 후 모두 삭제
         String regenerateKey = "thumbnail:regeneration:queue"; // 키 설정

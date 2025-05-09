@@ -42,10 +42,10 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @return MomentDetailRaw
      */
     @Override
-    public Optional<MomentDetailRaw> findMomentDetail(int userId, int momentId) {
+    public Optional<MomentDetailRaw> findActiveMomentDetail(int userId, int momentId) {
         log.debug("순간 일기 상세 조회 실행 (userId={}, momentId={})", userId, momentId);
 
-        Tuple base = fetchBaseMomentInfo(userId, momentId);
+        Tuple base = fetchBaseActiveMomentInfo(userId, momentId);
         if (base == null) return Optional.empty();
 
         return Optional.of(toMomentDetailRaw(base));
@@ -58,7 +58,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentListItemRaw> findMomentListByCondition(int userId, MomentListRequest request) {
+    public List<MomentListItemRaw> findActiveMomentListByCondition(int userId, MomentListRequest request) {
         log.debug("순간 일기 목록 검색 실행 (userId={}, request={})", userId, request);
 
         List<Integer> filteredMomentIds = null;
@@ -68,18 +68,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
         }
 
         BooleanBuilder conditions = buildSearchConditions(userId, request, filteredMomentIds);
-
-        List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
-                .from(moment)
-                .leftJoin(tag).on(moment.momentId.eq(tag.momentId)) // inner join tag가 있는 row만 조회하기 위해
-                .where(conditions)
-                .groupBy(moment.momentId)
-                .orderBy(moment.momentTime.desc())
-                .limit(request.getLimit())
-                .fetch();
-
-        // 이미지/태그 보강
-        return toMomentlList(baseResults);
+        return toMomentlList(fetchBaseActiveMomentListByCondition(conditions, request.getLimit()));
     }
 
     /**
@@ -89,18 +78,9 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @return List<MomentListDetailRaw>
      */
     @Override
-    public List<MomentListItemRaw> findMomentListBySummaryId(int userId, int summaryId) {
+    public List<MomentListItemRaw> findActiveMomentListBySummaryId(int userId, int summaryId) {
         log.debug("순간 일기 목록 조회 실행 (userId={}, summaryId={})", userId, summaryId);
-
-        List<Tuple> baseResults = queryFactory.select(selectMomentFields().toArray(new Expression[0]))
-                .from(moment)
-                .where(
-                        moment.userId.eq(userId),
-                        moment.summaryId.eq(summaryId)
-                )
-                .fetch();
-        
-        return toMomentlList(baseResults);
+        return toMomentlList(fetchBaseActiveMomentListBySummaryId(userId, summaryId));
     }
 
 
@@ -126,7 +106,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
      * @param momentId 순간일기ID
      * @return ActiveDailyMoment Tuple
      */
-    private Tuple fetchBaseMomentInfo(Integer userId, Integer momentId) {
+    private Tuple fetchBaseActiveMomentInfo(Integer userId, Integer momentId) {
         return queryFactory.select(selectMomentFields().toArray(new Expression[0]))
                 .from(moment)
                 .where(
@@ -134,6 +114,28 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
                         moment.momentId.eq(momentId)
                 )
                 .fetchOne();
+    }
+
+    private List<Tuple> fetchBaseActiveMomentListByCondition(BooleanBuilder conditions, int limit) {
+        return queryFactory.select(selectMomentFields().toArray(new Expression[0]))
+                .from(moment)
+                .leftJoin(tag).on(moment.momentId.eq(tag.momentId))
+                .where(conditions)
+                .groupBy(moment.momentId)
+                .orderBy(moment.momentTime.desc())
+                .limit(limit)
+                .fetch();
+    }
+
+    private List<Tuple> fetchBaseActiveMomentListBySummaryId(int userId, Integer summaryId) {
+        return queryFactory.select(selectMomentFields().toArray(new Expression[0]))
+                .from(moment)
+                .where(
+                        moment.userId.eq(userId),
+                        moment.summaryId.eq(summaryId)
+                )
+                .fetch();
+
     }
 
     /**
@@ -146,21 +148,6 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
         return new MomentDetailRaw(
                 tuple.get(moment.summaryId),
                 momentId,
-                tuple.get(moment.momentTime),
-                tuple.get(moment.imageCount),
-                getImages(momentId),
-                tuple.get(moment.content),
-                tuple.get(moment.tagCount),
-                getUserTagNames(momentId)
-        );
-    }
-
-    private MomentListItemRaw toMomentListItemRaw(Tuple tuple, int order) {
-        Integer momentId = tuple.get(moment.momentId);
-        return new MomentListItemRaw(
-                tuple.get(moment.summaryId),
-                momentId,
-                order,
                 tuple.get(moment.momentTime),
                 tuple.get(moment.imageCount),
                 getImages(momentId),

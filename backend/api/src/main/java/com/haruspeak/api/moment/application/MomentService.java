@@ -35,7 +35,7 @@ public class MomentService {
      */
     @Transactional(readOnly = true)
     public MomentDetailResponse getMomentDetailByMomentId(int userId, int momentId) {
-        return momentRepository.findMomentDetail(userId, momentId)
+        return momentRepository.findActiveMomentDetail(userId, momentId)
                 .map(raw -> {
                     log.debug("✅ 순간 일기 조회 성공 (userId={}, momentId={})", userId, momentId);
                     return toMomentDetail(raw);
@@ -62,7 +62,7 @@ public class MomentService {
             }
         }
 
-        List<MomentListItemRaw> results = momentRepository.findMomentListByCondition(userId,request);
+        List<MomentListItemRaw> results = momentRepository.findActiveMomentListByCondition(userId,request);
         List<MomentListItem> detailList = mapToMomentLstItem(results);
 
         setLimitOneMoreForHasMore(request);
@@ -92,7 +92,7 @@ public class MomentService {
      */
     @Transactional(readOnly = true)
     public List<MomentListItem> getMomentListOfSummary(int userId, int summaryId){
-        List<MomentListItemRaw> results = momentRepository.findMomentListBySummaryId(userId,summaryId);
+        List<MomentListItemRaw> results = momentRepository.findActiveMomentListBySummaryId(userId,summaryId);
 
         if(results.isEmpty()){
             // summaryId : NOT NULL -> moment : NOT NULL

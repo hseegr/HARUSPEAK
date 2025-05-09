@@ -1,6 +1,8 @@
 package com.haruspeak.api.user.application;
 
-import com.haruspeak.api.user.domain.repository.UserTagRepository;
+import com.haruspeak.api.user.domain.UserTagDetail;
+import com.haruspeak.api.user.domain.repository.UserTagJpaRepository;
+import com.haruspeak.api.user.domain.repository.UserTagQdslRepository;
 import com.haruspeak.api.user.dto.UserTag;
 import com.haruspeak.api.user.dto.UserTagRaw;
 import com.haruspeak.api.user.dto.response.UserTagResponse;
@@ -19,19 +21,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserTagRepository userTagRepository;
+    private final UserTagJpaRepository userTagJpaRepository;
+    private final UserTagQdslRepository userTagQdslRepository;
 
     @Transactional(readOnly = true)
     public UserTagResponse getUserTags(int userId) {
-        List<UserTag> userTags =  userTagRepository.findByUserId(userId).stream()
-                .map(detail -> new UserTag(
-                        detail.getUserTagId(),
-                        detail.getName(),
-                        detail.getTotalUsageCount()
-                ))
+        List<UserTag> userTags = userTagJpaRepository.findByUserIdOrderByScoreDesc(userId).stream()
+                .map(this::toUserTag)
                 .toList();
 
         return new UserTagResponse(userTags, userTags.size());
+    }
+
+    private UserTag toUserTag(UserTagDetail detail) {
+        return new UserTag(
+                detail.getUserTagId(),
+                detail.getName(),
+                detail.getTotalUsageCount()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public UserTagResponse getActiveUserTags(int userId) {
+        List<UserTag> userTags = userTagQdslRepository.findActiveUserTagsByUserId(userId).stream()
+                .map(this::toUserTag)
+                .toList();
+
+        return new UserTagResponse(userTags, userTags.size());
+    }
+
+    private UserTag toUserTag(UserTagRaw userTag) {
+        return new UserTag(
+                userTag.userTagId(),
+                userTag.name(),
+                userTag.count()
+        );
     }
 
 }
