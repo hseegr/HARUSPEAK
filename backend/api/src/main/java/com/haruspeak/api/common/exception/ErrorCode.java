@@ -35,10 +35,16 @@ public enum ErrorCode  {
 
     // 409 Conflict
     MOMENT_CONFLICT(40920, "해당 시간의 일기가 이미 존재합니다."),
+    THUMBNAIL_REGEN_CONFLICT(40921, "대기 중인 썸네일 재생성 요청이 이미 존재합니다."),
+    THUMBNAIL_REGENERATING_CONFLICT(40922, "썸네일이 재생성 중입니다. 잠시 후에 시도해주세요."),
 
     // 410 Gone
     DELETED_DIARY(41030, "요청된 하루 일기는 이미 삭제되었습니다. 더 이상 사용할 수 없습니다."),
     DELETED_MOMENT(41040, "요청된 순간 일기는 이미 삭제되었습니다. 더 이상 사용할 수 없습니다."),
+
+    // 429 Too Many Requests
+    THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED(42920, "썸네일 재생성 최대 요청 횟수를 초과하였습니다. 더 이상 재생성이 불가능합니다."),
+    THUMBNAIL_REGEN_REDIS_RETRY_COUNT_LIMIT_EXCEEDED(42921, "가능한 썸네일 redis 재생성 재시도 횟수를 초과하였습니다. 다시 요청해주세요."),
 
     // 500 Internal Server Error
     USER_REGISTER_ERROR(50010, "회원가입 처리 중 오류가 발생했습니다."),
