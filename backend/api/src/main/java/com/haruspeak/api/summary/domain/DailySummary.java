@@ -64,6 +64,10 @@ public class DailySummary {
         this.imageUrl = imageUrl;
     }
 
+    public void increaseContentGenerateCount() {
+        this.contentGenerateCount++;
+    }
+
     public void increaseImageGenerateCount() {
         this.imageGenerateCount++;
     }
