@@ -58,6 +58,9 @@ public class SummaryService {
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
                 .orElseThrow(() -> new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
 
+        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED); // user 검증
+        if(dailySummary.isDeleted()) throw new HaruspeakException(ErrorCode.DIARY_NOT_FOUND); // soft delete 여부 검증
+
         if(dailySummary.getImageGenerateCount() >= 3) { // 재생성 요청 횟수가 3 이상일 경우, 횟수초과 에러
             throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED);
         } else { // 재생성 요청 횟수 3 미만일 경우, 횟수+1
