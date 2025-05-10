@@ -7,6 +7,7 @@ import com.haruspeak.api.today.application.TodayService;
 import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.today.dto.request.MomentWriteRequest;
 import com.haruspeak.api.today.dto.response.TodayMomentListResponse;
+import com.haruspeak.api.today.dto.response.TodaySttResponse;
 import com.haruspeak.api.user.dto.response.UserStatResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -30,6 +32,20 @@ import org.springframework.web.bind.annotation.*;
 public class TodayController {
 
     private final TodayService todayService;
+
+    @PostMapping(value="/voice-to-text", consumes = "multipart/form-data")
+    @Operation(
+            summary = "음성파일 텍스트변환",
+            description = "요청된 음성파일을 텍스트로 변환하여 응답합니다."
+    )
+    public ResponseEntity<TodaySttResponse> transferStt(
+            @RequestParam("file") MultipartFile file,
+            @AuthenticatedUser Integer userId
+    ){
+        log.info("[POST] api/today/voice-to-text 음성파일 텍스트 변환 (userId={})", userId);
+        String uri = "/ai/stt";
+        return ResponseEntity.ok(todayService.transferStt(uri, file, userId));
+    }
 
     @PostMapping("")
     @Operation(

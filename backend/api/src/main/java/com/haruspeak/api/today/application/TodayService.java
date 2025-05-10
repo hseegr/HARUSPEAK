@@ -4,15 +4,19 @@ package com.haruspeak.api.today.application;
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.s3.S3Service;
+import com.haruspeak.api.common.util.FastApiClient;
+import com.haruspeak.api.moment.dto.response.MomentTagCreateResponse;
 import com.haruspeak.api.today.dto.TodayMoment;
 import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.today.dto.request.MomentWriteRequest;
 import com.haruspeak.api.today.dto.response.TodayMomentListResponse;
 import com.haruspeak.api.today.domain.repository.TodayMomentRedisRepository;
+import com.haruspeak.api.today.dto.response.TodaySttResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +35,16 @@ public class TodayService {
     private final TodayMomentRedisRepository todayRedisRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final S3Service s3Service;
+    private final FastApiClient fastApiClient;
+
+
+    public TodaySttResponse transferStt(
+            String uri,
+            MultipartFile file,
+            Integer userId
+    ) {
+        return fastApiClient.convertVoiceToText(uri, file, TodaySttResponse.class);
+    }
 
     /**
      * 순간 일기 작성
