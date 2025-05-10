@@ -34,7 +34,8 @@ public class SummaryService {
         // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
                 .orElseThrow(() -> new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
-        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED);
+        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED); // user 검증
+        if(dailySummary.isDeleted()) throw new HaruspeakException(ErrorCode.DIARY_NOT_FOUND); // soft delete 여부 검증
 
         // 요약내용생성횟수가 3회 이상이면 더이상 요청 불가
         if(dailySummary.getContentGenerateCount() >= 3) throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_GENERATE_COUNT_LIMIT_EXCEEDED);
