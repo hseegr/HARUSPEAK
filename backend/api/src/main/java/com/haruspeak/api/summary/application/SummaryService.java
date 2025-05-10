@@ -29,7 +29,20 @@ public class SummaryService {
 
     // [API] AI 하루일기 요약 재생성
     @Transactional
-    public DailySummaryCreateResponse regenerateDailySummary (String uri, DailySummaryCreateRequest dscr) {
+    public DailySummaryCreateResponse regenerateDailySummary (Integer userId, Integer summaryId, String uri, DailySummaryCreateRequest dscr) {
+
+        // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
+        DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
+                .orElseThrow(() -> new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
+        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED); // user 검증
+        if(dailySummary.isDeleted()) throw new HaruspeakException(ErrorCode.DIARY_NOT_FOUND); // soft delete 여부 검증
+
+        // 요약내용생성횟수가 3회 이상이면 더이상 요청 불가
+        if(dailySummary.getContentGenerateCount() >= 3) throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_GENERATE_COUNT_LIMIT_EXCEEDED);
+
+        // 요약내용재생성횟수 1회 증가
+        dailySummary.increaseContentGenerateCount();
+
         // ai 서버에 프론트 요청값 전달 후 반환 받기
         return fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
     }
@@ -44,6 +57,9 @@ public class SummaryService {
         // RDB 에서 summaryId 에 해당하는 dailySummary 가져오기, 없으면 에러처리
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
                 .orElseThrow(() -> new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
+
+        if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED); // user 검증
+        if(dailySummary.isDeleted()) throw new HaruspeakException(ErrorCode.DIARY_NOT_FOUND); // soft delete 여부 검증
 
         if(dailySummary.getImageGenerateCount() >= 3) { // 재생성 요청 횟수가 3 이상일 경우, 횟수초과 에러
             throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED);

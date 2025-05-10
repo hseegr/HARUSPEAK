@@ -22,16 +22,19 @@ import org.springframework.web.bind.annotation.*;
 public class SummaryController {
     private final SummaryService summaryService;
 
+    // 일기요약 재생성 요청
     @PostMapping("/{summaryId}/content/regenerate")
     @Operation(summary = "하루일기 요약 재생성", description = "하루일기 요약 내용을 AI 를 통해 재생성합니다.")
     public ResponseEntity<DailySummaryCreateResponse> regenerateDailySummary (
-            @RequestBody(required = true) DailySummaryCreateRequest dscr
-//            @AuthenticatedUser Integer userId
+            @PathVariable Integer summaryId,
+            @RequestBody(required = true) DailySummaryCreateRequest dscr,
+            @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/daily-summary";
-        return ResponseEntity.ok(summaryService.regenerateDailySummary(uri, dscr));
+        return ResponseEntity.ok(summaryService.regenerateDailySummary(userId, summaryId, uri, dscr));
     }
 
+    // 썸네일 재생성 요청
     @PostMapping("/{summaryId}/image/regenerate")
     @Operation(summary = "하루일기 썸네일 재생성", description = "하루일기 썸네일을 AI 를 통해 재생성합니다.")
     public ResponseEntity<Void> regenerateDailyThumbnail (

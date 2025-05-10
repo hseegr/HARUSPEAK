@@ -18,17 +18,8 @@ public class MomentTagService {
     // [API] AI 모먼트 태그 자동생성
     @Transactional
     public MomentTagCreateResponse createMomentTag(String uri, MomentTagCreateRequest mtcr) {
-
         // ai 서버에 프론트 요청값 전달 후 반환 받기
         MomentTagCreateResponse response = fastApiClient.getPrediction(uri, mtcr, MomentTagCreateResponse.class);
-
-        // 반환 받은 값과 나머지 데이터들 redis 에 저장
-        // redis 에 저장되는 값들 : (key, (createdAt, tags))
-//        String createdAt = mtcr.createdAt();
-
-        // redis 저장
-//        saveInRedis(momentTagResult);
-
         return response;
     }
 
