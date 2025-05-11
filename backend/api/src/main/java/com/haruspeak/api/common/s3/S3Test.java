@@ -15,14 +15,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Test {
 
     private final S3Uploader s3Uploader;
+    private final S3Service s3Service;
 
 
 //    @Hidden
     @PostMapping("/upload-base64")
     public ResponseEntity<String> uploadBase64(@RequestBody Base64UploadRequest request) {
-        MultipartFile file = FileConverter.fromBase64(request.base64());
-        String key = "uploads/" + file.getOriginalFilename();
-        String url = s3Uploader.uploadFile(file, key);
+//        MultipartFile file = FileConverter.fromBase64(request.base64());
+//        String key = "uploads/" + file.getOriginalFilename();
+//        String url = s3Uploader.uploadFile(file, key);
+        String url = s3Service.uploadImagesAndGetUrls(request.base64);
         return ResponseEntity.ok(url);
     }
 
