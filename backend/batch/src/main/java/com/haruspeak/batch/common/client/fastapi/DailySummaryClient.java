@@ -21,14 +21,14 @@ public class DailySummaryClient {
 
     /**
      * 오늘 작성한 일기 내용으로 api를 호출하여 제목과 요약을 받아오는 client
-     * @param todayDiaryContent 오늘 작성한 모든 일기 내용
+     * @param totalTodayContent 오늘 작성한 모든 일기 내용
      * @return DailySummaryResponse 제목, 요약
      */
-    public DailySummaryResponse getDailySummary(String todayDiaryContent) {
+    public DailySummaryResponse getDailySummary(String totalTodayContent) {
         return ApiClientHelper.post(
                 restTemplate,
                 industryVectorUrl,
-                new DiaryRequest(todayDiaryContent),
+                new DiaryRequest(totalTodayContent),
                 DailySummaryResponse.class
         );
     }
