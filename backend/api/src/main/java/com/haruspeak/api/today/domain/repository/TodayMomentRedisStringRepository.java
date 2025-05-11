@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 @Repository
 @RequiredArgsConstructor
-public class TodayMomentRedisRepository implements TodayMomentRepository {
+public class TodayMomentRedisStringRepository implements TodayMomentRepository {
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
