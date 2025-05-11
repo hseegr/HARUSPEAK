@@ -1,4 +1,4 @@
-package com.haruspeak.batch.diary.dto.request;
+package com.haruspeak.batch.dto.request;
 
 public record DiaryRequest (
     String content

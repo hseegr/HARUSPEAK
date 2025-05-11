@@ -1,4 +1,4 @@
-package com.haruspeak.batch.diary.dto.response;
+package com.haruspeak.batch.dto.response;
 
 import lombok.Data;
 
