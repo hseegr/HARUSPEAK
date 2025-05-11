@@ -6,22 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class SummaryThumnailRegenStateRedisRepositoryImpl implements SummaryThumnailRegenStateRedisRepository {
 
-    private final RedisTemplate<String, SummaryThumnailRegenState> redisTemplate;
+    private final RedisTemplate<String, Map<Integer, SummaryThumnailRegenState>> redisTemplate;
 
-    @Override
-    public void save(String userId, String summaryId, SummaryThumnailRegenState state) {
-
-    }
-
-    @Override
-    public void delete(String userId, String summaryId) {
-
-    }
 
     @Override
     public SummaryThumnailRegenState findBySummaryId(int userId, int summaryId) {
@@ -41,7 +34,7 @@ public class SummaryThumnailRegenStateRedisRepositoryImpl implements SummaryThum
     }
 
 
-    public String getRedisKey(int userId) {
+    private String getRedisKey(int userId) {
         return "user:" + userId + ":image:regeneration";
     }
 }
