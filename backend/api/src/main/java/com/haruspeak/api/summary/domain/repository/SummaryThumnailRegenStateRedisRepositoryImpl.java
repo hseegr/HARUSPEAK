@@ -1,6 +1,6 @@
 package com.haruspeak.api.summary.domain.repository;
 
-import com.haruspeak.api.summary.domain.SummaryThumnailRegenState;
+import com.haruspeak.api.summary.domain.SummaryThumbnailRegenState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,13 +13,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SummaryThumnailRegenStateRedisRepositoryImpl implements SummaryThumnailRegenStateRedisRepository {
 
-    private final RedisTemplate<String, Map<String, SummaryThumnailRegenState>> redisTemplate;
+    private final RedisTemplate<String, Map<String, SummaryThumbnailRegenState>> thumbnailRedisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     @Override
-    public SummaryThumnailRegenState findBySummaryId(int userId, int summaryId) {
-        Object value =  redisTemplate.opsForHash().get(getRedisKey(userId), String.valueOf(summaryId));
-        return value == null ? null : (SummaryThumnailRegenState) value;
+    public SummaryThumbnailRegenState findBySummaryId(int userId, int summaryId) {
+        Object value =  thumbnailRedisTemplate.opsForHash().get(getRedisKey(userId), String.valueOf(summaryId));
+        return value == null ? null : (SummaryThumbnailRegenState) value;
     }
 
     /**
