@@ -40,6 +40,8 @@ public class DailySummaryService {
     private final DailySummaryRepository dailySummaryRepository;
     private final ActiveDailySummaryQdslRepositoryImpl activeSummaryRepository;
 
+    private final ThumnailRegenStateViewer thumnailRegenStateViewer;
+
     @Transactional
     public void updateDailySummary(Integer summaryId, DailySummaryUpdateRequest request){
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
@@ -87,7 +89,7 @@ public class DailySummaryService {
         }
 
         List<SummaryDetailRaw> results = activeSummaryRepository.findSummaryListByCondition(userId,request);
-        List<SummaryDetail> detailList = mapToSummaryDetail(results);
+        List<SummaryDetail> detailList = mapToSummaryDetail(results, userId);
 
         // 더 조회할 게 남았는지 : 1개 더 조회해서 다 조회 됐으면 hasNext
         boolean hasNext = results.size() > request.getLimit();
@@ -146,7 +148,7 @@ public class DailySummaryService {
         return activeSummaryRepository.findSummaryDetailRaw(userId, summaryId)
                 .map(raw -> {
                     log.debug("✅ 하루 일기 조회 성공 (userId={}, summaryId={})", userId, summaryId);
-                    return toSummaryDetail(raw);
+                    return toSummaryDetail(raw, userId);
                 })
                 .orElseThrow(() -> {
                     log.warn("⚠️ 조회 실패 - 접근 권한 없거나 존재하지 않음 (userId={}, summaryId={})", userId, summaryId);
@@ -171,14 +173,14 @@ public class DailySummaryService {
      * @param raw 목록 한 줄
      * @return MomentListDetail
      */
-    private SummaryDetail toSummaryDetail(SummaryDetailRaw raw) {
+    private SummaryDetail toSummaryDetail(SummaryDetailRaw raw, int userId) {
         return new SummaryDetail(
                 raw.summaryId(),
                 raw.diaryDate(),
                 raw.imageUrl(),
                 raw.title(),
                 raw.content(),
-                false, // 나중에 수정하기
+                thumnailRegenStateViewer.isGeneratingOfSummary(userId, raw.summaryId()), // 임시
                 raw.imageGenerateCount(),
                 raw.contentGenerateCount(),
                 raw.momentCount()
@@ -190,9 +192,9 @@ public class DailySummaryService {
      * @param results 목록
      * @return 변환된 목록
      */
-    private List<SummaryDetail> mapToSummaryDetail(List<SummaryDetailRaw> results) {
+    private List<SummaryDetail> mapToSummaryDetail(List<SummaryDetailRaw> results, int userId) {
         return results.stream()
-                .map(this::toSummaryDetail)
+                .map(result -> toSummaryDetail(result, userId))
                 .toList();
     }
 }

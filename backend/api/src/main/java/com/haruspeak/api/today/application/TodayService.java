@@ -9,7 +9,7 @@ import com.haruspeak.api.today.dto.TodayMoment;
 import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.today.dto.request.MomentWriteRequest;
 import com.haruspeak.api.today.dto.response.TodayMomentListResponse;
-import com.haruspeak.api.today.domain.repository.TodayMomentRedisRepository;
+import com.haruspeak.api.today.domain.repository.TodayMomentRedisStringRepository;
 import com.haruspeak.api.today.dto.response.TodaySttResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 public class TodayService {
 
-    private final TodayMomentRedisRepository todayRedisRepository;
+    private final TodayMomentRedisStringRepository todayRedisRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final S3Service s3Service;
     private final FastApiClient fastApiClient;
