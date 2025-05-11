@@ -1,8 +1,8 @@
-package com.haruspeak.api.moment.application;
+package com.haruspeak.api.today.application;
 
 import com.haruspeak.api.common.util.FastApiClient;
-import com.haruspeak.api.moment.dto.request.MomentTagCreateRequest;
-import com.haruspeak.api.moment.dto.response.MomentTagCreateResponse;
+import com.haruspeak.api.today.dto.request.MomentTagCreateRequest;
+import com.haruspeak.api.today.dto.response.MomentTagCreateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.haruspeak.api.common.scheduler;
+package com.haruspeak.api.scheduler;
 
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;

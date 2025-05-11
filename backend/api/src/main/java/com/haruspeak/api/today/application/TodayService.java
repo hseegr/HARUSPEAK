@@ -5,7 +5,6 @@ import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.s3.S3Service;
 import com.haruspeak.api.common.util.FastApiClient;
-import com.haruspeak.api.moment.dto.response.MomentTagCreateResponse;
 import com.haruspeak.api.today.dto.TodayMoment;
 import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.today.dto.request.MomentWriteRequest;
