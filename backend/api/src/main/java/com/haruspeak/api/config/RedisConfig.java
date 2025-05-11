@@ -43,8 +43,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Map<Integer, SummaryThumnailRegenState>> thumnailRegenStateRedisTemplate(RedisConnectionFactory connectionFactory) {
-        return createRedisTemplate(connectionFactory, new RedisTemplate<String, Map<Integer, SummaryThumnailRegenState>>());
+    public RedisTemplate<String, Map<String, SummaryThumnailRegenState>> thumnailRegenStateRedisTemplate(RedisConnectionFactory connectionFactory) {
+        return createRedisTemplate(connectionFactory, new RedisTemplate<String, Map<String, SummaryThumnailRegenState>>());
     }
 
 
