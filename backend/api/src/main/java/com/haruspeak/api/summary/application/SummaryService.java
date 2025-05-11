@@ -40,11 +40,15 @@ public class SummaryService {
         // 요약내용생성횟수가 3회 이상이면 더이상 요청 불가
         if(dailySummary.getContentGenerateCount() >= 3) throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_GENERATE_COUNT_LIMIT_EXCEEDED);
 
-        // 요약내용재생성횟수 1회 증가
-        dailySummary.increaseContentGenerateCount();
-
-        // ai 서버에 프론트 요청값 전달 후 반환 받기
-        return fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
+        try {
+            // ai 서버에 프론트 요청값 전달 후 반환 받기
+            DailySummaryCreateResponse response = fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
+            // 성공 시 요약내용재생성횟수 1회 증가
+            dailySummary.increaseContentGenerateCount();
+            return response;
+        } catch (Exception e) {
+            throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_REGENERATION_FAILED); // 필요에 따라 ErrorCode 조정
+        }
     }
 
     // [API] AI 하루일기 썸네일 재생성
