@@ -2,8 +2,8 @@ package com.haruspeak.batch.diary.dto.response;
 
 import lombok.Data;
 
-@Data
-public class DailySummaryResponse {
-    private String title;
-    private String summary;
+public record DailySummaryResponse (
+    String title,
+    String summary
+){
 }

@@ -8,4 +8,8 @@ public class ApiException extends HaruspeakBatchException {
     public ApiException(ErrorCode errorCode) {
         super(errorCode);
     }
+
+    public ApiException(ErrorCode errorCode, Exception cause) {
+        super(errorCode, cause);
+    }
 }

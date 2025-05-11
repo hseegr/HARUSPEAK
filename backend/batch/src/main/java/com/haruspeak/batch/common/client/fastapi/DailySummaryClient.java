@@ -1,18 +1,13 @@
 package com.haruspeak.batch.common.client.fastapi;
 
 import com.haruspeak.batch.common.client.ApiClientHelper;
-import com.haruspeak.batch.common.exception.ApiException;
-import com.haruspeak.batch.common.exception.ErrorCode;
 import com.haruspeak.batch.diary.dto.request.DiaryRequest;
 import com.haruspeak.batch.diary.dto.response.DailySummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.*;
 
 @Component
 @RequiredArgsConstructor

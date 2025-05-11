@@ -56,7 +56,7 @@ public class RedisConfig {
     /**
      * 배치 RedisTemplate 사용
      */
-    @Bean
+    @Bean(name = "redisTemplate")
     public RedisTemplate<String, Object> batchRedisTemplate(RedisConnectionFactory batchConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(batchConnectionFactory);
@@ -80,7 +80,7 @@ public class RedisConfig {
     /**
      * API RedisTemplate 사용
      */
-    @Bean
+    @Bean(name = "apiRedisTemplate")
     public RedisTemplate<String, Object> apiRedisTemplate(RedisConnectionFactory apiConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(apiConnectionFactory);

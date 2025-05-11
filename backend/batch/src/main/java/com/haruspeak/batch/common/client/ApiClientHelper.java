@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+
 @Slf4j
 public class ApiClientHelper {
 
@@ -25,6 +27,7 @@ public class ApiClientHelper {
             );
 
             if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("[{}] {}", response.getStatusCode(), ErrorCode.API_CALL_FAILED.getMessage());
                 throw new ApiException(ErrorCode.API_CALL_FAILED);
             }
 
@@ -35,8 +38,10 @@ public class ApiClientHelper {
             return response.getBody();
 
         } catch (Exception e) {
-            e.getStackTrace();
-            throw new ApiException(ErrorCode.API_CLIENT_EXCEPTION);
+            log.error(ErrorCode.API_CLIENT_EXCEPTION.getMessage());
+            log.error(e.getMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw new ApiException(ErrorCode.API_CLIENT_EXCEPTION, e);
         }
     }
 
