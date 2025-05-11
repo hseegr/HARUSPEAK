@@ -13,12 +13,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SummaryThumnailRegenStateRedisRepositoryImpl implements SummaryThumnailRegenStateRedisRepository {
 
-    private final RedisTemplate<String, Map<Integer, SummaryThumnailRegenState>> redisTemplate;
+    private final RedisTemplate<String, Map<String, SummaryThumnailRegenState>> redisTemplate;
 
 
     @Override
     public SummaryThumnailRegenState findBySummaryId(int userId, int summaryId) {
-        Object value =  redisTemplate.opsForHash().get(getRedisKey(userId), summaryId);
+        Object value =  redisTemplate.opsForHash().get(getRedisKey(userId), String.valueOf(summaryId));
         return value == null ? null : (SummaryThumnailRegenState) value;
     }
 
