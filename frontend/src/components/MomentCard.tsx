@@ -64,18 +64,21 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
             ))}
           </div>
 
-          {isToday && tags.length < 3 && moment.content !== '' && (
-            <div className='flex-shrink-0 pl-1'>
-              <button
-                onClick={handleGenerateTags}
-                className='rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
-                aria-label='AI 태그 자동 생성'
-                disabled={isLoading}
-              >
-                {isLoading ? '생성 중...' : '태그 자동 생성'}
-              </button>
-            </div>
-          )}
+          {isToday &&
+            tags.length < 3 &&
+            moment.content !== '' &&
+            !tags.includes('아무말') && (
+              <div className='flex-shrink-0 pl-1'>
+                <button
+                  onClick={handleGenerateTags}
+                  className='rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                  aria-label='AI 태그 자동 생성'
+                  disabled={isLoading}
+                >
+                  {isLoading ? '생성 중...' : '태그 자동 생성'}
+                </button>
+              </div>
+            )}
         </section>
       </article>
       <MomentEditDialog

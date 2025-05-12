@@ -1,4 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import {
   Dialog,
@@ -17,6 +22,20 @@ interface MomentEditDialogProps {
   moment: MomentContent;
 }
 
+// 태그 입력을 위한 스키마 정의
+const tagSchema = z.object({
+  tag: z
+    .string()
+    .min(1, '태그를 입력해주세요')
+    .max(10, '태그는 최대 10글자까지 작성 가능합니다')
+    .regex(
+      /^[a-zA-Z0-9가-힣_]*$/,
+      '공백, _를 제외한 특수문자는 입력 불가합니다',
+    ),
+});
+
+type TagFormData = z.infer<typeof tagSchema>;
+
 const MomentEditDialog = ({
   open,
   onOpenChange,
@@ -24,7 +43,6 @@ const MomentEditDialog = ({
 }: MomentEditDialogProps) => {
   const {
     editedMoment,
-    newTag,
     setNewTag,
     isSaving,
     date,
@@ -39,12 +57,47 @@ const MomentEditDialog = ({
     resetState,
   } = useMomentEdit(moment, () => onOpenChange(false));
 
+  const [tagError, setTagError] = useState<string>('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<TagFormData>({
+    resolver: zodResolver(tagSchema),
+    defaultValues: {
+      tag: '',
+    },
+  });
+
+  // 태그 추가 핸들러
+  const onSubmit = (data: TagFormData) => {
+    if (editedMoment.tags.length >= 10) {
+      setTagError('태그는 최대 10개까지 입력 가능합니다');
+      return;
+    }
+    setNewTag(data.tag);
+    handleAddTag();
+    reset();
+  };
+
+  // 엔터 키 핸들러
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit(onSubmit)();
+    }
+  };
+
   // Dialog가 열릴 때마다 상태 초기화
   useEffect(() => {
     if (open) {
       resetState();
+      reset();
+      setTagError('');
     }
-  }, [open, resetState]); // resetState가 useCallback으로 memoized되어 있어서 안전함
+  }, [open, resetState, reset]);
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
@@ -112,7 +165,7 @@ const MomentEditDialog = ({
                       />
                       <button
                         onClick={() => handleDeleteImage(idx)}
-                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
+                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
                       >
                         ✕
                       </button>
@@ -136,21 +189,27 @@ const MomentEditDialog = ({
 
           {/* 태그 추가 */}
           <div className='flex flex-col gap-2'>
-            <div className='flex gap-2'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex gap-2'>
               <input
-                value={newTag}
-                onChange={e => setNewTag(e.target.value)}
+                {...register('tag')}
+                onKeyDown={handleKeyPress}
                 className='flex-1 rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
                 placeholder='태그 입력'
+                disabled={editedMoment.tags.length >= 10}
               />
               <button
-                onClick={handleAddTag}
-                disabled={newTag.trim() === ''}
+                type='submit'
+                disabled={editedMoment.tags.length >= 10}
                 className='rounded-full bg-[#41644A] px-3 py-1.5 text-sm text-white disabled:bg-gray-300'
               >
                 태그 추가
               </button>
-            </div>
+            </form>
+            {(errors.tag || tagError) && (
+              <div className='text-sm text-red-500'>
+                {errors.tag?.message || tagError}
+              </div>
+            )}
 
             {/* 현재 태그 목록 */}
             <div className='flex flex-wrap gap-2'>
@@ -162,13 +221,21 @@ const MomentEditDialog = ({
                   {tag}
                   <button
                     onClick={() => handleDeleteTag(idx)}
-                    className='text-gray-500 hover:text-gray-700'
+                    className='text-gray-500 hover:text-red-600'
                   >
                     ✕
                   </button>
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => {
+                editedMoment.tags = [];
+              }}
+              className='mt-2 text-sm text-red-500'
+            >
+              태그 목록 초기화
+            </button>
           </div>
         </div>
         {isSaveDisabled && (
