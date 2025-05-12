@@ -1,8 +1,8 @@
 package com.haruspeak.api.summary.domain.repository;
 
-import com.haruspeak.api.summary.domain.SummaryThumbnailRegenState;
+import java.util.Map;
 
 public interface SummaryThumnailRegenStateRedisRepository {
-    SummaryThumbnailRegenState findBySummaryId(int userId, int summaryId);
+    Object findBySummaryId(int userId, int summaryId);
     boolean isGenereatingOfSummary(int userId, int summaryId);
 }

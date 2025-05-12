@@ -18,9 +18,8 @@ public class SummaryThumnailRegenStateRedisRepositoryImpl implements SummaryThum
 
 
     @Override
-    public SummaryThumbnailRegenState findBySummaryId(int userId, int summaryId) {
-        Object value =  redisTemplate.opsForHash().get(getRedisKey(userId), String.valueOf(summaryId));
-        return value == null ? null : (SummaryThumbnailRegenState) value;
+    public Object findBySummaryId(int userId, int summaryId) {
+        return redisTemplate.opsForHash().get(getRedisKey(userId), String.valueOf(summaryId));
     }
 
     /**
