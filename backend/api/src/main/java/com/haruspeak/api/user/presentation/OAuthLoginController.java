@@ -47,26 +47,20 @@ public class OAuthLoginController {
      * - HttpStatus 302 : FOUND
      * - 구글 로그인 URL로 리다이렉트
      */
-//    @GetMapping("/google/login")
-//    @Operation(
-//            summary = "구글 SNS 로그인",
-//            description
-//                    =   "구글 OAuth2 로그인 인증 과정을 시작합니다.\n" +
-//                        "요청 시 사용자는 구글 로그인 화면으로 리다이렉트되며, 로그인 완료 후 서버로 콜백됩니다."
-//    )
-//    public ResponseEntity<Void> redirectToGoogle() {
-//        log.info("[GET] api/auth/google/login 로그인 요청");
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(URI.create(authorizationUri));
-//        return ResponseEntity.status(HttpStatus.FOUND)
-//                .headers(headers)
-//                .build();
-//    }
-
     @GetMapping("/google/login")
-    public void redirectToGoogle(HttpServletResponse response) throws IOException {
+    @Operation(
+            summary = "구글 SNS 로그인",
+            description
+                    =   "구글 OAuth2 로그인 인증 과정을 시작합니다.\n" +
+                        "요청 시 사용자는 구글 로그인 화면으로 리다이렉트되며, 로그인 완료 후 서버로 콜백됩니다."
+    )
+    public ResponseEntity<Void> redirectToGoogle() {
         log.info("[GET] api/auth/google/login 로그인 요청");
-        response.sendRedirect(authorizationUri); // ← 얘는 Spring 상관없이 무조건 302 + Location
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(authorizationUri));
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .headers(headers)
+                .build();
     }
 
 
