@@ -13,6 +13,7 @@ interface DiaryHeaderProps {
   onEditStart: () => void;
   onEditCancel: () => void;
   onEditSave: () => void;
+  onDeleteClick: () => void;
 }
 
 const DiaryHeader = ({
@@ -25,6 +26,7 @@ const DiaryHeader = ({
   onEditStart,
   onEditCancel,
   onEditSave,
+  onDeleteClick,
 }: DiaryHeaderProps) => {
   return (
     <div className='mb-4'>
@@ -47,7 +49,7 @@ const DiaryHeader = ({
             {!isEditing && (
               <>
                 <ContentEditBtn onClick={onEditStart} isEditing={isEditing} />
-                <DiaryDeleteBtn />
+                <DiaryDeleteBtn onClick={onDeleteClick} />
               </>
             )}
             {isEditing && (
