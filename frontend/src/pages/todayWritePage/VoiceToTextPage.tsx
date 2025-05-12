@@ -24,17 +24,9 @@ const VoiceToTextPage = () => {
   };
 
   // 변환(중지) 버튼 클릭
-  const handleConvert = e => {
+  const handleConvert = () => {
     console.log('🛑 [handleConvert] 중지 버튼 클릭됨');
-    e.preventDefault(); // 이벤트 기본 동작 방지
-    e.stopPropagation(); // 이벤트 버블링 방지
-
-    try {
-      SpeechRecognition.stopListening();
-      console.log('녹음 중지 성공, listening 상태:', listening);
-    } catch (error) {
-      console.error('녹음 중지 실패:', error);
-    }
+    SpeechRecognition.stopListening();
   };
 
   // 취소 버튼 클릭
