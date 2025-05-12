@@ -14,37 +14,12 @@ const VoiceToTextPage = () => {
   const navigate = useNavigate();
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
-  // 녹음 시작 -> 명시적 사용자 권한 요청
+  // handleStart에서 getUserMedia 제거 → 오로지 startListening()만 호출
   const handleStart = () => {
-    console.log('🟢 [handleStart] 녹음 시작 버튼 클릭됨');
     SpeechRecognition.startListening({
       continuous: true,
       language: 'ko',
     });
-  };
-
-  // 변환(중지) 버튼 클릭
-  const handleConvert = () => {
-    console.log('🛑 [handleConvert] 중지 버튼 클릭됨');
-    SpeechRecognition.stopListening();
-  };
-
-  // 취소 버튼 클릭
-  const handleCancle = () => {
-    console.log('↩️ [handleCancel] 취소 버튼 클릭됨');
-    resetTranscript();
-    SpeechRecognition.stopListening();
-    navigate('/todaywrite');
-  };
-
-  // 저장 버튼 클릭 시
-  const handleSave = () => {
-    console.log('💾 [handleSave] 저장 버튼 클릭됨, transcript:', transcript);
-    if (transcript.trim()) {
-      TodayWriteStore.getState().addTextBlock(transcript.trim());
-    }
-    SpeechRecognition.stopListening();
-    navigate('/todaywrite');
   };
 
   // 컴포넌트 언마운트 시 인식 중단
@@ -54,6 +29,22 @@ const VoiceToTextPage = () => {
       SpeechRecognition.stopListening();
     };
   }, []);
+
+  const handleConvert = () => {
+    SpeechRecognition.stopListening();
+  };
+
+  const handleCancle = () => {
+    resetTranscript();
+    navigate('/todaywrite');
+  };
+
+  const handleSave = () => {
+    if (transcript.trim()) {
+      TodayWriteStore.getState().addTextBlock(transcript.trim());
+    }
+    navigate('/todaywrite');
+  };
 
   return (
     <div className='flex min-h-[calc(100vh-150px)] w-full flex-col items-center justify-center gap-6'>
@@ -75,7 +66,6 @@ const VoiceToTextPage = () => {
           {listening ? (
             <button
               onClick={handleConvert}
-              onMouseDown={handleConvert}
               className='px-3 py-2 text-xs font-semibold text-haru-green'
             >
               중지
