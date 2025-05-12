@@ -8,6 +8,7 @@ import com.haruspeak.api.common.util.FastApiClient;
 import com.haruspeak.api.today.dto.TodayMoment;
 import com.haruspeak.api.today.dto.request.MomentUpdateRequest;
 import com.haruspeak.api.today.dto.request.MomentWriteRequest;
+import com.haruspeak.api.today.dto.request.TagUpdateRequest;
 import com.haruspeak.api.today.dto.response.TodayMomentListResponse;
 import com.haruspeak.api.today.domain.repository.TodayMomentRedisStringRepository;
 import com.haruspeak.api.today.dto.response.TodaySttResponse;
@@ -161,6 +162,28 @@ public class TodayService {
             return new TodayMomentListResponse(moments, moments.size());
         } catch (Exception e) {
             throw new HaruspeakException(ErrorCode.MOMENT_READ_ERROR, e.getMessage());
+        }
+    }
+
+    /**
+     * 태그 업데이트
+     * @param request 태그 업데이트 요청
+     * @param userId 유저ID
+     */
+    public void updateTag(TagUpdateRequest request, Integer userId){
+        
+        String key = redisKey(userId, LocalDateTime.now());
+
+        try{
+            Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, request.createdAt());
+
+            if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
+
+            existingMoment.put("tags", request.tags());
+
+            redisTemplate.opsForHash().put(key, request.createdAt(), existingMoment);
+        } catch (Exception e) {
+            throw new HaruspeakException(ErrorCode.MOMENT_UPDATE_ERROR, e.getMessage());
         }
     }
 
