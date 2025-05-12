@@ -3,16 +3,19 @@ import { Navigate } from 'react-router-dom';
 import { googleLogin } from '@/apis/accountApi';
 import googleLogo from '@/assets/images/googlelogin.png';
 import { useUserInfoQuery } from '@/hooks/useLoginQuery';
+import useAuthStore from '@/store/userStore';
 
 const LoginPage = () => {
-  const { isLoading, data } = useUserInfoQuery();
+  const { user } = useAuthStore();
+  const { data: userInfo, isLoading } = useUserInfoQuery({ enabled: true });
 
+  // 로딩 중이면 로딩 상태 표시
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return <div>Loading...</div>;
   }
 
-  if (data) {
-    // 이미 로그인된 상태라면 홈으로 리다이렉트
+  // 로그인된 사용자면 홈으로 리다이렉트
+  if (user || userInfo) {
     return <Navigate to='/' replace />;
   }
 
