@@ -14,11 +14,7 @@ public class DailySummary {
     private String title;
     private String imageUrl;
     private String content;
-    private int imageGenerateCount=1;
-    private int contentGenerateCount=1;
     private int momentCount;
-    private int viewCount=0;
-    private boolean isDeleted;
 
     public DailySummary (int userId, String writeDate, String title, String imageUrl, String content, int momentCount) {
         this.userId = userId;
@@ -26,6 +22,12 @@ public class DailySummary {
         this.title = title;
         this.imageUrl = imageUrl;
         this.content = content;
+        this.momentCount = momentCount;
+    }
+
+    public DailySummary (int userId, String writeDate, int momentCount) {
+        this.userId = userId;
+        this.writeDate = writeDate;
         this.momentCount = momentCount;
     }
 }

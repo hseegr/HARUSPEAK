@@ -1,11 +1,12 @@
 package com.haruspeak.batch.domain.repository;
 
-import com.haruspeak.batch.domain.TodayMoment;
+import com.haruspeak.batch.domain.DailySummary;
+import com.haruspeak.batch.domain.TodayDiary;
+import com.haruspeak.batch.domain.DailyMoment;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,24 +41,47 @@ public class TodayRedisRepository {
         return apiRedisTemplate.keys("user:*:moment:" + date);
     }
 
-    public Map<Integer, List<TodayMoment>> getTodayMomentsByKey(String key) {
+    public TodayDiary getTodayMomentsByKey(String key, String writeDate) {
+        // `getUserId`, `getMomentsFromRedis`, `createDailySummary`, `createTodayDiary` 메서드를 활용하여 분리
         int userId = getUserId(key);
-        Map<Object, Object> data = apiRedisTemplate.opsForHash().entries(key);
-        return new HashMap<Integer, List<TodayMoment>>(){{
-            put(userId, data.entrySet().stream()
-                    .map(entry -> {
-                        Map<String, Object> value = (Map<String, Object>) entry.getValue();
-                        return new TodayMoment(
-                                entry.getKey().toString(),
-                                value.get("momentTime").toString(),
-                                value.get("content").toString(),
-                                (List<String>)value.get("images"),
-                                (List<String>)value.get("tags")
-                        );
-                    })
-                    .toList());
-        }};
+        List<DailyMoment> moments = getMomentsFromRedis(key);
+        DailySummary summary = createDailySummary(userId, writeDate, moments.size());
+        return createTodayDiary(summary, moments);
     }
+
+    private List<DailyMoment> getMomentsFromRedis(String key) {
+        Map<Object, Object> data = apiRedisTemplate.opsForHash().entries(key);
+        return data.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> value = (Map<String, Object>) entry.getValue();
+                    List<String> images = (List<String>) value.get("images");
+                    List<String> tags = (List<String>) value.get("tags");
+                    return createDailyMoment(entry, value, images, tags);
+                })
+                .toList();
+    }
+
+    private DailyMoment createDailyMoment(Map.Entry<Object, Object> entry, Map<String, Object> value,
+                                          List<String> images, List<String> tags) {
+        return DailyMoment.builder()
+                .createdAt(entry.getKey().toString())
+                .momentTime(value.get("momentTime").toString())
+                .content(value.get("content").toString())
+                .images(images)
+                .tags(tags)
+                .imageCount(images.size())
+                .tagCount(tags.size())
+                .build();
+    }
+
+    private DailySummary createDailySummary(int userId, String writeDate, int momentCount) {
+        return new DailySummary(userId, writeDate, momentCount);
+    }
+
+    private TodayDiary createTodayDiary(DailySummary dailySummary, List<DailyMoment> moments) {
+        return new TodayDiary(dailySummary, moments);
+    }
+
 
     public void delete(Integer userId, String date) {
         apiRedisTemplate.opsForHash().delete(getKey(String.valueOf(userId), date));

@@ -1,6 +1,7 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.domain.TodayMoment;
+import com.haruspeak.batch.domain.DailyMoment;
+import com.haruspeak.batch.domain.TodayDiary;
 import com.haruspeak.batch.domain.repository.TodayRedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class TodayItemReader implements ItemReader<Map<Integer, List<TodayMoment>>> {
+public class TodayItemReader implements ItemReader<TodayDiary> {
 
     private final TodayRedisRepository repository;
     private final String date;
@@ -32,7 +33,7 @@ public class TodayItemReader implements ItemReader<Map<Integer, List<TodayMoment
      * Map Value - Value : Redis Value ( TodayMoment )
      */
     @Override
-    public Map<Integer, List<TodayMoment>> read() throws Exception {
+    public TodayDiary read() throws Exception {
         log.debug("🐛 STEP1.READ - 오늘의 순간 일기 전체 조회");
 
         if (keyIterator == null) {
@@ -42,6 +43,6 @@ public class TodayItemReader implements ItemReader<Map<Integer, List<TodayMoment
         if (!keyIterator.hasNext()) {
             return null;
         }
-        return repository.getTodayMomentsByKey(keyIterator.next());
+        return repository.getTodayMomentsByKey(keyIterator.next(), date);
     }
 }
