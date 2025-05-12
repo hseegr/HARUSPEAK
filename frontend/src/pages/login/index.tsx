@@ -7,7 +7,7 @@ import useAuthStore from '@/store/userStore';
 
 const LoginPage = () => {
   const { user } = useAuthStore();
-  const { data: userInfo, isLoading } = useUserInfoQuery({ enabled: true });
+  const { data: userInfo, isLoading } = useUserInfoQuery();
 
   // 로딩 중이면 로딩 상태 표시
   if (isLoading) {
