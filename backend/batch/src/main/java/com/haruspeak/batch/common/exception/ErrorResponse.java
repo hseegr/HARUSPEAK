@@ -1,0 +1,13 @@
+package com.haruspeak.batch.common.exception;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "공통 에러 응답")
+public record ErrorResponse(
+        @Schema(description = "커스텀 에러 코드")
+        int code,
+        @Schema(description = "커스텀 에러 메시지")
+        String message,
+        @Schema(description = "응답 시각", example = "2025-05-01T22:33:11")
+        String timestamp
+) {}
