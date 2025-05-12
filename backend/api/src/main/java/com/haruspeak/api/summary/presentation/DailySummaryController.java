@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/summary")
+@RequestMapping("/summary")
 @Tag(
         name = "Summary",
         description = "하루 일기 관련 API"
