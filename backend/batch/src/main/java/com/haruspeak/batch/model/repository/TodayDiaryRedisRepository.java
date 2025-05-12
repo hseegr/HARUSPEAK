@@ -3,11 +3,12 @@ package com.haruspeak.batch.model.repository;
 import com.haruspeak.batch.model.TodayDiary;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
-@Repository
+@Component
 public class TodayDiaryRedisRepository {
 
     @Qualifier("batchDiaryRedisTemplate")
@@ -41,4 +42,5 @@ public class TodayDiaryRedisRepository {
     public int getUserId(String key) {
         return Integer.parseInt(key.split(":")[1]);
     }
+
 }
