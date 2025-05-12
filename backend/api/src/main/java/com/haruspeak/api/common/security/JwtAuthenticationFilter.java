@@ -1,5 +1,6 @@
 package com.haruspeak.api.common.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import com.haruspeak.api.common.util.CookieUtil;
@@ -35,6 +36,7 @@ import java.util.Map;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final List<String> TEST_PATTERNS = List.of(
             "/api/moment/**",
@@ -67,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(cookies == null) {
             log.debug("⛔ 인증 불가 - 쿠키 없음 (요청 경로: {})", path);
             handleUnauthorized(response);
+            return;
         }
 
         // accessToken 쿠키에서 토큰 추출
@@ -74,6 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(token == null) {
             log.debug("⛔ 인증 불가 - accessToken 없음 (요청 경로: {})", path);
             handleUnauthorized(response);
+            return;
         }
 
         // 유효성 검사 후 인증 객체 생성
@@ -116,6 +120,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleUnauthorized(HttpServletResponse response) throws IOException {
+        log.debug("⛔ 필터 통과 실패");
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
 
@@ -126,7 +132,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("details", null);
 
-        response.getWriter().write(body.toString());
+        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 }
 
