@@ -35,7 +35,9 @@ const DeleteConfirmDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>취소</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>삭제</AlertDialogAction>
+          <AlertDialogAction className='bg-haru-green' onClick={onConfirm}>
+            삭제
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
