@@ -80,11 +80,8 @@ public class SummaryService {
         if(dailySummary.getUserId() != userId) throw new HaruspeakException(ErrorCode.UNAUTHORIZED); // user 검증
         if(dailySummary.isDeleted()) throw new HaruspeakException(ErrorCode.DIARY_NOT_FOUND); // soft delete 여부 검증
 
-        if(dailySummary.getImageGenerateCount() >= 3) { // 재생성 요청 횟수가 3 이상일 경우, 횟수초과 에러
-            throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED);
-        } else { // 재생성 요청 횟수 3 미만일 경우, 횟수+1
-            dailySummary.increaseImageGenerateCount(); // imageGenerateCount++
-        }
+        // 재생성 요청 횟수가 3 이상일 경우, 횟수초과 에러
+        if(dailySummary.getImageGenerateCount() >= 3) throw new HaruspeakException(ErrorCode.THUMBNAIL_REGEN_REQUEST_LIMIT_EXCEEDED);
 
         // "상태열"에 관련 요소들(키, 필드) 세팅
         String stateKey = "user:" + userId + ":image:regeneration"; // userId 로 만든 redis key 형식
