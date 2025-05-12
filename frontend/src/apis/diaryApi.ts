@@ -11,6 +11,8 @@ export const getDiary = async (summaryId: string) => {
 export const regenerateContent = async (summaryId: string) => {
   const response = await axiosInstance.post(
     `/api/summary/${summaryId}/content/regenerate`,
+    {},
+    { timeout: 30000 },
   );
   return response.data;
 };
@@ -19,6 +21,8 @@ export const regenerateContent = async (summaryId: string) => {
 export const regenerateImage = async (summaryId: string) => {
   const response = await axiosInstance.post(
     `/api/summary/${summaryId}/image/regenerate`,
+    {},
+    { timeout: 30000 },
   );
   return response.data;
 };
