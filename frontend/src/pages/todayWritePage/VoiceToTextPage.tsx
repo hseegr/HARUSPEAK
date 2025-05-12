@@ -14,68 +14,45 @@ const VoiceToTextPage = () => {
   const navigate = useNavigate();
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
-  // 테스트를 위한 코드
-  useEffect(() => {
-    console.log('🎧 현재 listening 상태:', listening);
-  }, [listening]);
-
-  // 테스트를 위한 코드
-  useEffect(() => {
-    if (!('webkitSpeechRecognition' in window)) {
-      console.warn('🚫 이 브라우저는 Web Speech API를 지원하지 않습니다.');
-    } else {
-      console.log('✅ Web Speech API 사용 가능');
-    }
-  }, []);
-
-  // 테스트를 위한 코드
-  useEffect(() => {
-    console.log('📝 transcript 변경됨:', transcript);
-  }, [transcript]);
-
-  // 테스트를 위한 코드
-  useEffect(() => {
-    // SpeechRecognition 객체가 내부적으로 감싸고 있는 원본에 접근
-    const recognition = (SpeechRecognition as any)
-      .browserSupportsSpeechRecognition
-      ? (SpeechRecognition as any).recognition
-      : null;
-
-    if (recognition) {
-      recognition.onend = () =>
-        console.log('🛑 음성 인식이 끝났습니다 (onend)');
-      recognition.onerror = (event: any) =>
-        console.error('❌ 음성 인식 에러:', event);
-      recognition.onresult = (event: any) =>
-        console.log('🗣️ 인식 결과 이벤트:', event);
-    }
-  }, []);
-
-  // 테스트를 위한 코드
-  useEffect(() => {
-    navigator.permissions
-      ?.query({ name: 'microphone' as any }) // 타입 경고 무시
-      .then(result => {
-        console.log('🎤 마이크 권한 상태:', result.state); // 'granted', 'denied', 'prompt'
-      });
-  }, []);
-
   // 녹음 시작 -> 명시적 사용자 권한 요청
-  const handleStart = async () => {
+  const handleStart = () => {
+    console.log('🟢 [handleStart] 녹음 시작 버튼 클릭됨');
+    SpeechRecognition.startListening({
+      continuous: true,
+      language: 'ko',
+    });
+  };
+
+  // 변환(중지) 버튼 클릭
+  const handleConvert = e => {
+    console.log('🛑 [handleConvert] 중지 버튼 클릭됨');
+    e.preventDefault(); // 이벤트 기본 동작 방지
+    e.stopPropagation(); // 이벤트 버블링 방지
+
     try {
-      // 사용자 제스처 내에서 마이크 권한 먼저 요청
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // 마이크 권한 획득 후 음성 인식 시작
-      SpeechRecognition.startListening({
-        continuous: true,
-        language: 'ko',
-      });
-
-      console.log('▶️ startListening 호출됨');
-    } catch (e) {
-      console.error('🚫 마이크 권한 요청 실패:', e);
+      SpeechRecognition.stopListening();
+      console.log('녹음 중지 성공, listening 상태:', listening);
+    } catch (error) {
+      console.error('녹음 중지 실패:', error);
     }
+  };
+
+  // 취소 버튼 클릭
+  const handleCancle = () => {
+    console.log('↩️ [handleCancel] 취소 버튼 클릭됨');
+    resetTranscript();
+    SpeechRecognition.stopListening();
+    navigate('/todaywrite');
+  };
+
+  // 저장 버튼 클릭 시
+  const handleSave = () => {
+    console.log('💾 [handleSave] 저장 버튼 클릭됨, transcript:', transcript);
+    if (transcript.trim()) {
+      TodayWriteStore.getState().addTextBlock(transcript.trim());
+    }
+    SpeechRecognition.stopListening();
+    navigate('/todaywrite');
   };
 
   // 컴포넌트 언마운트 시 인식 중단
@@ -85,28 +62,6 @@ const VoiceToTextPage = () => {
       SpeechRecognition.stopListening();
     };
   }, []);
-
-  // 변환(중지) 버튼 클릭
-  const handleConvert = () => {
-    console.log('🛑 stopListening 호출됨');
-    SpeechRecognition.stopListening();
-  };
-
-  // 취소 버튼 클릭
-  const handleCancle = () => {
-    resetTranscript();
-    SpeechRecognition.stopListening();
-    navigate('/todaywrite');
-  };
-
-  // 저장 버튼 클릭 시
-  const handleSave = () => {
-    if (transcript.trim()) {
-      TodayWriteStore.getState().addTextBlock(transcript.trim());
-    }
-    SpeechRecognition.stopListening();
-    navigate('/todaywrite');
-  };
 
   return (
     <div className='flex min-h-[calc(100vh-150px)] w-full flex-col items-center justify-center gap-6'>
@@ -128,6 +83,7 @@ const VoiceToTextPage = () => {
           {listening ? (
             <button
               onClick={handleConvert}
+              onMouseDown={handleConvert}
               className='px-3 py-2 text-xs font-semibold text-haru-green'
             >
               중지
