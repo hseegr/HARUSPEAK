@@ -23,4 +23,6 @@ public interface ActiveDailyMomentJpaRepository extends JpaRepository<ActiveDail
             m.moment_id IN (:momentIds)
         """, nativeQuery = true)
     List<MomentOrder> findRanksByMomentIds(@Param("momentIds") List<Integer> momentIds);
+
+    List<ActiveDailyMoment> findBySummaryId(int summaryId);
 }
