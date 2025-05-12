@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/today")
+@RequestMapping("/today")
 @Tag(
         name = "Today",
         description = "오늘 순간 일기 관련 API"

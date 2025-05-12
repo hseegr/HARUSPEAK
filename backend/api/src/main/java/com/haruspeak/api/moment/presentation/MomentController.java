@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/moment")
+@RequestMapping("/moment")
 @Tag(
         name = "Moment",
         description = "순간 일기 조회 API"

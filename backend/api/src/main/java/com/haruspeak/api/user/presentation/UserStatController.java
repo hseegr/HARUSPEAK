@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/main")
 @RequiredArgsConstructor
 @Tag(
         name = "User"
@@ -32,7 +32,7 @@ public class UserStatController {
      * @param userId 사용자ID
      * @return UserStatResponse 사용자 stat 정보
      */
-    @GetMapping("/main")
+    @GetMapping("")
     @Operation(
             summary = "사용자 메인 스탯 요청",
             description = "사용자의 오늘 작성 일기 수, 삭제되지 않은 총 순간 일기 수, 총 하루 일기 수를 조회합니다.",
