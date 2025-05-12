@@ -160,7 +160,6 @@ const Library = () => {
   return (
     <div className='w-full'>
       <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        {/* 필터 배지들을 플렉스 컨테이너로 묶음 */}
         <div className='flex items-center gap-2'>
           <FilterBadge onClick={handleFilterClick} />
           <DateFilterBadge onClick={handleDateFilterClick} />
