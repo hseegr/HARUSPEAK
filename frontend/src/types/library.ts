@@ -11,6 +11,7 @@ export interface BaseDiary {
   imageUrl: string;
   title: string;
   content: string;
+  isImageGenerating: boolean;
   imageGenerateCount: number;
   contentGenerateCount: number;
   momentCount: number;
