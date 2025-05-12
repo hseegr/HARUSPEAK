@@ -18,17 +18,17 @@ public class TodaySummaryService {
 
     private final S3Service s3Service;
 
-    public DailySummaryResponse getDailySummaryAndTitle(String totalTodayContent) {
-      log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청");
+    public DailySummaryResponse generateDailySummary(String totalTodayContent) {
+      log.debug("🐛 STEP1.PROCESS - 오늘의 제목 및 요약 내용 생성 요청");
       return dailySummaryClient.getDailySummary(totalTodayContent);
     }
 
-    public String getTodayThumbnailS3Url(String todaySummaryContent){
-        log.debug("🐛 오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
-        return uploadThumbnailAndGetS3Url(getBase64TodayThumbnail(todaySummaryContent));
+    public String generateThumbnailUrl(String todaySummaryContent){
+        log.debug("🐛 STEP1.PROCESS - 오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
+        return uploadThumbnailAndGetS3Url(generateThumbnailBase64(todaySummaryContent));
     }
 
-    private String getBase64TodayThumbnail(String totalTodayContent) {
+    private String generateThumbnailBase64(String totalTodayContent) {
         return dailyThumbnailClient.getDailyThumbnail(totalTodayContent).base64();
     }
 

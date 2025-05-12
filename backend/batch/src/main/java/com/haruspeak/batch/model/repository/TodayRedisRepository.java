@@ -1,13 +1,12 @@
-package com.haruspeak.batch.domain.repository;
+package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.domain.DailySummary;
-import com.haruspeak.batch.domain.TodayDiary;
-import com.haruspeak.batch.domain.DailyMoment;
+import com.haruspeak.batch.model.DailySummary;
+import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.model.DailyMoment;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +14,11 @@ import java.util.Set;
 @Component
 public class TodayRedisRepository {
 
+    @Qualifier("apiRedisTemplate")
     private final RedisTemplate<String, Object> apiRedisTemplate;
-    private final RedisTemplate<String, Object> redisTemplate;
 
-    public TodayRedisRepository(@Qualifier("apiRedisTemplate")RedisTemplate<String, Object> apiRedisTemplate,
-                                @Qualifier("redisTemplate")RedisTemplate<String, Object> redisTemplate
-    ) {
+    public TodayRedisRepository(@Qualifier("apiRedisTemplate")RedisTemplate<String, Object> apiRedisTemplate) {
         this.apiRedisTemplate = apiRedisTemplate;
-        this.redisTemplate = redisTemplate;
     }
 
     public int getUserId(String key) {

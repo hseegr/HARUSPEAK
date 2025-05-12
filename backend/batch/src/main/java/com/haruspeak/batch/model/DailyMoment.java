@@ -1,6 +1,5 @@
-package com.haruspeak.batch.domain;
+package com.haruspeak.batch.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,9 +1,6 @@
-package com.haruspeak.batch.domain;
+package com.haruspeak.batch.model;
 
 import lombok.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -12,8 +9,8 @@ public class DailySummary {
     private int userId;
     private String writeDate;
     private String title;
-    private String imageUrl;
     private String content;
+    private String imageUrl;
     private int momentCount;
 
     public DailySummary (int userId, String writeDate, String title, String imageUrl, String content, int momentCount) {
@@ -29,5 +26,11 @@ public class DailySummary {
         this.userId = userId;
         this.writeDate = writeDate;
         this.momentCount = momentCount;
+    }
+
+    public void setSummaries(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
     }
 }

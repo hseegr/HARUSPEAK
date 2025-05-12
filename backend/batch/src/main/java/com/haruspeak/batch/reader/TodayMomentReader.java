@@ -1,19 +1,16 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.domain.DailyMoment;
-import com.haruspeak.batch.domain.TodayDiary;
-import com.haruspeak.batch.domain.repository.TodayRedisRepository;
+import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.model.repository.TodayRedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component
-public class TodayItemReader implements ItemReader<TodayDiary> {
+public class TodayMomentReader implements ItemReader<TodayDiary> {
 
     private final TodayRedisRepository repository;
     private final String date;
@@ -22,7 +19,7 @@ public class TodayItemReader implements ItemReader<TodayDiary> {
     /*
     @Value("#{jobParameters['date']}") String date,
      */
-    public TodayItemReader(TodayRedisRepository repository, String date) {
+    public TodayMomentReader(TodayRedisRepository repository, String date) {
         this.repository = repository;
         this.date = date;
     }

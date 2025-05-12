@@ -46,7 +46,7 @@ public class RedisConfig {
     /**
      * 배치 Redis 연결 풀 (LettuceConnectionFactory 사용)
      */
-    @Bean
+    @Bean(name = "connectionFactory")
     public RedisConnectionFactory batchConnectionFactory() {
         LettuceConnectionFactory factory = new LettuceConnectionFactory(batchHost, batchPort);
         factory.setPassword(batchPassword);  // 배치 Redis 인증 비밀번호 설정
@@ -57,9 +57,9 @@ public class RedisConfig {
      * 배치 RedisTemplate 사용
      */
     @Bean(name = "redisTemplate")
-    public RedisTemplate<String, Object> batchRedisTemplate(RedisConnectionFactory batchConnectionFactory) {
+    public RedisTemplate<String, Object> batchRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(batchConnectionFactory);
+        template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());  // 키 직렬화 설정
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));  // 값 직렬화 설정
         return template;
