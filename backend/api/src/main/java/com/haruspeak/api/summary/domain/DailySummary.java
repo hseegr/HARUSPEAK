@@ -72,6 +72,8 @@ public class DailySummary {
         this.imageGenerateCount++;
     }
 
+    public void updateContent(String content) {this.content = content;}
+
     public void deleteSummary(){
         this.isDeleted = true;
         this.updatedAt = LocalDateTime.now();
