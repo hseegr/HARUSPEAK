@@ -1,26 +1,20 @@
-import { ReactNode } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useUserInfoQuery } from '@/hooks/useLoginQuery';
+import useAuthStore from '@/store/userStore';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const LoginProvider = ({ children }: PropsWithChildren) => {
+  const { setUser } = useAuthStore();
 
-interface Props {
-  children: ReactNode;
-}
+  const { data } = useUserInfoQuery();
 
-const LoginQueryProvider = ({ children }: Props) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-    <ReactQueryDevtools />
-  </QueryClientProvider>
-);
+  useEffect(() => {
+    if (data) {
+      setUser(data);
+    }
+  }, [data, setUser]);
 
-export default LoginQueryProvider;
+  return <>{children}</>;
+};
+
+export default LoginProvider;

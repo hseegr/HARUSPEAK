@@ -23,12 +23,17 @@ axiosInstance.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // 토큰이 만료된 경우에만 토큰 갱신 시도
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      error.response.data?.message === 'Token expired'
+    ) {
       originalRequest._retry = true;
       try {
         await axios.post(
           `${import.meta.env.VITE_API_DOMAIN}/api/auth/token/refresh`,
-          {}, // POST 바디는 비워도 됨 -> 왜? 쿠키에 있는 토큰을 사용하기 때문
+          {},
           {
             withCredentials: true,
           },
@@ -42,6 +47,8 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+
+    // 토큰이 없는 경우(로그인하지 않은 상태)는 그냥 에러 반환
     return Promise.reject(error);
   },
 );
