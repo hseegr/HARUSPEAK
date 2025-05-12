@@ -1,5 +1,6 @@
 package com.haruspeak.api.common.security;
 
+import com.haruspeak.api.common.exception.ErrorCode;
 import com.haruspeak.api.common.exception.user.UnauthorizedException;
 import com.haruspeak.api.common.util.CookieUtil;
 import jakarta.servlet.FilterChain;
@@ -18,7 +19,10 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JWT 인증 필터
@@ -62,14 +66,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
             log.debug("⛔ 인증 불가 - 쿠키 없음 (요청 경로: {})", path);
-            throw new UnauthorizedException();
+            handleUnauthorized(response);
         }
 
         // accessToken 쿠키에서 토큰 추출
         String token = CookieUtil.extractTokenFromCookie(request.getCookies(), "accessToken");
         if(token == null) {
             log.debug("⛔ 인증 불가 - accessToken 없음 (요청 경로: {})", path);
-            throw new UnauthorizedException();
+            handleUnauthorized(response);
         }
 
         // 유효성 검사 후 인증 객체 생성
@@ -109,6 +113,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //        }
 
         return isExcluded;
+    }
+
+    private void handleUnauthorized(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+
+        ErrorCode error = ErrorCode.UNAUTHORIZED;
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", error.getCode());
+        body.put("message", error.getMessage());
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("details", null);
+
+        response.getWriter().write(body.toString());
     }
 }
 
