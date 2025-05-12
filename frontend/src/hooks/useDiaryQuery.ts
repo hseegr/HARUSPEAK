@@ -7,19 +7,7 @@ import {
   regenerateContent,
   regenerateImage,
 } from '@/apis/diaryApi';
-import { MomentContent } from '@/types/common';
-
-interface DiaryResponse {
-  summaryId: number;
-  diaryDate: string;
-  imageUrl: string;
-  title: string;
-  content: string; // 요약 내용
-  isImageGenerating: boolean;
-  imageGenerateCount: number;
-  contentGenerateCount: number;
-  moments: MomentContent[];
-}
+import { DiaryResponse } from '@/types/diary';
 
 export const useGetDiary = (summaryId: string) =>
   useQuery<DiaryResponse>({

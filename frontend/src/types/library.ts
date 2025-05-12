@@ -5,32 +5,20 @@ export interface GetLibraryParams {
   endDate?: string;
 }
 
-export interface Diary {
+export interface BaseDiary {
   summaryId: number;
   diaryDate: string;
   imageUrl: string;
   title: string;
   content: string;
-  isImageGenerating: boolean;
   imageGenerateCount: number;
   contentGenerateCount: number;
   momentCount: number;
 }
 
-// export interface Moment {
-//   summaryId: number;
-//   momentId: number;
-//   momentTime: string;
-//   imageCount: number;
-//   images: string[];
-//   content: string;
-//   tagCount: number;
-//   tags: string[];
-//   diaryDate: string;
-//   imageUrl: string;
-//   title: string;
-//   momentCount: number;
-// }
+export interface Diary extends BaseDiary {
+  isImageGenerating: boolean;
+}
 
 export interface ResInfo {
   dataCount: number;
