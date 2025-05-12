@@ -1,14 +1,19 @@
 package com.haruspeak.batch.job;
 
+import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.repository.DailyMomentRepository;
-import com.haruspeak.batch.model.repository.DailySummaryRepository;
-import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
-import com.haruspeak.batch.model.repository.TodayRedisRepository;
+import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.model.repository.*;
+import com.haruspeak.batch.processor.TodayImageProcessor;
 import com.haruspeak.batch.processor.TodaySummaryProcessor;
+import com.haruspeak.batch.processor.TodayTagProcessor;
+import com.haruspeak.batch.reader.TodayDiaryReader;
 import com.haruspeak.batch.reader.TodayMomentReader;
+import com.haruspeak.batch.service.TodayDiaryService;
 import com.haruspeak.batch.service.TodaySummaryService;
 import com.haruspeak.batch.writer.DailySummaryWriter;
+import com.haruspeak.batch.writer.TodayImageWriter;
+import com.haruspeak.batch.writer.TodayTagWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -22,6 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.List;
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -34,16 +41,24 @@ public class TodayDiaryJobConfig {
 
     private final DailySummaryRepository dailySummaryRepository;
     private final DailyMomentRepository dailyMomentRepository;
-
     private final TodayRedisRepository todayRedisRepository;
-    private final TodayDiaryRedisRepository todayDiaryRedisRepository;
 
-    TodaySummaryService todaySummaryService;
+    private final TodayDiaryRedisRepository todayDiaryRedisRepository;
+    private final TagRepository tagRepository;
+    private final UserTagRepository userTagRepository;
+    private final MomentTagRepository momentTagRepository;
+
+    private final MomentImageRepository momentImageRepository;
+
+    private final TodaySummaryService todaySummaryService;
+    private final TodayDiaryService todayDiaryService;
 
     @Bean
     public Job todayDiaryJob() {
         return new JobBuilder("todayDiaryJob", jobRepository)
                 .start(dailySummaryStep())
+                .next(dailyTagStep())
+                .next(dailyImageStep())
                 .build();
     }
 
@@ -61,6 +76,43 @@ public class TodayDiaryJobConfig {
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(3)
+                .skip(Exception.class)
+                .build();
+    }
+
+    /**
+     * 하루 일기 태그
+     * @return
+     */
+    @Bean
+    public Step dailyTagStep(){
+        return new StepBuilder("dailyTagStep", jobRepository)
+                .<TodayDiary, TodayDiaryTag>chunk(CHUNK_SIZE, transactionManager)
+                .reader(todayDiaryReader(null))
+                .processor(todayTagProcessor())
+                .writer(todayTagWriter())
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(3)
+                .skip(Exception.class)
+                .build();
+    }
+
+    /**
+     * 하루 일기 이미지
+     * @return
+     */
+    @Bean
+    public Step dailyImageStep(){
+        return new StepBuilder("dailyImageStep", jobRepository)
+                .<TodayDiary, List<DailyMoment>>chunk(CHUNK_SIZE, transactionManager)
+                .reader(todayDiaryReader(null))
+                .processor(todayImageProcessor())
+                .writer(todayImageWriter())
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(3)
+                .skip(Exception.class)
                 .build();
     }
 
@@ -79,7 +131,37 @@ public class TodayDiaryJobConfig {
     @Bean
     @StepScope
     public DailySummaryWriter dailySummaryWriter() {
-        return new DailySummaryWriter(dailySummaryRepository, dailyMomentRepository, todayRedisRepository, todayDiaryRedisRepository);
+        return new DailySummaryWriter(dailySummaryRepository, dailyMomentRepository, todayDiaryService);
     }
 
+    @Bean
+    @StepScope
+    public TodayDiaryReader todayDiaryReader(@Value("#{jobParameters['date']}") String date) {
+        return new TodayDiaryReader(todayDiaryRedisRepository, date);
+    }
+
+    @Bean
+    @StepScope
+    public TodayTagProcessor todayTagProcessor() {
+        return new TodayTagProcessor();
+    }
+
+    @Bean
+    @StepScope
+    public TodayTagWriter todayTagWriter() {
+        return new TodayTagWriter(tagRepository, userTagRepository, momentTagRepository);
+    }
+
+
+    @Bean
+    @StepScope
+    public TodayImageProcessor todayImageProcessor() {
+        return new TodayImageProcessor();
+    }
+
+    @Bean
+    @StepScope
+    public TodayImageWriter todayImageWriter() {
+        return new TodayImageWriter(momentImageRepository);
+    }
 }
