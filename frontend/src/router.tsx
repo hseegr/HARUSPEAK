@@ -15,11 +15,6 @@ import VoiceToTextPage from './pages/todayWritePage/VoiceToTextPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-    handle: { title: '로그인' },
-  },
-  {
     element: <ProtectedRoute />,
     children: [
       {
@@ -69,6 +64,11 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+    handle: { title: '로그인' },
   },
   // 최상단 404 (비로그인 상태에서 잘못된 경로 접근 시)
   {

@@ -1,13 +1,13 @@
 import { RouterProvider } from 'react-router-dom';
 
-import LoginQueryProvider from '@/providers/LoginQueryProvider';
+import LoginProvider from '@/providers/LoginQueryProvider';
 import { router } from '@/router';
 
 const App = () => {
   return (
-    <LoginQueryProvider>
+    <LoginProvider>
       <RouterProvider router={router} />
-    </LoginQueryProvider>
+    </LoginProvider>
   );
 };
 

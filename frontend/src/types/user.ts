@@ -1,10 +1,11 @@
 export interface UserInfo {
-  userId: number;
+  id: string;
+  email: string;
   name: string;
 }
 
 export interface AuthState {
   user: UserInfo | null;
-  setUser: (user: UserInfo) => void;
+  setUser: (user: UserInfo | null) => void;
   clearUser: () => void;
 }
