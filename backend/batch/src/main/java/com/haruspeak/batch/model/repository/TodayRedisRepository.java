@@ -38,28 +38,28 @@ public class TodayRedisRepository {
     }
 
     public TodayDiary getTodayMomentsByKey(String key, String writeDate) {
-        // `getUserId`, `getMomentsFromRedis`, `createDailySummary`, `createTodayDiary` 메서드를 활용하여 분리
         int userId = getUserId(key);
-        List<DailyMoment> moments = getMomentsFromRedis(key);
+        List<DailyMoment> moments = getMomentsFromRedis(key, userId);
         DailySummary summary = createDailySummary(userId, writeDate, moments.size());
         return createTodayDiary(summary, moments);
     }
 
-    private List<DailyMoment> getMomentsFromRedis(String key) {
+    private List<DailyMoment> getMomentsFromRedis(String key, int userId) {
         Map<Object, Object> data = apiRedisTemplate.opsForHash().entries(key);
         return data.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> value = (Map<String, Object>) entry.getValue();
                     List<String> images = (List<String>) value.get("images");
                     List<String> tags = (List<String>) value.get("tags");
-                    return createDailyMoment(entry, value, images, tags);
+                    return createDailyMoment(entry, value, images, tags, userId);
                 })
                 .toList();
     }
 
     private DailyMoment createDailyMoment(Map.Entry<Object, Object> entry, Map<String, Object> value,
-                                          List<String> images, List<String> tags) {
+                                          List<String> images, List<String> tags, int userId) {
         return DailyMoment.builder()
+                .userId(userId)
                 .createdAt(entry.getKey().toString())
                 .momentTime(value.get("momentTime").toString())
                 .content(value.get("content").toString())

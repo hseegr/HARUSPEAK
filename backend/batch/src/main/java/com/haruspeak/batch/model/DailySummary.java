@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 public class DailySummary {
     private Integer summaryId;
-    private int userId;
+    private Integer userId;
     private String writeDate;
     private String title;
     private String content;

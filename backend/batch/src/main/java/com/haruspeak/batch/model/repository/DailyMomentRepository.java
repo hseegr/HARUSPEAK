@@ -1,32 +1,38 @@
 package com.haruspeak.batch.model.repository;
 
+import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
-public class DailySummaryRepository {
+public class DailyMomentRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     /**
-     * Chunk의 summary 들을 한 번에 insert
-     * @param dailySummaries
+     * Chunk 내의 moments를 한 번에 bulk insert
+     * @param dailyMoments
      */
-    public void bulkInsertDailySummaries(List<DailySummary> dailySummaries) {
+    public void bulkInsertDailyMoments(List<DailyMoment> dailyMoments) {
         String sql =
                 """
-                INSERT INTO daily_summary 
-                (user_id, write_date, title, content, image_url, moment_count) 
-                VALUES (:userId, :writeDate, :title, :content, :imageUrl, :momentCount)
+                INSERT INTO daily_moments
+                (summary_id, content, moment_time, image_count, tag_count, created_at)
+                SELECT summary_id, :content, :momentTime, :imageCount, :tagCount, :createdAt
+                FROM daily_summary
+                WHERE user_id = :userId
+                AND write_date = date(:createdAt)
                 """;
 
-        SqlParameterSource[] batchParams = dailySummaries.stream()
+        SqlParameterSource[] batchParams = dailyMoments.stream()
                 .map(BeanPropertySqlParameterSource::new)
                 .toArray(SqlParameterSource[]::new);
 
