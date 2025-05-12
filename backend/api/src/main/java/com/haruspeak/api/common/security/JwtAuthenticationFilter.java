@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/v3/api-docs/**",
             "/oauth2/**",
             "/login/oauth2/**",
-            "/api/auth/**"
+            "/auth/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
