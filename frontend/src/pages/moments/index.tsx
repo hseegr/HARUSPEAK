@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import MomentCard from '@/components/MomentCard';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useGetMoments } from '@/hooks/useMomentQuery';
 import { MomentContent } from '@/types/common';
 import { MomentsResponse } from '@/types/moment';
 
 import DateRangeDisplay from './components/DateRangeDisplay';
+import MomentFrame from './components/MomentFrame';
 import TagNameDisplay from './components/TagNameDisplay';
 
 const Moments = () => {
@@ -82,7 +82,7 @@ const Moments = () => {
               onClick={() => handleMomentClick(moment)}
               className='cursor-pointer'
             >
-              <MomentCard
+              <MomentFrame
                 moment={{
                   momentId: moment.momentId,
                   summaryId: moment.summaryId,
@@ -91,8 +91,8 @@ const Moments = () => {
                   content: moment.content,
                   tags: moment.tags,
                   createdAt: moment.createdAt || new Date().toISOString(),
+                  orderInDay: moment.orderInDay,
                 }}
-                isToday={false}
               />
             </div>
           )),
