@@ -190,6 +190,7 @@ const Library = () => {
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.includes(diary.summaryId)}
                 onSelect={handleSelect}
+                isImageGenerating={diary.isImageGenerating}
               />
             )),
           )}
