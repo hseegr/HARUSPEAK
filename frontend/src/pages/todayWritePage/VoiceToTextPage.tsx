@@ -64,16 +64,20 @@ const VoiceToTextPage = () => {
   }, []);
 
   // 변환(중지) 버튼 클릭
-
-  const handleConvert = () => {
-    console.log('✅ 마이크 권한 허용됨');
-    SpeechRecognition.stopListening();
+  const handleConvert = async () => {
+    try {
+      await SpeechRecognition.abortListening();
+      console.log('🎙 음성 인식 완전 종료됨');
+    } catch (err) {
+      console.error('❌ abortListening 오류:', err);
+    }
   };
 
   // 취소 버튼 클릭
   const handleCancle = () => {
     resetTranscript();
-    SpeechRecognition.stopListening();
+    SpeechRecognition.abortListening();
+    console.log('🎙 음성 인식 완전 종료됨');
     navigate('/todaywrite');
   };
 
@@ -82,7 +86,8 @@ const VoiceToTextPage = () => {
     if (transcript.trim()) {
       TodayWriteStore.getState().addTextBlock(transcript.trim());
     }
-    SpeechRecognition.stopListening();
+    SpeechRecognition.abortListening();
+    console.log('🎙 음성 인식 완전 종료됨');
     navigate('/todaywrite');
   };
 
