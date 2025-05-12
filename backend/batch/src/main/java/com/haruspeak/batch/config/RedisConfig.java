@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.haruspeak.batch.model.TodayDiary;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
+import java.util.List;
 import java.util.TimeZone;
 
 @Configuration
@@ -62,6 +64,15 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());  // 키 직렬화 설정
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));  // 값 직렬화 설정
+        return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, TodayDiary> batchDiaryRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, TodayDiary> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
         return template;
     }
 

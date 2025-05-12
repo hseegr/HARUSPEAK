@@ -25,16 +25,12 @@ public class TodayRedisRepository {
         return Integer.parseInt(key.split(":")[1]);
     }
 
-    public String getAllUserKey(String date) {
-        return getKey("*", date);
-    }
-
     private String getKey(String userId, String date) {
         return "user:" + userId + ":" + date;
     }
 
     public Set<String> getAllKeys (String date) {
-        return apiRedisTemplate.keys("user:*:moment:" + date);
+        return apiRedisTemplate.keys(getKey("*", date));
     }
 
     public TodayDiary getTodayMomentsByKey(String key, String writeDate) {
@@ -79,8 +75,8 @@ public class TodayRedisRepository {
     }
 
 
-    public void delete(Integer userId, String date) {
-        apiRedisTemplate.opsForHash().delete(getKey(String.valueOf(userId), date));
+    public void delete(String userId, String date) {
+        apiRedisTemplate.opsForHash().delete(getKey(userId, date));
     }
 
 
