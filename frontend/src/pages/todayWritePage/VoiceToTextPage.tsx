@@ -61,11 +61,21 @@ const VoiceToTextPage = () => {
   }, []);
 
   // 녹음 시작 -> 명시적 사용자 권한 요청
-  const handleStart = () => {
-    SpeechRecognition.startListening({
-      continuous: true,
-      language: 'ko',
-    });
+  const handleStart = async () => {
+    try {
+      // 사용자 제스처 내에서 마이크 권한 먼저 요청
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // 마이크 권한 획득 후 음성 인식 시작
+      SpeechRecognition.startListening({
+        continuous: true,
+        language: 'ko',
+      });
+
+      console.log('▶️ startListening 호출됨');
+    } catch (e) {
+      console.error('🚫 마이크 권한 요청 실패:', e);
+    }
   };
 
   // 컴포넌트 언마운트 시 인식 중단
