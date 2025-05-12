@@ -31,6 +31,6 @@ public class MomentTagController {
             @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/moment-tag";
-        return ResponseEntity.ok(momentTagService.createMomentTag(uri, mtcr));
+        return ResponseEntity.ok(momentTagService.createMomentTag(userId, uri, mtcr));
     }
 }
