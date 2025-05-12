@@ -1,24 +1,17 @@
-import { useEffect } from 'react';
-
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useUserInfoQuery } from '@/hooks/useLoginQuery';
-import useAuthStore from '@/store/userStore';
 
 const ProtectedRoute = () => {
-  const { isLoading, isError, data } = useUserInfoQuery();
-  const { setUser, clearUser } = useAuthStore();
+  const { isLoading, data } = useUserInfoQuery({ enabled: true });
 
-  useEffect(() => {
-    if (data) setUser(data);
-    else if (isError) clearUser();
-  }, [data, isError, setUser, clearUser]);
-
+  // 로딩 중이면 현재 페이지 유지
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return <Outlet />;
   }
 
-  if (isError || !data) {
+  // 로딩이 끝났고 사용자 정보가 없을 때만 리다이렉트
+  if (!data) {
     return <Navigate to='/login' replace />;
   }
 

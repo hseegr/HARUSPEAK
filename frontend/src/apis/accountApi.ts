@@ -1,10 +1,8 @@
-import { QueryClient } from '@tanstack/react-query';
-
+import { queryClient } from '@/lib/queryClient';
 import useAuthStore from '@/store/userStore';
 
 import { DOMAIN, axiosInstance } from './core';
 
-const queryClient = new QueryClient();
 // 구글 로그인
 // 리다이렉트 -> 브라우저가 직접 이동해야 함
 export const googleLogin = async () => {
@@ -14,9 +12,9 @@ export const googleLogin = async () => {
 // 로그아웃
 export const userLogout = async () => {
   try {
+    queryClient.clear();
     await axiosInstance.post('/api/auth/logout');
     useAuthStore.getState().clearUser();
-    queryClient.clear();
   } catch {
     throw new Error('로그아웃 처리 중 오류가 발생했습니다');
   }
