@@ -1,65 +1,71 @@
 import { useNavigate } from 'react-router-dom';
 
+import ImageGrid from '@/components/ImageGrid';
+import TagBadge from '@/components/TagBadge';
+import { formatDate, formatMomentTime } from '@/lib/timeUtils';
+import { MomentContent } from '@/types/common';
+
 interface MomentFrameProps {
-  momentId?: number;
-  summaryId?: number;
-  momentTime: string;
-  images: string[];
-  content: string;
-  tags: string[];
+  moment: MomentContent;
+  isToday?: boolean;
 }
 
-const MomentFrame = ({
-  momentId,
-  summaryId,
-  momentTime,
-  images,
-  content,
-  tags,
-}: MomentFrameProps) => {
+const MomentFrame = ({ moment }: MomentFrameProps) => {
   const navigate = useNavigate();
+  const { momentTime, content, images, tags, momentId, orderInDay } = moment;
+
+  const formattedTime = formatMomentTime(momentTime);
+  const formattedDate = formatDate(momentTime);
 
   const handleClick = () => {
-    if (summaryId && momentId) {
-      // summaryId와 momentId가 모두 있을 경우 diary 상세 페이지로 이동하면서 해당 moment 위치 전달
-      console.log(`이동: /diary/${summaryId}?momentId=${momentId}`);
-      navigate(`/diary/${summaryId}?momentId=${momentId}`);
-    } else if (summaryId) {
-      // summaryId만 있을 경우 diary 상세 페이지로 이동
-      console.log(`이동: /diary/${summaryId}`);
-      navigate(`/diary/${summaryId}`);
-    } else if (momentId) {
-      // momentId만 있을 경우 기존 moment 상세 페이지로 이동
-      console.log(`이동: /moment/${momentId}`);
-      navigate(`/moment/${momentId}`);
+    if (moment.summaryId && moment.momentId) {
+      navigate(`/diary/${moment.summaryId}?momentId=${moment.momentId}`);
+    } else if (moment.summaryId) {
+      navigate(`/diary/${moment.summaryId}`);
+    } else if (moment.momentId) {
+      navigate(`/moment/${moment.momentId}`);
     }
   };
 
   return (
-    <div
-      className='cursor-pointer rounded border p-4 hover:shadow'
+    <article
+      className='flex w-full cursor-pointer flex-col gap-2 rounded-xl bg-haru-beige p-3'
       onClick={handleClick}
     >
-      <div className='mb-1 text-xs text-gray-500'>{momentTime}</div>
-      <div className='mb-2 font-semibold'>{content}</div>
-      <div className='mb-2 flex gap-2'>
-        {images.map((img, idx) => (
-          <img
-            key={idx}
-            src={img}
-            alt={`moment-${momentId}-img-${idx}`}
-            className='h-16 w-16 rounded object-cover'
-          />
-        ))}
-      </div>
-      <div className='flex flex-wrap gap-1'>
-        {tags.map(tag => (
-          <span key={tag} className='rounded bg-gray-200 px-2 py-1 text-xs'>
-            {tag}
-          </span>
-        ))}
-      </div>
-    </div>
+      {/* 상단 */}
+      <section className='flex items-center justify-between'>
+        <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 font-mont'>
+          {formattedDate}의 {orderInDay}번째 순간
+        </div>
+        {orderInDay && (
+          <div className='text-mg text-haru-gray-5'>{formattedTime}</div>
+        )}
+      </section>
+
+      {/* 중심부 */}
+      <section className='text-start'>
+        <ImageGrid
+          images={images}
+          momentId={momentId}
+          momentTime={momentTime}
+        />
+
+        <div className='font-leeseyoon' style={{ whiteSpace: 'pre-wrap' }}>
+          {content}
+        </div>
+      </section>
+
+      {/* 하단 - 태그 표시 */}
+      {tags.length > 0 && (
+        <section className='flex items-start'>
+          <div className='flex flex-1 flex-wrap items-center gap-2'>
+            {tags.map((tag: string, idx: number) => (
+              <TagBadge key={`${tag}-${idx}`} tag={tag} />
+            ))}
+          </div>
+        </section>
+      )}
+    </article>
   );
 };
 

@@ -8,6 +8,7 @@ export interface MomentContent {
   tags: string[];
   imageCount?: number;
   tagCount?: number;
+  orderInDay?: number;
 }
 
 export interface MomentCardProps {

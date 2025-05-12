@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import ImageDialog from '@/components/ImageDialog';
+import ImageGrid from '@/components/ImageGrid';
 import TagBadge from '@/components/TagBadge';
 import { useMomentTagRecommend } from '@/hooks/useMomentTagRecommend';
 import { formatMomentTime } from '@/lib/timeUtils';
@@ -10,9 +10,7 @@ import { MomentCardProps } from '@/types/common';
 
 const MomentCard = ({ moment, isToday }: MomentCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const formattedTime = formatMomentTime(moment.momentTime);
 
   const { tags, isLoading, handleGenerateTags } = useMomentTagRecommend({
@@ -48,36 +46,11 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 중심부 */}
         <section className='text-start'>
-          <div className='mb-3 flex w-full gap-3'>
-            {moment.images.slice(0, 3).map((image, idx) => {
-              const remainingCount = moment.images.length - 3;
-
-              return (
-                <div
-                  key={`${image}-${idx}`}
-                  className='relative h-[105px] w-[105px] cursor-pointer overflow-hidden rounded-xl'
-                  onClick={() => {
-                    setSelectedImageIndex(idx);
-                    setIsImageDialogOpen(true);
-                  }}
-                >
-                  <img
-                    src={image}
-                    alt='moment'
-                    onError={e => {
-                      e.currentTarget.src = '/fallback-image.png';
-                    }}
-                    className={`h-full w-full object-cover ${idx === 2 && remainingCount > 0 ? 'blur-sm' : ''}`}
-                  />
-                  {idx === 2 && remainingCount > 0 && (
-                    <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-bold text-white'>
-                      +{remainingCount}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          <ImageGrid
+            images={moment.images}
+            momentTime={moment.momentTime}
+            momentId={moment.momentId}
+          />
           <div className='font-leeseyoon' style={{ whiteSpace: 'pre-wrap' }}>
             {moment.content}
           </div>
@@ -109,13 +82,6 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         moment={moment}
-      />
-      <ImageDialog
-        open={isImageDialogOpen}
-        onOpenChange={setIsImageDialogOpen}
-        images={moment.images}
-        currentIndex={selectedImageIndex}
-        momentTime={moment.momentTime}
       />
 
       {isToday && (
