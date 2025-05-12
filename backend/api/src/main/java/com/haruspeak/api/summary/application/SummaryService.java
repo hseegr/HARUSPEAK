@@ -12,6 +12,7 @@ import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class SummaryService {
     private final ActiveDailyMomentJpaRepository activeDailyMomentJpaRepository;
     private final FastApiClient fastApiClient;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     // [API] AI 하루일기 요약 재생성
     @Transactional
@@ -58,6 +60,8 @@ public class SummaryService {
         try {
             // ai 서버에 프론트 요청값 전달 후 반환 받기
             DailySummaryCreateResponse response = fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
+            // 받아온 값 컨텐츠 RDB 업데이트
+            dailySummary.updateContent(response.content());
             // 성공 시 요약내용재생성횟수 1회 증가
             dailySummary.increaseContentGenerateCount();
             return response;
@@ -103,7 +107,7 @@ public class SummaryService {
         thumbnailData.put("retryCount", 1);
         redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData);
 
-        // redisData 없으면, "재생성 대기열" 추가
+        // @@@ redisData 없으면, "재생성 대기열" 추가
         String regenerateKey = "thumbnail:regeneration:queue";
         redisTemplate.opsForList().rightPush(regenerateKey, summaryId);
     }
