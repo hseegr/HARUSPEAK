@@ -113,6 +113,9 @@ public class DailyThumbnailRegenScheduler {
                 redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData); // redis 에 변경사항 반영
                 redisTemplate.opsForHash().delete(stateKey, redisField); // 상태열 필드 삭제
 
+                // 재생성 횟수+1
+                dailySummary.increaseImageGenerateCount(); // imageGenerateCount++
+
             } catch (Exception e) {
 
                 // 실패시 다시 "재생성 대기열" 추가
