@@ -27,7 +27,7 @@ import java.net.URI;
 
 @Slf4j
 @RestController()
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(
         name = "Auth",
