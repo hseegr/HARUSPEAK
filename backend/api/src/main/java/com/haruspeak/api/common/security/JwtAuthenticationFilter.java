@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/v3/api-docs/**",
             "/oauth2/**",
             "/login/oauth2/**",
-            "/auth/**",
+            "/api/auth/**",
             "/authorization/**"
     );
 
