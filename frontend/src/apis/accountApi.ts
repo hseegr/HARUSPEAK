@@ -20,4 +20,8 @@ export const userLogout = async () => {
   }
 };
 
-// userInfo API 제거
+// 유저 정보 받아오기
+export const userInfo = async () => {
+  const response = await axiosInstance.get('/api/user/me');
+  return response.data;
+};
