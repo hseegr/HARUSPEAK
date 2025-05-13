@@ -23,32 +23,29 @@ export const useMomentTagRecommend = ({
   }, [moment.tags]);
 
   const handleGenerateTags = async () => {
-    try {
-      setIsLoading(true);
-      recommendTagMutation(
-        {
-          tags,
-          createdAt: moment.momentTime,
-          content: moment.content,
+    setIsLoading(true);
+    recommendTagMutation(
+      {
+        tags,
+        createdAt: moment.momentTime,
+        content: moment.content,
+      },
+      {
+        onSuccess: response => {
+          setTags(prevTags => {
+            const spaceLeft = 3 - prevTags.length;
+            const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
+            return [...prevTags, ...tagsToAdd];
+          });
         },
-        {
-          onSuccess: response => {
-            setTags(prevTags => {
-              const spaceLeft = 3 - prevTags.length;
-              const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
-              return [...prevTags, ...tagsToAdd];
-            });
-          },
-          onError: error => {
-            console.error('태그 생성 실패:', error);
-          },
+        onError: error => {
+          console.error('태그 생성 실패:', error);
         },
-      );
-    } catch (error) {
-      console.error('태그 생성 실패:', error);
-    } finally {
-      setIsLoading(false);
-    }
+        onSettled: () => {
+          setIsLoading(false);
+        },
+      },
+    );
   };
 
   return {

@@ -3,53 +3,25 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   editDiary,
   getDiary,
-  getImage,
   regenerateContent,
   regenerateImage,
 } from '@/apis/diaryApi';
-import { MomentContent } from '@/types/common';
-
-interface DiaryResponse {
-  summaryId: number;
-  diaryDate: string;
-  imageUrl: string;
-  title: string;
-  content: string; // 요약 내용
-  isImageGenerating: boolean;
-  imageGenerateCount: number;
-  contentGenerateCount: number;
-  moments: MomentContent[];
-}
+import { DiaryResponse } from '@/types/diary';
 
 export const useGetDiary = (summaryId: string) =>
   useQuery<DiaryResponse>({
     queryKey: ['diary', summaryId],
     queryFn: () => getDiary(summaryId),
+    enabled: !!summaryId, // summaryId가 없으면 쿼리 실행 안함
   });
-
-export const useRegenerateContent = () => {
-  const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
-    mutationFn: regenerateContent,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['diary'] });
-    },
-    onError: error => {
-      console.log(error);
-    },
-  });
-
-  return mutate;
-};
 
 export const useRegenerateImage = () => {
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: regenerateImage,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['diary'] });
+    onSuccess: (_, summaryId) => {
+      queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
     },
     onError: error => {
       console.log(error);
@@ -58,18 +30,46 @@ export const useRegenerateImage = () => {
   return mutate;
 };
 
-export const useGetImage = (summaryId: string) =>
-  useQuery({
-    queryKey: ['image', summaryId],
-    queryFn: () => getImage(summaryId),
+export const useRegenerateContent = () => {
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: regenerateContent,
+    onSuccess: (_, summaryId) => {
+      queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
+    },
+    onError: error => {
+      console.log(error);
+    },
   });
+
+  return mutate;
+};
+
+// export const useGetImage = (summaryId: string) =>
+//   useQuery({
+//     queryKey: ['image', summaryId],
+//     queryFn: () => getImage(summaryId),
+//   });
 
 export const useEditDiary = () => {
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
-    mutationFn: editDiary,
-    onSuccess: () => {
+    mutationFn: ({
+      summaryId,
+      title,
+      content,
+    }: {
+      summaryId: string;
+      title: string;
+      content: string;
+    }) => editDiary(summaryId, title, content),
+    onSuccess: (_, variables) => {
+      // 성공 시 해당 일기와 라이브러리 데이터 모두 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['diary', variables.summaryId],
+      });
       queryClient.invalidateQueries({ queryKey: ['library'] });
     },
     onError: error => {
