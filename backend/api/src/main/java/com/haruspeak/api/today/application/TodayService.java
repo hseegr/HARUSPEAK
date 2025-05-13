@@ -37,13 +37,12 @@ public class TodayService {
     private final S3Service s3Service;
     private final FastApiClient fastApiClient;
 
-
     public TodaySttResponse transferStt(
             String uri,
             MultipartFile file,
             Integer userId
     ) {
-        return fastApiClient.convertVoiceToText(uri, file, TodaySttResponse.class);
+        return fastApiClient.gpuConvertVoiceToText(uri, file, TodaySttResponse.class);
     }
 
     /**
