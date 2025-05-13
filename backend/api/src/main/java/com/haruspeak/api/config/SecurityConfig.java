@@ -47,12 +47,14 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        log.debug("🐛 시큐리티 필터 체인");
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {})
                 // 허용할 요청
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/google/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/api/auth/google/**", "/oauth2/**").permitAll()
                         .anyRequest().permitAll() //
                 )
 
