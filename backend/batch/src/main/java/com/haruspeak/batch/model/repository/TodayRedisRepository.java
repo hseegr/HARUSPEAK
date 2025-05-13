@@ -3,6 +3,7 @@ package com.haruspeak.batch.model.repository;
 import com.haruspeak.batch.model.DailySummary;
 import com.haruspeak.batch.model.TodayDiary;
 import com.haruspeak.batch.model.DailyMoment;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Component
 public class TodayRedisRepository {
 
@@ -37,6 +39,8 @@ public class TodayRedisRepository {
         int userId = getUserId(key);
         List<DailyMoment> moments = getMomentsFromRedis(key, userId);
         DailySummary summary = createDailySummary(userId, writeDate, moments.size());
+
+        log.debug("🔍 userId:{}, summary:{}", userId, summary);
         return createTodayDiary(summary, moments);
     }
 

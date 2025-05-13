@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class TodayImageWriter implements ItemWriter<List<DailyMoment>> {
 

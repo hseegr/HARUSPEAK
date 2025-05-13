@@ -7,9 +7,9 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
+import java.util.Set;
 
 @Slf4j
-@Component
 public class TodayMomentReader implements ItemReader<TodayDiary> {
 
     private final TodayRedisRepository repository;
@@ -33,12 +33,28 @@ public class TodayMomentReader implements ItemReader<TodayDiary> {
         log.debug("🐛 STEP1.READ - 오늘의 순간 일기 전체 조회");
 
         if (keyIterator == null) {
-            keyIterator = repository.getAllKeys(date).iterator();
+            Set<String> keys = repository.getAllKeys(date);
+            this.keyIterator = keys.iterator();
+            log.debug("🔍 key list = {}", String.join(", ", keys));
         }
 
         if (!keyIterator.hasNext()) {
             return null;
         }
-        return repository.getTodayMomentsByKey(keyIterator.next(), date);
+        String key = keyIterator.next();
+        log.debug("🔎 현재 key = {}", key);
+//        return repository.getTodayMomentsByKey(keyIterator.next(), date);
+        try {
+            TodayDiary diary = repository.getTodayMomentsByKey(key, date);
+            if (diary == null) {
+                log.warn("⛔ getTodayMomentsByKey()가 null 반환! key={}, date={}", key, date);
+            } else {
+                log.debug("📘 diary 정상 반환됨 = {}", diary);
+            }
+            return diary;
+        } catch (Exception e) {
+            log.error("💥 diary 조회 중 예외 발생! key={}, date={}, error={}", key, date, e.getMessage(), e);
+            throw e; // 재던지기
+        }
     }
 }

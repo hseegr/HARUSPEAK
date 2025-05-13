@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
 @NoArgsConstructor
 public class TodayTagProcessor implements ItemProcessor <TodayDiary, TodayDiaryTag> {
 

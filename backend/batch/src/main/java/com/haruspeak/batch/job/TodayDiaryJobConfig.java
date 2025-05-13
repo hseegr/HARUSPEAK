@@ -73,9 +73,9 @@ public class TodayDiaryJobConfig {
     public Step dailySummaryStep(){
         return new StepBuilder("dailySummaryStep", jobRepository)
                 .<TodayDiary, TodayDiary>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayMomentReader())
-                .processor(todaySummaryProcessor())
-                .writer(dailySummaryWriter())
+                .reader(todayMomentReaderScoped(null))
+                .processor(todaySummaryProcessorScoped())
+                .writer(dailySummaryWriterScoped())
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(3)
@@ -91,9 +91,9 @@ public class TodayDiaryJobConfig {
     public Step dailyTagStep(){
         return new StepBuilder("dailyTagStep", jobRepository)
                 .<TodayDiary, TodayDiaryTag>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayDiaryReader())
-                .processor(todayTagProcessor())
-                .writer(todayTagWriter())
+                .reader(todayDiaryReaderScoped(null))
+                .processor(todayTagProcessorScoped())
+                .writer(todayTagWriterScoped())
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(3)
@@ -109,9 +109,9 @@ public class TodayDiaryJobConfig {
     public Step dailyImageStep(){
         return new StepBuilder("dailyImageStep", jobRepository)
                 .<TodayDiary, List<DailyMoment>>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayDiaryReader())
-                .processor(todayImageProcessor())
-                .writer(todayImageWriter())
+                .reader(todayDiaryReaderScoped(null))
+                .processor(todayImageProcessorScoped())
+                .writer(todayImageWriterScoped())
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(3)
@@ -121,50 +121,50 @@ public class TodayDiaryJobConfig {
 
     @Bean
     @StepScope
-    public ItemReader<TodayDiary> todayMomentReader(@Value("#{jobParameters['date']}") String date) {
+    public TodayMomentReader todayMomentReaderScoped(@Value("#{jobParameters['date']}") String date) {
         return new TodayMomentReader(todayRedisRepository, date);
     }
 
     @Bean
     @StepScope
-    public ItemProcessor<TodayDiary, TodayDiary> todaySummaryProcessor() {
+    public TodaySummaryProcessor todaySummaryProcessorScoped() {
         return new TodaySummaryProcessor(todaySummaryService);
     }
 
     @Bean
     @StepScope
-    public ItemWriter<TodayDiary> dailySummaryWriter() {
+    public DailySummaryWriter dailySummaryWriterScoped() {
         return new DailySummaryWriter(dailySummaryRepository, dailyMomentRepository, todayDiaryService);
     }
 
     @Bean
     @StepScope
-    public ItemReader<TodayDiary> todayDiaryReader(@Value("#{jobParameters['date']}") String date) {
+    public TodayDiaryReader todayDiaryReaderScoped(@Value("#{jobParameters['date']}") String date) {
         return new TodayDiaryReader(todayDiaryRedisRepository, date);
     }
 
     @Bean
     @StepScope
-    public ItemProcessor <TodayDiary, TodayDiaryTag>  todayTagProcessor() {
+    public TodayTagProcessor  todayTagProcessorScoped() {
         return new TodayTagProcessor();
     }
 
     @Bean
     @StepScope
-    public ItemWriter<TodayDiaryTag> todayTagWriter() {
+    public TodayTagWriter todayTagWriterScoped() {
         return new TodayTagWriter(tagRepository, userTagRepository, momentTagRepository);
     }
 
 
     @Bean
     @StepScope
-    public TodayImageProcessor todayImageProcessor() {
+    public TodayImageProcessor todayImageProcessorScoped() {
         return new TodayImageProcessor();
     }
 
     @Bean
     @StepScope
-    public TodayImageWriter todayImageWriter() {
+    public TodayImageWriter todayImageWriterScoped() {
         return new TodayImageWriter(momentImageRepository);
     }
 }

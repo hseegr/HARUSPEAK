@@ -62,18 +62,14 @@ public class RedisConfig {
     public RedisTemplate<String, Object> batchRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());  // 키 직렬화 설정
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));  // 값 직렬화 설정
-        return template;
+        return applyDefaultSerializers(template);
     }
 
     @Bean
     public RedisTemplate<String, TodayDiary> batchDiaryRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, TodayDiary> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
-        return template;
+        return applyDefaultSerializers(template);
     }
 
     /////////////////////////// API //////////////////////////////////////////////////
@@ -95,8 +91,19 @@ public class RedisConfig {
     public RedisTemplate<String, Object> apiRedisTemplate(RedisConnectionFactory apiConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(apiConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());  // 키 직렬화 설정
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));  // 값 직렬화 설정
+        return applyDefaultSerializers(template);
+    }
+
+
+
+    private <T> RedisTemplate<String, T> applyDefaultSerializers(RedisTemplate<String, T> template) {
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+        GenericJackson2JsonRedisSerializer valueSerializer = new GenericJackson2JsonRedisSerializer(objectMapper());
+
+        template.setKeySerializer(keySerializer);
+        template.setHashKeySerializer(keySerializer);
+        template.setValueSerializer(valueSerializer);
+        template.setHashValueSerializer(valueSerializer);
         return template;
     }
 
@@ -107,9 +114,14 @@ public class RedisConfig {
     private ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        // 날짜를 TIMESTAMP로 저장하지 않도록 설정
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
 
         return objectMapper;
     }

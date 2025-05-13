@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDiary>{
 
     private final TodaySummaryService todaySummaryService;

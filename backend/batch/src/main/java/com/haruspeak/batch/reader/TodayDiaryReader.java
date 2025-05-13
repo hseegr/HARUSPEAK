@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.util.Iterator;
 
 @Slf4j
-@Component
 public class TodayDiaryReader implements ItemReader<TodayDiary> {
 
     private final TodayDiaryRedisRepository repository;

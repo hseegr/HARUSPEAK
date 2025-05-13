@@ -33,20 +33,20 @@ public class TodayDiaryJobRunner {
                 .toJobParameters();
 
         try {
-            log.info("🐛 하루 일기 배치 실행 (date: {}) - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
+            log.info("🐛 [{}]하루 일기 배치 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
             Instant start = Instant.now();
 
             JobExecution execution = jobLauncher.run(todayDiaryJob, jobParameters);
             Duration duration = Duration.between(start, Instant.now());
 
-            log.info("🐛 하루 일기 배치 실행 완료 상태 (date: {}) - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+            log.info("🐛 [{}]하루 일기 배치 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
 
             if (execution.getStatus() != BatchStatus.COMPLETED) {
-                log.warn("🐛 하루 일기 배치 실행 중 일부 실패 또는 중단: {}", execution.getExitStatus());
+                log.warn("🐛 [{}]하루 일기 배치 실행 중 일부 실패 또는 중단: {}", date,  execution.getExitStatus());
             }
 
         } catch (Exception e) {
-            log.error("🐛 하루 일기 배치 실행 실패 (date: {}) - {}", date, e.getMessage(), e);
+            log.error("🐛 [{}] 하루 일기 배치 실행 실패 - {}", date, e.getMessage(), e);
         }
     }
 
