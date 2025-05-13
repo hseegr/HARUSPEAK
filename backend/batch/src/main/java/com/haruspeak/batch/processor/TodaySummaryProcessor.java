@@ -19,12 +19,10 @@ public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDi
 
     private final TodaySummaryService todaySummaryService;
     private final String date;
-    private final DailySummaryClient dailySummaryClient;
 
-    public TodaySummaryProcessor(TodaySummaryService todaySummaryService, String date, DailySummaryClient dailySummaryClient) {
+    public TodaySummaryProcessor(TodaySummaryService todaySummaryService, String date) {
         this.todaySummaryService = todaySummaryService;
         this.date = date;
-        this.dailySummaryClient = dailySummaryClient;
     }
 
     @Override
