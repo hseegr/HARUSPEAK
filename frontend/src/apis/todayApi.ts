@@ -10,7 +10,9 @@ export const getToday = async () => {
 
 // POST : 순간 태그 생성
 export const recommendTag = async (data: TagRequest) => {
-  const response = await axiosInstance.post('/api/today/tags', data);
+  const response = await axiosInstance.post('/api/today/tags', data, {
+    timeout: 5000,
+  });
   return response.data;
 };
 
