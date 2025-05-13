@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
+import ProtectedRoute from './components/ProtectedRoute';
 import BaseLayout from './components/layout/BaseLayout';
 import Diary from './pages/diary';
 import Home from './pages/home';
@@ -15,9 +16,8 @@ import VoiceToTextPage from './pages/todayWritePage/VoiceToTextPage';
 
 export const router = createBrowserRouter([
   {
-    element: <BaseLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: '/', element: <Home />, handle: { title: undefined } },
       {
         element: <BaseLayout />,
         children: [

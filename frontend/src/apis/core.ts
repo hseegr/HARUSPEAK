@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       try {
         await axios.post(
           `${import.meta.env.VITE_API_DOMAIN}/api/auth/token/refresh`,
-          {},
+          {}, // POST 바디는 비워도 됨 -> 왜? 쿠키에 있는 토큰을 사용하기 때문
           {
             withCredentials: true,
           },
