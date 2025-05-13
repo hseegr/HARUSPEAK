@@ -43,7 +43,7 @@ public class TodayController {
             @AuthenticatedUser Integer userId
     ){
         log.info("[POST] api/today/voice-to-text 음성파일 텍스트 변환 (userId={})", userId);
-        String uri = "/ai/stt";
+        String uri = "/ai/stt-faster-whisper";
         return ResponseEntity.ok(todayService.transferStt(uri, file, userId));
     }
 
