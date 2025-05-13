@@ -10,6 +10,7 @@ import Moments from './pages/moments';
 import NotFound from './pages/notFound';
 import TodayPage from './pages/today';
 import TodayWritePage from './pages/todayWritePage';
+import FileToTextPage from './pages/todayWritePage/FileToTextPage';
 import ImageUploadPage from './pages/todayWritePage/ImageUploadPage';
 import VoiceToTextPage from './pages/todayWritePage/VoiceToTextPage';
 
@@ -45,6 +46,11 @@ export const router = createBrowserRouter([
             path: 'todaywrite/image',
             element: <ImageUploadPage />,
             handle: { title: '이미지 업로드하기' },
+          },
+          {
+            path: 'todaywrite/file',
+            element: <FileToTextPage />,
+            handle: { title: '음성파일 변환하기' },
           },
           {
             path: 'library',
