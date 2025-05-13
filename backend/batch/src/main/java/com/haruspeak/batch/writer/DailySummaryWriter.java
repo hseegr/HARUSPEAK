@@ -7,6 +7,7 @@ import com.haruspeak.batch.model.repository.DailyMomentRepository;
 import com.haruspeak.batch.model.repository.DailySummaryRepository;
 import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
 import com.haruspeak.batch.model.repository.TodayRedisRepository;
+import com.haruspeak.batch.service.TodayDiaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
@@ -24,8 +25,7 @@ public class DailySummaryWriter implements ItemWriter<TodayDiary> {
     private final DailySummaryRepository dailySummaryRepository;
     private final DailyMomentRepository dailyMomentRepository;
 
-    private final TodayRedisRepository todayRedisRepository;
-    private final TodayDiaryRedisRepository todayDiaryRedisRepository;
+    private final TodayDiaryService todayDiaryService;
 
     @Override
     public void write(Chunk<? extends TodayDiary> chunk) throws Exception {
@@ -45,7 +45,7 @@ public class DailySummaryWriter implements ItemWriter<TodayDiary> {
             dailySummaryRepository.bulkInsertDailySummaries(summaries);
             dailyMomentRepository.bulkInsertDailyMoments(moments);
 
-            saveToRedis(diaries);
+            todayDiaryService.saveToRedis(diaries);
 
         }catch (Exception e){
             log.error("⚠️ daily_summary, daily_moments 삽입 중 에러가 발생했습니다.", e);
@@ -53,15 +53,5 @@ public class DailySummaryWriter implements ItemWriter<TodayDiary> {
         }
     }
 
-    private void saveToRedis(List<TodayDiary> diaries){
-        for(TodayDiary todayDiary : diaries){
-            DailySummary summary = todayDiary.getDailySummary();
-            String userId = String.valueOf(summary.getUserId());
-            String date = summary.getWriteDate();
-
-            todayRedisRepository.delete(userId, date);
-            todayDiaryRedisRepository.saveTodayDiaryToRedis(userId, date, todayDiary);
-        }
-    }
 }
 
