@@ -36,7 +36,7 @@ public class TodayDiaryRedisRepository {
 
 
     private String getKey(String userId, String date) {
-        return "user:" + userId + "diary:" + date;
+        return "user:" + userId + ":diary:" + date;
     }
 
     public int getUserId(String key) {

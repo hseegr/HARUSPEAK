@@ -18,11 +18,9 @@ import java.util.stream.Collectors;
 public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDiary>{
 
     private final TodaySummaryService todaySummaryService;
-    private final String date;
 
-    public TodaySummaryProcessor(TodaySummaryService todaySummaryService, String date) {
+    public TodaySummaryProcessor(TodaySummaryService todaySummaryService) {
         this.todaySummaryService = todaySummaryService;
-        this.date = date;
     }
 
     @Override

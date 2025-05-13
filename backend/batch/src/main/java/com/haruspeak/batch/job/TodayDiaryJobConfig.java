@@ -22,6 +22,9 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +73,8 @@ public class TodayDiaryJobConfig {
     public Step dailySummaryStep(){
         return new StepBuilder("dailySummaryStep", jobRepository)
                 .<TodayDiary, TodayDiary>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayMomentReader(null))
-                .processor(todaySummaryProcessor(null))
+                .reader(todayMomentReader())
+                .processor(todaySummaryProcessor())
                 .writer(dailySummaryWriter())
                 .faultTolerant()
                 .retry(Exception.class)
@@ -88,7 +91,7 @@ public class TodayDiaryJobConfig {
     public Step dailyTagStep(){
         return new StepBuilder("dailyTagStep", jobRepository)
                 .<TodayDiary, TodayDiaryTag>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayDiaryReader(null))
+                .reader(todayDiaryReader())
                 .processor(todayTagProcessor())
                 .writer(todayTagWriter())
                 .faultTolerant()
@@ -106,7 +109,7 @@ public class TodayDiaryJobConfig {
     public Step dailyImageStep(){
         return new StepBuilder("dailyImageStep", jobRepository)
                 .<TodayDiary, List<DailyMoment>>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayDiaryReader(null))
+                .reader(todayDiaryReader())
                 .processor(todayImageProcessor())
                 .writer(todayImageWriter())
                 .faultTolerant()
@@ -118,37 +121,37 @@ public class TodayDiaryJobConfig {
 
     @Bean
     @StepScope
-    public TodayMomentReader todayMomentReader(@Value("#{jobParameters['date']}") String date) {
+    public ItemReader<TodayDiary> todayMomentReader(@Value("#{jobParameters['date']}") String date) {
         return new TodayMomentReader(todayRedisRepository, date);
     }
 
     @Bean
     @StepScope
-    public TodaySummaryProcessor todaySummaryProcessor(@Value("#{jobParameters['date']}") String date) {
-        return new TodaySummaryProcessor(todaySummaryService, date);
+    public ItemProcessor<TodayDiary, TodayDiary> todaySummaryProcessor() {
+        return new TodaySummaryProcessor(todaySummaryService);
     }
 
     @Bean
     @StepScope
-    public DailySummaryWriter dailySummaryWriter() {
+    public ItemWriter<TodayDiary> dailySummaryWriter() {
         return new DailySummaryWriter(dailySummaryRepository, dailyMomentRepository, todayDiaryService);
     }
 
     @Bean
     @StepScope
-    public TodayDiaryReader todayDiaryReader(@Value("#{jobParameters['date']}") String date) {
+    public ItemReader<TodayDiary> todayDiaryReader(@Value("#{jobParameters['date']}") String date) {
         return new TodayDiaryReader(todayDiaryRedisRepository, date);
     }
 
     @Bean
     @StepScope
-    public TodayTagProcessor todayTagProcessor() {
+    public ItemProcessor <TodayDiary, TodayDiaryTag>  todayTagProcessor() {
         return new TodayTagProcessor();
     }
 
     @Bean
     @StepScope
-    public TodayTagWriter todayTagWriter() {
+    public ItemWriter<TodayDiaryTag> todayTagWriter() {
         return new TodayTagWriter(tagRepository, userTagRepository, momentTagRepository);
     }
 
