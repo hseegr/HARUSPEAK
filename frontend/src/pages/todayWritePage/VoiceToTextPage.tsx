@@ -45,7 +45,6 @@ const VoiceToTextPage = () => {
   useEffect(() => {
     resetTranscript();
     return () => {
-      // clearTimeout(retryTimeout);
       SpeechRecognition.stopListening();
     };
   }, []);
