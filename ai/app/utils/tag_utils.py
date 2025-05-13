@@ -31,6 +31,9 @@ prompt = PromptTemplate(
 - 예를 들어 추천 키워드가 만약 "바쁜 일상", "프로젝트 회의" 라면 "바쁜일상", "프로젝트회의" 로 해주되,
 "프로젝트회의"는 6글자니까 다른 키워드를 추천해주세요.
 - 감정, 주제, 활동 등을 대표하는 단어여야 합니다.
+- 일기 내용의 의미를 해석할 수 없는 컨텐츠의 경우 "아무말"을 출력력해주세요. 그러나 "안녕하세요> ㅎㅎj" 처럼 대략적으로라도 해석할 수 있으면 태그 추천해주세요.
+- "아무말" 하나만 나올 경우 "아무말"을 출력하고 그외에는 "아무말"은 지워주세요.
+- 일기, 즉 컨텐츠 내용이 없을 때는 빈배열을 추천해주세요.
 {guide}
 
 [일기]
@@ -44,7 +47,7 @@ prompt = PromptTemplate(
 # LangChain 모델
 llm = ChatOpenAI(
         model="gpt-4.1",
-        temperature=0.5,
+        temperature=0.3,
         base_url=BASE_URL,
         openai_api_key=OPEN_AI_API_KEY
 )
