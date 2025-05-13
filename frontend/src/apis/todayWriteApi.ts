@@ -10,6 +10,21 @@ export const todayWriteSend = async (data: TodayWrite) => {
   return response.data;
 };
 
+// 음성 파일 업로드 STT
+export const fileToText = async (audioBlob: Blob) => {
+  const formData = new FormData();
+  formData.append('file', audioBlob, 'voice.mp3');
+  const response = await axiosInstance.post(
+    '/api/today/voice-to-text',
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 300000,
+    },
+  );
+  return response.data;
+};
+
 // 이미지 base64 변환 함수
 export const imageToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {

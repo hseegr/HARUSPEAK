@@ -1,5 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import AutoTagGenerator from '@/components/AutoTagGenerator';
 import {
   Dialog,
   DialogClose,
@@ -17,6 +23,20 @@ interface MomentEditDialogProps {
   moment: MomentContent;
 }
 
+// 태그 입력을 위한 스키마 정의
+const tagSchema = z.object({
+  tag: z
+    .string()
+    .min(1)
+    .max(10, '태그는 최대 10글자까지 작성 가능합니다')
+    .regex(
+      /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_]*$/,
+      '_를 제외한 공백과 특수문자는 입력 불가합니다',
+    ),
+});
+
+type TagFormData = z.infer<typeof tagSchema>;
+
 const MomentEditDialog = ({
   open,
   onOpenChange,
@@ -24,8 +44,6 @@ const MomentEditDialog = ({
 }: MomentEditDialogProps) => {
   const {
     editedMoment,
-    newTag,
-    setNewTag,
     isSaving,
     date,
     currentTime,
@@ -34,17 +52,64 @@ const MomentEditDialog = ({
     handleContentChange,
     handleDeleteImage,
     handleDeleteTag,
-    handleAddTag,
     handleSave,
     resetState,
   } = useMomentEdit(moment, () => onOpenChange(false));
+
+  const [tagError, setTagError] = useState<string>('');
+  const [shouldResetTags, setShouldResetTags] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<TagFormData>({
+    resolver: zodResolver(tagSchema),
+    defaultValues: {
+      tag: '',
+    },
+    mode: 'onChange',
+  });
+
+  // 태그 추가 핸들러
+  const onSubmit = (data: TagFormData) => {
+    if (editedMoment.tags.length >= 10) {
+      setTagError('태그는 최대 10개까지 입력 가능합니다');
+      return;
+    }
+    // 태그를 직접 추가
+    editedMoment.tags = [...editedMoment.tags, data.tag];
+    reset();
+  };
+
+  // 엔터 키 핸들러
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!errors.tag) {
+        handleSubmit(onSubmit)();
+      }
+    }
+  };
 
   // Dialog가 열릴 때마다 상태 초기화
   useEffect(() => {
     if (open) {
       resetState();
+      reset();
+      setTagError('');
     }
-  }, [open, resetState]); // resetState가 useCallback으로 memoized되어 있어서 안전함
+  }, [open, resetState, reset]);
+
+  // 태그 초기화를 처리하는 useEffect
+  useEffect(() => {
+    if (shouldResetTags) {
+      editedMoment.tags = [];
+      setShouldResetTags(false);
+    }
+  }, [shouldResetTags, editedMoment]);
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
@@ -112,7 +177,7 @@ const MomentEditDialog = ({
                       />
                       <button
                         onClick={() => handleDeleteImage(idx)}
-                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white'
+                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
                       >
                         ✕
                       </button>
@@ -136,19 +201,50 @@ const MomentEditDialog = ({
 
           {/* 태그 추가 */}
           <div className='flex flex-col gap-2'>
-            <div className='flex gap-2'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex gap-2'>
               <input
-                value={newTag}
-                onChange={e => setNewTag(e.target.value)}
-                className='flex-1 rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
-                placeholder='태그 입력'
+                {...register('tag')}
+                onKeyDown={handleKeyPress}
+                className={`flex-1 rounded-md border p-2 text-sm focus:outline-[#41644A] ${
+                  errors.tag && errors.tag.type !== 'too_small'
+                    ? 'border-red-500'
+                    : 'border-gray-300'
+                }`}
+                placeholder={
+                  editedMoment.tags.length >= 10
+                    ? '태그 최대 개수 도달 (10개)'
+                    : '태그 입력'
+                }
+                disabled={editedMoment.tags.length >= 10}
               />
               <button
-                onClick={handleAddTag}
-                disabled={newTag.trim() === ''}
-                className='rounded-full bg-[#41644A] px-3 py-1.5 text-sm text-white disabled:bg-gray-300'
+                type='submit'
+                disabled={editedMoment.tags.length >= 10 || !watch('tag')}
+                className='rounded-full bg-[#41644A] px-3 py-1.5 text-sm font-bold text-white disabled:bg-gray-300 disabled:text-gray-500'
               >
                 태그 추가
+              </button>
+            </form>
+            {errors.tag && errors.tag.type !== 'too_small' && (
+              <div className='text-sm text-red-500'>
+                {errors.tag?.message || tagError}
+              </div>
+            )}
+
+            <div className='flex flex-row-reverse justify-between'>
+              <AutoTagGenerator
+                moment={editedMoment}
+                initialTags={editedMoment.tags}
+                isToday={true}
+                hideWhenDisabled={false}
+                buttonStyle='simple'
+              />
+              <button
+                onClick={() => setShouldResetTags(true)}
+                className='text-sm font-bold text-red-500 hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
+                disabled={editedMoment.tags.length > 0 ? false : true}
+              >
+                태그 목록 초기화
               </button>
             </div>
 
@@ -162,7 +258,7 @@ const MomentEditDialog = ({
                   {tag}
                   <button
                     onClick={() => handleDeleteTag(idx)}
-                    className='text-gray-500 hover:text-gray-700'
+                    className='text-gray-500 hover:text-red-600'
                   >
                     ✕
                   </button>
