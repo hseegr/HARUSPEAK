@@ -6,6 +6,7 @@ import { compressImage, imageToBase64 } from '@/apis/todayWriteApi';
 import { useTodayWriteMutation } from '@/hooks/useTodayWriteQuery';
 import { TodayWriteStore } from '@/store/todayWriteStore';
 
+import FileToTextButton from './components/FileToTextButton';
 import ImageAttachButton from './components/ImageAttachButton';
 import ImageInputList from './components/ImageInputList';
 import TextInput from './components/TextInput';
@@ -38,6 +39,11 @@ const TodayWritePage = () => {
   // 이미지 첨부 버튼 클릭 핸들러
   const handleImageButtonClick = () => {
     navigate('/todaywrite/image');
+  };
+
+  // 파일 -> 텍스트 변환 버튼 클릭 핸들러
+  const handleFileButtonClick = () => {
+    navigate('/todaywrite/file');
   };
 
   // 저장 버튼 클릭 핸들러
@@ -122,29 +128,28 @@ const TodayWritePage = () => {
         {/* 하단 고정 입력 영역 */}
         <div className='fixed bottom-[70px] left-0 right-0 mx-auto w-full max-w-96 bg-white px-2 pb-8 pt-2'>
           <div className='flex flex-col gap-4'>
+            {hasContent && (
+              <div className='flex flex-row justify-end px-4'>
+                <div
+                  onClick={handleSave}
+                  className='flex cursor-pointer justify-end px-2 text-sm font-semibold text-haru-green'
+                >
+                  {isSaving ? '저장 중' : '저장'}
+                </div>
+                <div
+                  onClick={handleClear}
+                  className='flex cursor-pointer justify-end px-2 text-sm font-semibold text-haru-gray-4'
+                >
+                  초기화
+                </div>
+              </div>
+            )}
             {/* 버튼들 */}
             <div className='flex justify-between px-4'>
               <div className='flex gap-2'>
                 <ImageAttachButton onClick={handleImageButtonClick} />
                 <VoiceToTextButton onClick={handleVoiceButtonClick} />
-              </div>
-              <div className='flex'>
-                {hasContent && (
-                  <div className='flex flex-row justify-end'>
-                    <div
-                      onClick={handleSave}
-                      className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-green'
-                    >
-                      {isSaving ? '저장 중' : '저장'}
-                    </div>
-                    <div
-                      onClick={handleClear}
-                      className='flex cursor-pointer justify-end px-2 pb-2 text-sm font-semibold text-haru-gray-4'
-                    >
-                      초기화
-                    </div>
-                  </div>
-                )}
+                <FileToTextButton onClick={handleFileButtonClick} />
               </div>
             </div>
 

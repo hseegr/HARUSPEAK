@@ -1,10 +1,10 @@
-import { useCallback, useState } from 'react';
-
-import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import { useFilterDialogs } from '@/hooks/useFilterDialogs';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { useDeleteDiary, useGetLibrary } from '@/hooks/useLibraryQuery';
+import { useLibraryDelete } from '@/hooks/useLibraryDelete';
+import { useLibraryFilters } from '@/hooks/useLibraryFilters';
+import { useGetLibrary } from '@/hooks/useLibraryQuery';
 
+import DateRangeDisplay from '../moments/components/DateRangeDisplay';
 import DateFilterBadge from './components/DateFilterBadge';
 import DateFilterDialog from './components/DateFilterDialog';
 import DeleteBtn from './components/DeleteBtn';
@@ -14,20 +14,33 @@ import FilterBadge from './components/FilterBadge';
 import FilterDialog from './components/FilterDialog';
 
 const Library = () => {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  // 필터 관련 로직
+  const { filterParams, handleTagFilterApply, handleDateFilterApply } =
+    useLibraryFilters();
+  const { startDate, endDate } = filterParams;
 
-  // 검색 파라미터에서 필터 값 추출
-  const startDate = searchParams.get('startDate') || undefined;
-  const endDate = searchParams.get('endDate') || undefined;
-  const userTags = searchParams.get('userTags') || undefined;
+  // 다이얼로그 관련 로직
+  const { dialogState, dialogActions } = useFilterDialogs();
+  const { isFilterOpen, isDateFilterOpen } = dialogState;
+  const {
+    setIsFilterOpen,
+    setIsDateFilterOpen,
+    handleFilterClick,
+    handleDateFilterClick,
+  } = dialogActions;
 
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
-  const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // 선택 및 삭제 관련 로직
+  const { selectionState, selectionActions } = useLibraryDelete();
+  const { isSelectionMode, selectedIds, isDeleteDialogOpen, isDeleting } =
+    selectionState;
+  const {
+    handleToggleSelection,
+    handleSelect,
+    handleReset,
+    handleDeleteClick,
+    handleConfirmDelete,
+    setIsDeleteDialogOpen,
+  } = selectionActions;
 
   // 무한 스크롤 데이터 가져오기
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -35,125 +48,14 @@ const Library = () => {
       limit: 30,
       startDate,
       endDate,
-      userTags,
+      userTags: filterParams.userTags,
     });
-
-  const deleteDiary = useDeleteDiary();
 
   // 교차 관찰자 설정
   const observerRef = useIntersectionObserver({
     onIntersect: fetchNextPage,
     enabled: hasNextPage && !isFetchingNextPage,
   });
-
-  const handleFilterClick = useCallback(() => {
-    setIsFilterOpen(true);
-  }, []);
-
-  // 날짜 필터 클릭 핸들러 추가
-  const handleDateFilterClick = useCallback(() => {
-    setIsDateFilterOpen(true);
-  }, []);
-
-  // 태그 필터 적용 핸들러 - /moments 페이지로 이동하며 필터 적용
-  const handleTagFilterApply = useCallback(
-    (filters: {
-      startDate?: string;
-      endDate?: string;
-      userTags?: number[];
-    }) => {
-      const newSearchParams = new URLSearchParams();
-
-      if (filters.startDate) {
-        newSearchParams.set('startDate', filters.startDate);
-      }
-      if (filters.endDate) {
-        newSearchParams.set('endDate', filters.endDate);
-      }
-      if (filters.userTags?.length) {
-        newSearchParams.set('userTags', filters.userTags.join(','));
-      }
-
-      // moments 페이지로 이동하며 필터 적용
-      navigate(`/moments?${newSearchParams.toString()}`);
-    },
-    [navigate],
-  );
-
-  // 날짜 필터 적용 핸들러 - 현재 Library 페이지에서 필터 적용
-  const handleDateFilterApply = useCallback(
-    (filters: { startDate?: string; endDate?: string }) => {
-      // 기존 파라미터 유지하면서 새로운 날짜 필터 적용
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-
-      if (filters.startDate) {
-        newSearchParams.set('startDate', filters.startDate);
-      } else {
-        newSearchParams.delete('startDate');
-      }
-
-      if (filters.endDate) {
-        newSearchParams.set('endDate', filters.endDate);
-      } else {
-        newSearchParams.delete('endDate');
-      }
-
-      // 현재 페이지에 필터 적용 (라우트 변경 없이 쿼리 파라미터만 업데이트)
-      navigate({ search: newSearchParams.toString() }, { replace: true });
-    },
-    [navigate, searchParams],
-  );
-
-  const handleToggleSelection = useCallback(() => {
-    setIsSelectionMode(prev => !prev);
-    setSelectedIds([]);
-  }, []);
-
-  const handleSelect = useCallback((summaryId: number) => {
-    setSelectedIds(prev =>
-      prev.includes(summaryId)
-        ? prev.filter(id => id !== summaryId)
-        : [...prev, summaryId],
-    );
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setSelectedIds([]);
-  }, []);
-
-  // 삭제 버튼 클릭 시 Dialog 열기
-  const handleDeleteClick = useCallback(() => {
-    if (selectedIds.length > 0) {
-      setIsDeleteDialogOpen(true);
-    }
-  }, [selectedIds]);
-
-  // 실제 삭제 처리 (개별 요청)
-  const handleConfirmDelete = useCallback(async () => {
-    if (selectedIds.length === 0) return;
-
-    try {
-      setIsDeleting(true);
-      console.log('삭제 시작:', selectedIds);
-
-      // 각 일기를 순차적으로 개별 삭제 (Promise.all 대신 for문 사용)
-      for (const id of selectedIds) {
-        try {
-          await deleteDiary(id);
-          console.log(`일기 ${id} 삭제 성공`);
-        } catch (error) {
-          console.error(`일기 ${id} 삭제 실패:`, error);
-        }
-      }
-      setIsSelectionMode(false);
-      setSelectedIds([]);
-      setIsDeleteDialogOpen(false);
-    } catch (error) {
-      console.error('일기 삭제 중 오류 발생:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [deleteDiary, selectedIds]);
 
   const hasData = (data?.pages?.[0]?.data?.length ?? 0) > 0;
 
@@ -174,9 +76,15 @@ const Library = () => {
         />
       </div>
 
-      {/* 컨트롤 바만큼 상단 여백 추가 */}
       <div className='pt-12'>
-        <div className='grid grid-cols-1 gap-6'>
+        <div className='mb-4 px-4'>
+          {(startDate || endDate) && (
+            <DateRangeDisplay startDate={startDate} endDate={endDate} />
+          )}
+        </div>
+
+        {/* 일기 목록 */}
+        <div className='grid grid-cols-1 gap-6 px-4'>
           {data?.pages?.map(page =>
             page.data?.map(diary => (
               <DiaryFrame
