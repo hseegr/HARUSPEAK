@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Mic } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +13,18 @@ import VoiceInput from './components/VoiceInput';
 const VoiceToTextPage = () => {
   const navigate = useNavigate();
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  const mediaStreamRef = useRef<MediaStream | null>(null); // 마이크 스트림 저장용
 
-  // 추가: 버튼 클릭 한 번으로 권한 요청 + 음성 인식 시작
+  // 마이크 스트림 종료
+  const stopMicrophone = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      console.log('🔇 마이크 스트림 종료됨');
+      mediaStreamRef.current = null;
+    }
+  };
+
+  // 버튼 클릭 한 번으로 권한 요청 + 음성 인식 시작
   const handleStart = async () => {
     try {
       console.log(
@@ -24,7 +34,9 @@ const VoiceToTextPage = () => {
       console.log('🔐 현재 프로토콜:', window.location.protocol);
 
       // 1) 사용자 제스처 내에서 권한 요청 (팝업)
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
       console.log('✅ 마이크 권한 허용됨');
 
       // 2) 권한 허용 후 음성 인식 시작
@@ -36,32 +48,6 @@ const VoiceToTextPage = () => {
       alert('⚠️ 마이크 권한을 허용해야 녹음을 시작할 수 있습니다.');
     }
   };
-
-  // 컴포넌트 처음 렌더링 시 실행
-  useEffect(() => {
-    resetTranscript();
-
-    // 삭제 또는 주석 처리 가능: 자동 재요청 로직
-    // const retryTimeout = setTimeout(() => {
-    //   navigator.mediaDevices
-    //     .getUserMedia({ audio: true })
-    //     .then(() => {
-    //       SpeechRecognition.startListening({
-    //         continuous: true,
-    //         language: 'ko',
-    //       });
-    //       console.log('권한 재허용 후 다시 인식 시작');
-    //     })
-    //     .catch(e => {
-    //       console.error('마이크 권한 요청 실패:', e.name, e.message);
-    //     });
-    // }, 300);
-
-    return () => {
-      // clearTimeout(retryTimeout);
-      SpeechRecognition.stopListening();
-    };
-  }, []);
 
   // 변환(중지) 버튼 클릭
   const handleConvert = async () => {
@@ -77,6 +63,7 @@ const VoiceToTextPage = () => {
   const handleCancle = () => {
     resetTranscript();
     SpeechRecognition.abortListening();
+    stopMicrophone(); // 마이크 해제
     console.log('🎙 음성 인식 완전 종료됨');
     navigate('/todaywrite');
   };
@@ -87,9 +74,40 @@ const VoiceToTextPage = () => {
       TodayWriteStore.getState().addTextBlock(transcript.trim());
     }
     SpeechRecognition.abortListening();
+    stopMicrophone(); // 마이크 해제
     console.log('🎙 음성 인식 완전 종료됨');
     navigate('/todaywrite');
   };
+
+  // 컴포넌트 처음 렌더링 시 실행
+  useEffect(() => {
+    resetTranscript();
+
+    // 디버깅용: SpeechRecognition 이벤트 리스너 등록
+    const recognition = (SpeechRecognition as any).getRecognition?.();
+    if (recognition) {
+      recognition.onresult = (event: any) => {
+        console.log('🎯 onresult 발생:', event);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('❌ onerror 발생:', event.error);
+      };
+
+      recognition.onend = () => {
+        console.warn('📴 onend 발생: 음성 인식 세션 종료');
+      };
+
+      console.log('🧪 SpeechRecognition 이벤트 리스너 등록 완료');
+    } else {
+      console.warn('❌ recognition 인스턴스를 가져올 수 없습니다.');
+    }
+
+    return () => {
+      SpeechRecognition.stopListening();
+      stopMicrophone(); // 마이크 해제
+    };
+  }, []);
 
   return (
     <div className='flex min-h-[calc(100vh-150px)] w-full flex-col items-center justify-center gap-6'>
