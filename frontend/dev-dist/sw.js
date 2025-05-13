@@ -79,13 +79,19 @@ define(['./workbox-86c9b217'], function (workbox) {
    * requests for URLs in the manifest.
    * See https://goo.gl/S9QRab
    */
-  workbox.precacheAndRoute([{
-    "url": "registerSW.js",
-    "revision": "3ca0b8505b4bec776b69afdba2768812"
-  }, {
-    "url": "index.html",
-    "revision": "0.tdjlk1sduro"
-  }], {});
+  workbox.precacheAndRoute(
+    [
+      {
+        url: 'registerSW.js',
+        revision: '3ca0b8505b4bec776b69afdba2768812',
+      },
+      {
+        url: 'index.html',
+        revision: '0.nhkovor511o',
+      },
+    ],
+    {},
+  );
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(
     new workbox.NavigationRoute(workbox.createHandlerBoundToURL('index.html'), {
