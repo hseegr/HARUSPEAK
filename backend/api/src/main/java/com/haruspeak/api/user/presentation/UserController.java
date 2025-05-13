@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 // 테스트 코드 미작성
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Tag(
         name = "User",
