@@ -35,7 +35,7 @@ const DeleteBtn = ({
       )}
       <button
         onClick={isSelectionMode ? onDelete : onToggleSelection}
-        className={`text-mg px-2 py-1 ${
+        className={`text-mg px-1 py-1 ${
           isSelectionMode
             ? 'text-haru-green hover:text-haru-green'
             : 'text-haru-gray-4 hover:text-haru-green'
