@@ -3,6 +3,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 import { deleteDiary, getLibrary } from '@/apis/libraryApi';
 import { LibraryParams, LibraryResponse } from '@/types/library';
@@ -26,7 +27,6 @@ export const useGetLibrary = ({
       if (!lastPage?.resInfo?.hasMore) return undefined;
       return lastPage.resInfo.nextCursor;
     },
-    // 불필요한 리렌더링 방지
     structuralSharing: true,
   });
 
@@ -39,7 +39,7 @@ export const useDeleteDiary = () => {
       queryClient.invalidateQueries({ queryKey: ['library'] });
     },
     onError: error => {
-      console.log(error);
+      toast.error(error.message);
     },
   });
   return mutateAsync;
