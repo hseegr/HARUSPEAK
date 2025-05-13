@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 import {
   editDiary,
@@ -24,7 +25,7 @@ export const useRegenerateImage = () => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
     },
     onError: error => {
-      console.log(error);
+      toast.error(error.message);
     },
   });
   return mutate;
@@ -39,7 +40,7 @@ export const useRegenerateContent = () => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
     },
     onError: error => {
-      console.log(error);
+      toast.error(error.message);
     },
   });
 
@@ -73,7 +74,7 @@ export const useEditDiary = () => {
       queryClient.invalidateQueries({ queryKey: ['library'] });
     },
     onError: error => {
-      console.log(error);
+      toast.error(error.message);
     },
   });
   return mutate;
