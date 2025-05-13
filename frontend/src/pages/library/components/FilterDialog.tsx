@@ -325,7 +325,9 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
               onClick={handleApply}
               disabled={isButtonDisabled()}
               className={
-                isButtonDisabled() ? 'cursor-not-allowed opacity-50' : ''
+                isButtonDisabled()
+                  ? 'cursor-not-allowed opacity-50'
+                  : 'bg-haru-green'
               }
             >
               필터 적용
