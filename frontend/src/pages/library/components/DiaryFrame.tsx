@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
+import ImageSkeleton from '@/components/ImageSkeleton';
+
 export interface DiaryFrameProps {
   summaryId: number;
   diaryDate: string;
@@ -9,6 +11,7 @@ export interface DiaryFrameProps {
   isSelectionMode: boolean;
   isSelected: boolean;
   onSelect: (id: number) => void;
+  isImageGenerating?: boolean;
 }
 
 const DiaryFrame = ({
@@ -20,6 +23,7 @@ const DiaryFrame = ({
   isSelectionMode,
   isSelected,
   onSelect,
+  isImageGenerating,
 }: DiaryFrameProps) => {
   const navigate = useNavigate();
 
@@ -54,12 +58,16 @@ const DiaryFrame = ({
         <div className='mt-8 flex flex-col'>
           <div className='font-mont'>{title}</div>
           <div className='font-mont'>{momentCount}개의 순간</div>
-          <div>
-            <img
-              className='h-full w-full rounded-xl'
-              src={imageUrl}
-              alt='일기 썸네일'
-            />
+          <div className='w-full overflow-hidden'>
+            {isImageGenerating || !imageUrl ? (
+              <ImageSkeleton />
+            ) : (
+              <img
+                className='h-full w-full rounded-xl'
+                src={imageUrl}
+                alt='일기 썸네일'
+              />
+            )}
           </div>
         </div>
       </div>

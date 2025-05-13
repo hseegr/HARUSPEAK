@@ -11,6 +11,8 @@ export const getDiary = async (summaryId: string) => {
 export const regenerateContent = async (summaryId: string) => {
   const response = await axiosInstance.post(
     `/api/summary/${summaryId}/content/regenerate`,
+    {},
+    { timeout: 30000 },
   );
   return response.data;
 };
@@ -19,20 +21,29 @@ export const regenerateContent = async (summaryId: string) => {
 export const regenerateImage = async (summaryId: string) => {
   const response = await axiosInstance.post(
     `/api/summary/${summaryId}/image/regenerate`,
+    {},
+    { timeout: 30000 },
   );
   return response.data;
 };
 
-// 요약 이미지 불러오기
-export const getImage = async (summaryId: string) => {
-  const response = await axiosInstance.get(
-    `/api/summary/${summaryId}/image/regenerate`,
-  );
-  return response.data;
-};
+// 요약 이미지 불러오기 -> 불필요 ?
+// export const getImage = async (summaryId: string) => {
+//   const response = await axiosInstance.get(
+//     `/api/summary/${summaryId}/image/regenerate`,
+//   );
+//   return response.data;
+// };
 
 // 하루일기 수정(오늘 제외)
-export const editDiary = async (summaryId: string) => {
-  const response = await axiosInstance.patch(`/api/summary/${summaryId}`);
+export const editDiary = async (
+  summaryId: string,
+  title: string,
+  content: string,
+) => {
+  const response = await axiosInstance.patch(`/api/summary/${summaryId}`, {
+    title,
+    content,
+  });
   return response.data;
 };
