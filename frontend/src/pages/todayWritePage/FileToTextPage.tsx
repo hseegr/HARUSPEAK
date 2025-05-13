@@ -13,13 +13,21 @@ const FileToTextPage = () => {
   const recorder = useRef<MicRecorder | null>(null);
   const navigate = useNavigate();
 
+  // 녹음 중 여부 확인
   const [recording, setRecording] = useState(false);
+
+  // 녹음 완료된 오디오 blob 저장
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+
+  // 변환 텍스트 저장
   const [convertedText, setConvertedText] = useState('');
+
+  // 음성 입력 화면 표시 여부 확인
   const [showVoiceInput, setShowVoiceInput] = useState(false);
 
   const { mutate: convertFile, isPending } = useFileToTextMutation();
 
+  // 녹음 시작
   const handleStartRecording = async () => {
     try {
       recorder.current = new MicRecorder({ bitRate: 128 });
@@ -32,6 +40,7 @@ const FileToTextPage = () => {
     }
   };
 
+  // 녹음 중지
   const handleStopRecording = async () => {
     try {
       if (!recorder.current) return;
@@ -43,6 +52,7 @@ const FileToTextPage = () => {
     }
   };
 
+  // 텍스트로 변환
   const handleConvert = () => {
     if (!audioBlob) return;
 
@@ -59,6 +69,7 @@ const FileToTextPage = () => {
     });
   };
 
+  // 저장
   const handleSave = () => {
     if (convertedText.trim()) {
       TodayWriteStore.getState().addTextBlock(convertedText.trim());
@@ -66,10 +77,12 @@ const FileToTextPage = () => {
     navigate('/todaywrite');
   };
 
+  // 취소
   const handleCancel = () => {
     navigate('/todaywrite');
   };
 
+  // 재녹음
   const handleRetry = () => {
     setAudioBlob(null);
     setConvertedText('');
@@ -96,8 +109,8 @@ const FileToTextPage = () => {
           {recording
             ? '녹음 중이에요!'
             : audioBlob
-              ? '녹음이 완료되었습니다'
-              : '녹음을 시작해주세요'}
+              ? '녹음이 완료되었습니다!'
+              : '녹음을 시작해주세요!'}
         </p>
 
         {/* 버튼 */}
@@ -124,19 +137,20 @@ const FileToTextPage = () => {
         {/* 미리듣기 + 변환 + 재녹음 버튼 */}
         {audioBlob && !recording && !showVoiceInput && (
           <>
-            <div className='mt-4'>
+            <div className='mb-4 mt-4 w-full'>
               <audio controls src={URL.createObjectURL(audioBlob)} />
             </div>
-            <div className='mt-2 flex gap-2'>
+
+            <div className='mt-2 flex w-full justify-end'>
               <button
-                className='rounded bg-haru-green px-4 py-2 text-xs font-semibold text-white'
+                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
                 onClick={handleConvert}
                 disabled={isPending}
               >
-                {isPending ? '변환 중...' : '파일 변환 요청'}
+                {isPending ? '변환 중...' : '텍스트로 바꾸기'}
               </button>
               <button
-                className='rounded bg-haru-green px-4 py-2 text-xs font-semibold text-white'
+                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
                 onClick={handleRetry}
               >
                 재녹음
