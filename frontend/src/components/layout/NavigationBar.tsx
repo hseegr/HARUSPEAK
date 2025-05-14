@@ -6,14 +6,16 @@ import LibraryIcon from '@/assets/icons/LibraryIcon';
 import TodayIcon from '@/assets/icons/TodayIcon';
 
 const baseButtonClasses =
-  'flex w-1/2 flex-col items-center justify-center text-xs transition-colors duration-200 hover:text-haru-gray-5';
+  'flex w-1/2 flex-col items-center justify-center text-xs transition-colors duration-200';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const getActiveColor = (path: string) =>
-    location.pathname === path ? 'text-haru-green' : 'text-haru-gray-4';
+    location.pathname === path
+      ? 'text-haru-green hover:text-haru-green'
+      : 'text-haru-gray-4 hover:text-haru-gray-5';
 
   const handleLogout = async () => {
     await userLogout();

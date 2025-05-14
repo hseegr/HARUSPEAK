@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Mic } from 'lucide-react';
 import MicRecorder from 'mic-recorder-to-mp3-fixed';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { useFileToTextMutation } from '@/hooks/useTodayWriteQuery';
 import { TodayWriteStore } from '@/store/todayWriteStore';
@@ -35,8 +36,8 @@ const FileToTextPage = () => {
       setRecording(true);
       setConvertedText('');
       setShowVoiceInput(false);
-    } catch (err) {
-      console.error('녹음 시작 실패:', err);
+    } catch {
+      toast.error('마이크 권한을 허용해야 녹음을 시작할 수 있습니다.');
     }
   };
 
@@ -47,8 +48,8 @@ const FileToTextPage = () => {
       const [, blob] = await recorder.current.stop().getMp3();
       setAudioBlob(blob);
       setRecording(false);
-    } catch (err) {
-      console.error('녹음 중지 실패:', err);
+    } catch {
+      toast.error('녹음 중지에 실패했습니다.');
     }
   };
 
@@ -61,10 +62,6 @@ const FileToTextPage = () => {
         const text = response.text.trim();
         setConvertedText(text);
         setShowVoiceInput(true);
-      },
-      onError: error => {
-        console.error('❌ 변환 실패 상세:', error);
-        alert('❌ 음성 변환 실패! 다시 시도해주세요.');
       },
     });
   };
@@ -105,7 +102,7 @@ const FileToTextPage = () => {
         )}
 
         {/* 상태 메시지 */}
-        <p className='mb-4 text-sm font-semibold text-gray-700'>
+        <p className='mb-4 text-base font-semibold text-gray-700'>
           {recording
             ? '녹음 중이에요!'
             : audioBlob
@@ -117,7 +114,7 @@ const FileToTextPage = () => {
         <div className='flex gap-2'>
           {recording ? (
             <button
-              className='px-3 py-2 text-xs font-semibold text-haru-green'
+              className='px-3 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
               onClick={handleStopRecording}
             >
               녹음 중지
@@ -125,7 +122,7 @@ const FileToTextPage = () => {
           ) : (
             !audioBlob && (
               <button
-                className='bg-haru-blue rounded px-4 py-2 text-xs font-semibold text-haru-green'
+                className='bg-haru-blue rounded px-4 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleStartRecording}
               >
                 녹음 시작
@@ -143,14 +140,14 @@ const FileToTextPage = () => {
 
             <div className='mt-2 flex w-full justify-end'>
               <button
-                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
+                className='rounded-full bg-white px-2 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleConvert}
                 disabled={isPending}
               >
                 {isPending ? '변환 중...' : '텍스트로 바꾸기'}
               </button>
               <button
-                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
+                className='rounded-full bg-white px-2 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleRetry}
               >
                 재녹음
