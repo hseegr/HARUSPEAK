@@ -147,6 +147,7 @@ const Library = () => {
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         selectedCount={selectedIds.length}
+        isDeleting={isDeleting}
       />
     </div>
   );

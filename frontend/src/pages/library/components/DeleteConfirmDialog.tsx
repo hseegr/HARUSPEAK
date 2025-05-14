@@ -15,6 +15,7 @@ interface DeleteConfirmDialogProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   selectedCount: number;
+  isDeleting: boolean;
 }
 
 const DeleteConfirmDialog = ({
