@@ -1,34 +1,14 @@
-import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
-import { useHomeStatistics } from '@/hooks/useHomeStatistics';
+import { useHomeStatisticsQuery } from '@/hooks/useHomeStatisticsQuery';
 import useAuthStore from '@/store/userStore';
 
 const Home = () => {
   const { user } = useAuthStore();
-  const { statistics, isLoading, error, refetch, finishLoading } =
-    useHomeStatistics();
-
-  if (isLoading) {
-    return <SplashScreen onFinish={finishLoading} />;
-  }
-
-  if (error) {
-    return (
-      <div className='flex min-h-[80vh] w-full flex-col items-center justify-center p-4'>
-        <p>{error}</p>
-        <button
-          onClick={refetch}
-          className='mt-4 rounded-md bg-haru-green px-4 py-2 text-white hover:bg-haru-green/80'
-        >
-          다시 시도
-        </button>
-      </div>
-    );
-  }
+  const { data: statistics } = useHomeStatisticsQuery();
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
-      <div className='flex flex-1 flex-col justify-between gap-8'>
+      <div className='flex h-full flex-1 flex-col justify-between gap-3'>
         {/* 인사말 섹션 */}
         <section className='pt-2 text-center'>
           <p>
