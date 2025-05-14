@@ -116,8 +116,6 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
   const handleApply = () => {
     // 버튼이 비활성화되어 있으면 함수 실행 중지
     if (isButtonDisabled()) return;
-
-    // [여기] 제출할 때 parameters가 빈 값이면 undefined로 보내지 않도록 수정
     onApply({
       startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
@@ -171,7 +169,6 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
           <DialogTitle>순간 일기 찾기</DialogTitle>
         </DialogHeader>
         <div className='space-y-4'>
-          {/* 날짜 선택 - 시작/종료 날짜를 한 줄에 표시 */}
           <div className='flex gap-2'>
             <div className='flex-1'>
               <label className='mb-2 block text-sm font-medium'>

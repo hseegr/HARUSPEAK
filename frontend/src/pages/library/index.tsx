@@ -1,3 +1,6 @@
+import { useState } from 'react';
+
+import ImageSkeleton from '@/components/ImageSkeleton';
 import { useFilterDialogs } from '@/hooks/useFilterDialogs';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useLibraryDelete } from '@/hooks/useLibraryDelete';
@@ -14,6 +17,9 @@ import FilterBadge from './components/FilterBadge';
 import FilterDialog from './components/FilterDialog';
 
 const Library = () => {
+  // key 상태를 추가하여 Dialog 강제 리마운트에 사용
+  const [dialogKey, setDialogKey] = useState(0);
+
   // 필터 관련 로직
   const { filterParams, handleTagFilterApply, handleDateFilterApply } =
     useLibraryFilters();
@@ -29,6 +35,25 @@ const Library = () => {
     handleDateFilterClick,
   } = dialogActions;
 
+  // 커스텀 onOpenChange 핸들러
+  const handleDateFilterOpenChange = (open: boolean) => {
+    setIsDateFilterOpen(open);
+    if (!open) {
+      // 다이얼로그가 닫힐 때 key 값을 증가시켜서 다음에 열릴 때 강제로 새로운 다이얼로그 생성
+      setDialogKey(prev => prev + 1);
+    }
+  };
+
+  // 커스텀 필터 적용 핸들러
+  const handleCustomDateFilterApply = (filters: {
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    handleDateFilterApply(filters);
+    // 필터 적용 후에도 key 증가
+    setDialogKey(prev => prev + 1);
+  };
+
   // 선택 및 삭제 관련 로직
   const { selectionState, selectionActions } = useLibraryDelete();
   const { isSelectionMode, selectedIds, isDeleteDialogOpen, isDeleting } =
@@ -43,7 +68,7 @@ const Library = () => {
   } = selectionActions;
 
   // 무한 스크롤 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useGetLibrary({
       limit: 30,
       startDate,
@@ -85,22 +110,27 @@ const Library = () => {
 
         {/* 일기 목록 */}
         <div className='grid grid-cols-1 gap-6 px-4'>
-          {data?.pages?.map(page =>
-            page.data?.map(diary => (
-              <DiaryFrame
-                key={diary.summaryId}
-                summaryId={diary.summaryId}
-                diaryDate={diary.diaryDate}
-                imageUrl={diary.imageUrl}
-                title={diary.title}
-                momentCount={diary.momentCount}
-                isSelectionMode={isSelectionMode}
-                isSelected={selectedIds.includes(diary.summaryId)}
-                onSelect={handleSelect}
-                isImageGenerating={diary.isImageGenerating}
-              />
-            )),
-          )}
+          {isPending
+            ? // 여러 개의 다이어리 스켈레톤 표시 (6개로 고정)
+              Array.from({ length: 6 }).map((_, index) => (
+                <ImageSkeleton key={`skeleton-${index}`} />
+              ))
+            : data?.pages?.map(page =>
+                page.data?.map(diary => (
+                  <DiaryFrame
+                    key={diary.summaryId}
+                    summaryId={diary.summaryId}
+                    diaryDate={diary.diaryDate}
+                    imageUrl={diary.imageUrl}
+                    title={diary.title}
+                    momentCount={diary.momentCount}
+                    isSelectionMode={isSelectionMode}
+                    isSelected={selectedIds.includes(diary.summaryId)}
+                    onSelect={handleSelect}
+                    isImageGenerating={diary.isImageGenerating}
+                  />
+                )),
+              )}
         </div>
 
         {/* 데이터가 없을 때 */}
@@ -128,10 +158,12 @@ const Library = () => {
         )}
       </div>
 
+      {/* key 속성을 추가하여 다이얼로그 강제 리렌더링 */}
       <DateFilterDialog
+        key={`date-filter-dialog-${dialogKey}`}
         open={isDateFilterOpen}
-        onOpenChange={setIsDateFilterOpen}
-        onApply={handleDateFilterApply}
+        onOpenChange={handleDateFilterOpenChange}
+        onApply={handleCustomDateFilterApply}
         initialStartDate={startDate}
         initialEndDate={endDate}
       />
@@ -147,6 +179,7 @@ const Library = () => {
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         selectedCount={selectedIds.length}
+        isDeleting={isDeleting}
       />
     </div>
   );

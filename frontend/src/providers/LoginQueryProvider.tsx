@@ -5,14 +5,19 @@ import useAuthStore from '@/store/userStore';
 
 const LoginProvider = ({ children }: PropsWithChildren) => {
   const { setUser } = useAuthStore();
-
-  const { data } = useUserInfoQuery();
+  const { data, isLoading } = useUserInfoQuery();
 
   useEffect(() => {
-    if (data) {
-      setUser(data);
+    if (isLoading) {
+      return;
     }
-  }, [data, setUser]);
+    setUser(data || null);
+  }, [data, isLoading, setUser]);
+
+  // 로딩 중일 때는 로딩 UI 표시
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return <>{children}</>;
 };

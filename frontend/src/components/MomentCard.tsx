@@ -71,7 +71,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         moment={moment}
       />
 
-      {isToday && (
+      {isToday && moment.createdAt && (
         <MomentDeleteDialog
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}

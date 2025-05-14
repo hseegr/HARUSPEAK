@@ -1,25 +1,19 @@
 import { useState } from 'react';
 
-import { useEditDiary } from '@/hooks/useDiaryQuery';
+import { toast } from 'react-toastify';
 
-type AlertFunction = (
-  title: string,
-  message: string,
-  isError?: boolean,
-) => void;
+import { useEditDiary } from '@/hooks/useDiaryQuery';
 
 export const useEditHandler = (
   summaryId: string,
   initialTitle: string,
   initialContent: string,
-  showAlert: AlertFunction,
 ) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(initialTitle);
   const [editContent, setEditContent] = useState(initialContent);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const editDiaryMutation = useEditDiary();
+  const { mutate: editDiaryMutation, isPending: isSaving } = useEditDiary();
 
   // 수정 모드 시작
   const handleEditStart = () => {
@@ -39,7 +33,10 @@ export const useEditHandler = (
   const handleEditSave = () => {
     if (!summaryId) return;
 
-    setIsSaving(true);
+    if (!editTitle.trim() || !editContent.trim()) {
+      toast.warning('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
 
     editDiaryMutation({
       summaryId,
@@ -47,12 +44,9 @@ export const useEditHandler = (
       content: editContent,
     });
 
-    // 저장 완료 후 상태 업데이트
-    setTimeout(() => {
-      setIsEditing(false);
-      setIsSaving(false);
-      showAlert('알림', '일기가 성공적으로 수정되었습니다.');
-    }, 1000);
+    // 모든 처리는 useMutation의 콜백에서 이루어지므로
+    // 여기서는 편집 모드만 종료
+    setIsEditing(false);
   };
 
   return {
