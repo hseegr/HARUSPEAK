@@ -61,6 +61,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}'],
         cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB로 늘림
+        clientsClaim: true, // 새 서비스워커가 즉시 모든 탭에 적용
+        skipWaiting: true, // 새 서비스워커가 바로 활성화
       },
 
       // 개발 중에도 PWA 기능 테스트 가능
