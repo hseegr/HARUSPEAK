@@ -17,7 +17,7 @@ public class ApiClientHelper {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<T> entity = new HttpEntity<>(requestBody, headers);
 
-            log.debug("API 요청 URL: {}", url);
+            log.debug("[API 요청] URL: {}", url);
 
             ResponseEntity<R> response = restTemplate.exchange(
                     url,

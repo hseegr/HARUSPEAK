@@ -13,13 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
 @NoArgsConstructor
 public class TodayTagProcessor implements ItemProcessor <TodayDiary, TodayDiaryTag> {
 
     @Override
     public TodayDiaryTag process(TodayDiary diary) {
-        log.debug("🐛 STEP2.PROCESS - 태그별 사용 횟수 정리");
+        log.debug("🐛 [PROCESSOR] 태그별 사용 횟수 정리");
 
         Map<String, Integer> tagCountMap = calculateTagCounts(diary.getDailyMoments());
         return new TodayDiaryTag(diary.getDailyMoments(), tagCountMap, diary.getDailySummary().getUserId(), diary.getDailySummary().getWriteDate());
