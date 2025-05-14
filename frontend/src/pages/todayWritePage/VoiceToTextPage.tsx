@@ -89,7 +89,7 @@ const VoiceToTextPage = () => {
           </div>
         </div>
 
-        <p className='mb-4 text-sm font-semibold text-gray-700'>
+        <p className='mb-4 text-base font-semibold text-gray-700'>
           {listening ? '듣고 있어요!' : '녹음이 중지되었습니다'}
         </p>
 
@@ -98,7 +98,7 @@ const VoiceToTextPage = () => {
             // 녹음 중일 땐 중지 버튼만
             <button
               onClick={handleConvert}
-              className='px-3 py-2 text-xs font-semibold text-haru-green'
+              className='px-3 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
             >
               중지
             </button>
@@ -106,7 +106,7 @@ const VoiceToTextPage = () => {
             // 수정: listening=false 시 handleStart 버튼만 표시
             <button
               onClick={handleStart}
-              className='bg-haru-blue rounded px-4 py-2 text-xs font-semibold text-haru-green'
+              className='bg-haru-blue rounded px-4 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
             >
               녹음 시작
             </button>

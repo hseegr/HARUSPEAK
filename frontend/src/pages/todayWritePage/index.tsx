@@ -66,6 +66,7 @@ const TodayWritePage = () => {
             // 저장 성공 후 스토어 초기화
             clearAll();
             setIsSaving(false);
+            navigate('/today');
           },
           onError: error => {
             console.error('일기 저장 실패:', error);
@@ -125,8 +126,8 @@ const TodayWritePage = () => {
             <div className='flex justify-between px-4'>
               <div className='flex gap-2'>
                 <ImageAttachButton onClick={handleImageButtonClick} />
-                <VoiceToTextButton onClick={handleVoiceButtonClick} />
                 <FileToTextButton onClick={handleFileButtonClick} />
+                <VoiceToTextButton onClick={handleVoiceButtonClick} />
               </div>
             </div>
 

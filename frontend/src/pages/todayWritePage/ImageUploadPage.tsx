@@ -78,12 +78,20 @@ const ImageUploadPage = () => {
 
       <div className='mt-4 flex justify-end gap-4 text-sm'>
         <button
-          className='font-semibold text-haru-green'
+          className={`font-semibold ${
+            images.length === 0
+              ? 'cursor-not-allowed text-haru-gray-4'
+              : 'text-haru-light-green hover:text-haru-green'
+          }`}
           onClick={handleUpload}
+          disabled={images.length === 0}
         >
           이미지 업로드
         </button>
-        <button className='text-haru-gray-4' onClick={handleCancel}>
+        <button
+          className='text-haru-gray-4 hover:text-haru-gray-5'
+          onClick={handleCancel}
+        >
           취소
         </button>
       </div>

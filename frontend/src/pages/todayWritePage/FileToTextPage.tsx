@@ -101,7 +101,7 @@ const FileToTextPage = () => {
         )}
 
         {/* 상태 메시지 */}
-        <p className='mb-4 text-sm font-semibold text-gray-700'>
+        <p className='mb-4 text-base font-semibold text-gray-700'>
           {recording
             ? '녹음 중이에요!'
             : audioBlob
@@ -113,7 +113,7 @@ const FileToTextPage = () => {
         <div className='flex gap-2'>
           {recording ? (
             <button
-              className='px-3 py-2 text-xs font-semibold text-haru-green'
+              className='px-3 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
               onClick={handleStopRecording}
             >
               녹음 중지
@@ -121,7 +121,7 @@ const FileToTextPage = () => {
           ) : (
             !audioBlob && (
               <button
-                className='bg-haru-blue rounded px-4 py-2 text-xs font-semibold text-haru-green'
+                className='bg-haru-blue rounded px-4 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleStartRecording}
               >
                 녹음 시작
@@ -139,14 +139,14 @@ const FileToTextPage = () => {
 
             <div className='mt-2 flex w-full justify-end'>
               <button
-                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
+                className='rounded-full bg-white px-2 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleConvert}
                 disabled={isPending}
               >
                 {isPending ? '변환 중...' : '텍스트로 바꾸기'}
               </button>
               <button
-                className='rounded-full bg-white px-2 py-2 text-xs font-semibold text-haru-green'
+                className='rounded-full bg-white px-2 py-2 text-sm font-semibold text-haru-light-green hover:text-haru-green'
                 onClick={handleRetry}
               >
                 재녹음
