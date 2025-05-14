@@ -8,6 +8,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -40,6 +41,16 @@ public class DataSourceConfig {
         return new JdbcTransactionManager(batchDataSource);
     }
 
+    /**
+     * batchDataSource에 맞는 NamedParameterJdbcTemplate
+     */
+    @Bean
+    @Primary
+    public NamedParameterJdbcTemplate batchNamedParameterJdbcTemplate(
+            @Qualifier("batchDataSource") DataSource batchDataSource) {
+        return new NamedParameterJdbcTemplate(batchDataSource);
+    }
+
 
     /////////////////////////// API //////////////////////////////////////////////////
 
@@ -59,6 +70,15 @@ public class DataSourceConfig {
     public PlatformTransactionManager apiTransactionManager(
             @Qualifier("apiDataSource") DataSource businessDataSource) {
         return new JdbcTransactionManager(businessDataSource);
+    }
+
+    /**
+     * apiDataSource에 맞는 NamedParameterJdbcTemplate
+     */
+    @Bean
+    public NamedParameterJdbcTemplate apiNamedParameterJdbcTemplate(
+            @Qualifier("apiDataSource") DataSource apiDataSource) {
+        return new NamedParameterJdbcTemplate(apiDataSource);
     }
 
 }

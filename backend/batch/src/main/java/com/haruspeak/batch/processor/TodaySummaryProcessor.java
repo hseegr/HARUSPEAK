@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDiary>{
 
     private final TodaySummaryService todaySummaryService;
@@ -25,15 +24,26 @@ public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDi
 
     @Override
     public TodayDiary process(TodayDiary todayDiary) throws Exception {
-        log.debug("🐛 STEP1.PROCESS - 오늘 하루 일기 요약 및 썸네일 생성");
+        log.debug("🐛 [PROCESSOR] - 오늘 하루 일기 요약 및 썸네일 생성");
 
-        String totalContent = buildTotalContent(todayDiary.getDailyMoments());
+        try {
+            String totalContent = buildTotalContent(todayDiary.getDailyMoments());
+            log.debug("🔎 totalContent={} ...", totalContent.substring(0, 10));
 
-        DailySummaryResponse summaries = todaySummaryService.generateDailySummary(totalContent);
-        String imageUrl = todaySummaryService.generateThumbnailUrl(summaries.summary());
+            DailySummaryResponse summaries = todaySummaryService.generateDailySummary(totalContent);
+            log.debug("🔎 {}", summaries.toString());
+            String imageUrl = todaySummaryService.generateThumbnailUrl(summaries.summary());
+            log.debug("🔎 imageUrl={}", imageUrl);
 
-        setDailySummary(todayDiary.getDailySummary(), summaries, imageUrl);
-        return  todayDiary;
+//            DailySummaryResponse summaries = new DailySummaryResponse("title", "content");
+//            String imageUrl = "이미지주소";
+
+            setDailySummary(todayDiary.getDailySummary(), summaries, imageUrl);
+            return todayDiary;
+
+        }catch (Exception e) {
+            throw new RuntimeException("오늘 하루 일기 요약 및 썸네일 생성 중 오류 발생", e);
+        }
     }
 
     private String buildTotalContent(List<DailyMoment> moments) {

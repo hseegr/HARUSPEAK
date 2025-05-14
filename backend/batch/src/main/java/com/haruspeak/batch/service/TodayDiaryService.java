@@ -19,6 +19,8 @@ public class TodayDiaryService {
     private final TodayDiaryRedisRepository todayDiaryRedisRepository;
 
     public void saveToRedis(List<TodayDiary> diaries) {
+        log.debug("🐛 TodayDiary API REDIS 삭제 및 BATCH REDIS 저장 실행");
+
         for (TodayDiary todayDiary : diaries) {
             DailySummary summary = todayDiary.getDailySummary();
             String userId = String.valueOf(summary.getUserId());

@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class TodayTagWriter implements ItemWriter<TodayDiaryTag>{
 
@@ -27,18 +27,18 @@ public class TodayTagWriter implements ItemWriter<TodayDiaryTag>{
 
     @Override
     public void write(Chunk<? extends TodayDiaryTag> chunk) throws Exception {
-        log.debug("🐛 STEP2.WRITE - 오늘의 일기 태그 저장");
+        log.debug("🐛 [WRITER] 오늘의 일기 태그 저장");
 
         List<TodayDiaryTag> diaryTags = (List<TodayDiaryTag>) chunk.getItems();
 
         try {
             tagRepository.bulkInsertTags(getTagList(diaryTags));
             userTagRepository.bulkInsertUserTags(diaryTags, diaryTags.get(0).getDate());
-            momentTagRepository.bulkInsertMomentTags(getMomentList(diaryTags));
+            momentTagRepository.bulkInsertMomentTags(getMomentsWithNonZeroTags(diaryTags));
 
         }catch (Exception e){
-            log.error("⚠️ tags, user_tags, moment_tags 삽입 중 에러가 발생했습니다.", e);
-            throw e;
+            log.error("💥 순간 일기 태그 저장 중 에러가 발생했습니다.", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -51,12 +51,11 @@ public class TodayTagWriter implements ItemWriter<TodayDiaryTag>{
         return new ArrayList<>(tagList);
     }
 
-    private List<DailyMoment> getMomentList(List<TodayDiaryTag> diaries) {
-        List<DailyMoment> momentList = new ArrayList<>();
-        for (TodayDiaryTag diary : diaries) {
-            momentList.addAll(diary.getMoments());
-        }
-        return momentList;
+    private List<DailyMoment> getMomentsWithNonZeroTags(List<TodayDiaryTag> diaries) {
+        return diaries.stream()
+                .flatMap(diary -> diary.getMoments().stream()
+                        .filter(moment -> moment.getTagCount() > 0)
+                ).toList();
     }
 
 }
