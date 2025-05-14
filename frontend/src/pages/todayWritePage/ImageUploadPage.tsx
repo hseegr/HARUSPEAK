@@ -3,23 +3,17 @@
 import React, { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { TodayWriteStore } from '@/store/todayWriteStore';
 
 import ImageFindButton from './components/ImageFindButton';
 import ImageList from './components/ImageList';
-import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
+
+//import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
 
 const ImageUploadPage = () => {
   const navigate = useNavigate();
-
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertInfo, setAlertInfo] = useState({
-    title: '',
-    message: '',
-    confirmText: '확인',
-    confirmColor: 'bg-haru-green',
-  });
 
   // 이미지 업로드 상태관리
   const images = TodayWriteStore(state => state.images);
@@ -33,13 +27,7 @@ const ImageUploadPage = () => {
       const newFiles = Array.from(e.target.files);
       const total = images.length + newFiles.length;
       if (total > 10) {
-        setAlertInfo({
-          title: '이미지 업로드 오류',
-          message: '이미지는 10장까지만 첨부할 수 있어요.',
-          confirmText: '확인',
-          confirmColor: 'bg-haru-green',
-        });
-        setAlertOpen(true);
+        toast.error('이미지는 10장까지 첨부할 수 있어요.');
         return;
       }
 
@@ -90,23 +78,23 @@ const ImageUploadPage = () => {
 
       <div className='mt-4 flex justify-end gap-4 text-sm'>
         <button
-          className='font-semibold text-haru-green'
+          className={`font-semibold ${
+            images.length === 0
+              ? 'cursor-not-allowed text-haru-gray-4'
+              : 'text-haru-light-green hover:text-haru-green'
+          }`}
           onClick={handleUpload}
+          disabled={images.length === 0}
         >
           이미지 업로드
         </button>
-        <button className='text-haru-gray-4' onClick={handleCancel}>
+        <button
+          className='text-haru-gray-4 hover:text-haru-gray-5'
+          onClick={handleCancel}
+        >
           취소
         </button>
       </div>
-      <TodayWriteAlertDialog
-        open={alertOpen}
-        onOpenChange={setAlertOpen}
-        title={alertInfo.title}
-        message={alertInfo.message}
-        confirmText={alertInfo.confirmText}
-        confirmColor={alertInfo.confirmColor}
-      />
     </div>
   );
 };

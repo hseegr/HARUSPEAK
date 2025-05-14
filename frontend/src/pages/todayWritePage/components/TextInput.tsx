@@ -51,7 +51,7 @@ const TextInput = () => {
         value={text}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder='오늘 일기를 작성해주세요'
+        placeholder='오늘 무슨 일이 있었나요?'
         rows={1}
         className='flex-grow resize-none bg-transparent text-sm placeholder-gray-400 focus:outline-none'
       />

@@ -8,7 +8,7 @@ const TextInputList = () => {
   if (textBlocks.length === 0) return null;
 
   return (
-    <div className='flex flex-col gap-2 overflow-hidden pb-4'>
+    <div className='flex flex-col gap-2 overflow-hidden pb-4 font-leeseyoon'>
       {textBlocks.map((text, index) => (
         <TextItem key={index} text={text} index={index} />
       ))}

@@ -4,12 +4,17 @@ interface VoiceToTextButtonProps {
 
 const VoiceToTextButton = ({ onClick }: VoiceToTextButtonProps) => {
   return (
-    <button
-      onClick={onClick}
-      className='rounded-full border border-haru-green bg-haru-yellow px-3 py-1 text-xs font-semibold text-haru-green'
-    >
-      음성 {'>'} 텍스트 변환
-    </button>
+    <div className='relative inline-block'>
+      <button
+        onClick={onClick}
+        className='rounded-full border border-haru-green bg-haru-gray-2 px-3 py-1 text-[13px] font-semibold text-haru-green hover:bg-haru-gray-3'
+      >
+        실시간 변환
+      </button>
+      <span className='absolute -right-2 -top-2 rounded-full bg-haru-green px-1 text-[10px] font-normal text-white'>
+        BETA
+      </span>
+    </div>
   );
 };
 

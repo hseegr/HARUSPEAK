@@ -27,7 +27,9 @@ const ImageFindButton = ({ onChange, disabled }: ImageFindButtonProps) => {
       {/* 커스텀 버튼 */}
       <div
         className={`w-full rounded py-2 text-center text-sm font-semibold text-white ${
-          disabled ? 'bg-haru-gray-4' : 'bg-haru-green'
+          disabled
+            ? 'bg-haru-gray-4'
+            : 'bg-haru-light-green hover:bg-haru-green'
         }`}
       >
         이미지 찾기
