@@ -1,4 +1,4 @@
-import { useMomentTagRecommend } from '@/hooks/useMomentTagRecommend';
+import { useMomentTagRecommend } from '@/hooks/useTodayQuery';
 import { MomentContent } from '@/types/common';
 
 interface AutoTagGeneratorProps {
@@ -16,16 +16,13 @@ const AutoTagGenerator = ({
   hideWhenDisabled = true,
   buttonStyle = 'default',
 }: AutoTagGeneratorProps) => {
-  const { tags, isLoading, handleGenerateTags } = useMomentTagRecommend({
-    moment,
-    initialTags,
-  });
+  const { mutate: recommendTagMutation, isPending } = useMomentTagRecommend();
 
   const isButtonEnabled =
     isToday &&
-    tags.length < 3 &&
+    initialTags.length < 3 &&
     moment.content !== '' &&
-    !tags.includes('아무말');
+    !initialTags.includes('아무말');
 
   if (hideWhenDisabled && !isButtonEnabled) return null;
 
@@ -37,12 +34,18 @@ const AutoTagGenerator = ({
   return (
     <div className='flex-shrink-0 pl-1'>
       <button
-        onClick={handleGenerateTags}
+        onClick={() =>
+          recommendTagMutation({
+            tags: initialTags,
+            createdAt: moment.momentTime,
+            content: moment.content,
+          })
+        }
         className={buttonClassName}
         aria-label='AI 태그 자동 생성'
-        disabled={isLoading || !isButtonEnabled}
+        disabled={isPending || !isButtonEnabled}
       >
-        {isLoading ? '생성 중...' : '태그 자동 생성'}
+        {isPending ? '생성 중...' : '태그 자동 생성'}
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 import {
   deleteMoment,
@@ -28,6 +29,14 @@ export const useMomentEdit = () => {
     }) => updateMoment(createdAt, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+      toast.success('순간 기록이 수정되었습니다.');
+    },
+    onError: error => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : '순간 기록 수정 중 오류가 발생했습니다.',
+      );
     },
   });
 };
@@ -36,9 +45,22 @@ export const useMomentDelete = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteMoment,
+    mutationFn: (createdAt?: string) => {
+      if (!createdAt) {
+        throw new Error('createdAt이 없습니다.');
+      }
+      return deleteMoment(createdAt);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+      toast.success('순간 기록이 삭제되었습니다.');
+    },
+    onError: error => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : '순간 기록 삭제 중 오류가 발생했습니다.',
+      );
     },
   });
 };
@@ -48,8 +70,36 @@ export const useMomentTagRecommend = () => {
 
   return useMutation({
     mutationFn: recommendTag,
-    onSuccess: () => {
+    onSuccess: (response, variables) => {
       queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+      toast.success('태그가 성공적으로 생성되었습니다.');
+
+      // 태그 업데이트 로직
+      const { tags } = variables;
+      const spaceLeft = 3 - tags.length;
+      const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
+      const newTags = [...tags, ...tagsToAdd];
+
+      // 쿼리 클라이언트를 통해 태그 업데이트
+      queryClient.setQueryData(['todayDiary'], (oldData: any) => {
+        if (!oldData) return oldData;
+        if (!oldData.data) return oldData;
+        return {
+          ...oldData,
+          data: oldData.data.map((moment: any) =>
+            moment.momentTime === variables.createdAt
+              ? { ...moment, tags: newTags }
+              : moment,
+          ),
+        };
+      });
+    },
+    onError: error => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : '태그 생성 중 오류가 발생했습니다.',
+      );
     },
   });
 };
