@@ -11,12 +11,17 @@ export const googleLogin = async () => {
 
 // 로그아웃
 export const userLogout = async () => {
-  try {
-    queryClient.clear();
-    await axiosInstance.post('/api/auth/logout');
-    useAuthStore.getState().clearUser();
-  } catch {
-    throw new Error('로그아웃 처리 중 오류가 발생했습니다');
+  queryClient.clear();
+  await axiosInstance.post('/api/auth/logout');
+  useAuthStore.getState().clearUser();
+
+  // 워크박스(서비스워커) 캐시 삭제
+  if ('caches' in window) {
+    caches.keys().then(names => {
+      for (let name of names) {
+        caches.delete(name);
+      }
+    });
   }
 };
 

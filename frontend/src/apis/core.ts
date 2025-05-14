@@ -12,6 +12,10 @@ export const axiosInstance = axios.create({
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   config => {
+    // 오프라인 상태 체크
+    if (!navigator.onLine) {
+      return Promise.reject(new Error('오프라인 상태입니다.'));
+    }
     return config;
   },
   error => Promise.reject(error),
@@ -22,6 +26,11 @@ axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+
+    // 네트워크 에러 처리
+    if (!error.response) {
+      return Promise.reject(error);
+    }
 
     // 토큰이 만료된 경우에만 토큰 갱신 시도
     if (
