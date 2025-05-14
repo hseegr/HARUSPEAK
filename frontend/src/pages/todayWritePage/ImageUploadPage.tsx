@@ -3,23 +3,17 @@
 import React, { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { TodayWriteStore } from '@/store/todayWriteStore';
 
 import ImageFindButton from './components/ImageFindButton';
 import ImageList from './components/ImageList';
-import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
+
+//import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
 
 const ImageUploadPage = () => {
   const navigate = useNavigate();
-
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertInfo, setAlertInfo] = useState({
-    title: '',
-    message: '',
-    confirmText: '확인',
-    confirmColor: 'bg-haru-green',
-  });
 
   // 이미지 업로드 상태관리
   const images = TodayWriteStore(state => state.images);
@@ -33,13 +27,7 @@ const ImageUploadPage = () => {
       const newFiles = Array.from(e.target.files);
       const total = images.length + newFiles.length;
       if (total > 10) {
-        setAlertInfo({
-          title: '이미지 업로드 오류',
-          message: '이미지는 10장까지만 첨부할 수 있어요.',
-          confirmText: '확인',
-          confirmColor: 'bg-haru-green',
-        });
-        setAlertOpen(true);
+        toast.error('이미지는 10장까지 첨부할 수 있어요.');
         return;
       }
 
@@ -99,14 +87,6 @@ const ImageUploadPage = () => {
           취소
         </button>
       </div>
-      <TodayWriteAlertDialog
-        open={alertOpen}
-        onOpenChange={setAlertOpen}
-        title={alertInfo.title}
-        message={alertInfo.message}
-        confirmText={alertInfo.confirmText}
-        confirmColor={alertInfo.confirmColor}
-      />
     </div>
   );
 };

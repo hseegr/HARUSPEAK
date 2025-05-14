@@ -62,10 +62,6 @@ const FileToTextPage = () => {
         setConvertedText(text);
         setShowVoiceInput(true);
       },
-      onError: error => {
-        console.error('❌ 변환 실패 상세:', error);
-        alert('❌ 음성 변환 실패! 다시 시도해주세요.');
-      },
     });
   };
 

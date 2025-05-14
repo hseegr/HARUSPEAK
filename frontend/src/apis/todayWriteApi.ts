@@ -15,7 +15,7 @@ export const fileToText = async (audioBlob: Blob) => {
   const formData = new FormData();
   formData.append('file', audioBlob, 'voice.mp3');
   const response = await axiosInstance.post(
-    '/api/today/voice-to-text',
+    '/api/today/voice-to-text/',
     formData,
     {
       headers: { 'Content-Type': 'multipart/form-data' },

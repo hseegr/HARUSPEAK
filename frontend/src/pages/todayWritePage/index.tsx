@@ -11,7 +11,6 @@ import ImageAttachButton from './components/ImageAttachButton';
 import ImageInputList from './components/ImageInputList';
 import TextInput from './components/TextInput';
 import TextInputList from './components/TextInputList';
-import TodayWriteAlertDialog from './components/TodayWriteAlertDialog';
 import VoiceToTextButton from './components/VoiceToTextButton';
 
 const TodayWritePage = () => {
@@ -19,14 +18,6 @@ const TodayWritePage = () => {
   const textBlocks = TodayWriteStore(state => state.textBlocks);
   const clearAll = TodayWriteStore(state => state.clearAll);
   const [isSaving, setIsSaving] = useState(false);
-
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertInfo, setAlertInfo] = useState({
-    title: '',
-    message: '',
-    confirmText: '확인',
-    confirmColor: 'bg-haru-green',
-  });
 
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
@@ -75,24 +66,10 @@ const TodayWritePage = () => {
             // 저장 성공 후 스토어 초기화
             clearAll();
             setIsSaving(false);
-            setAlertInfo({
-              title: '일기 저장 완료',
-              message: '오늘의 일기가 성공적으로 저장되었습니다.',
-              confirmText: '확인',
-              confirmColor: 'bg-haru-green',
-            });
-            setAlertOpen(true);
           },
           onError: error => {
             console.error('일기 저장 실패:', error);
             setIsSaving(false);
-            setAlertInfo({
-              title: '저장 실패',
-              message: '일기 저장에 실패했습니다. 다시 시도해주세요.',
-              confirmText: '닫기',
-              confirmColor: 'bg-red-500',
-            });
-            setAlertOpen(true);
           },
         },
       );
@@ -160,14 +137,6 @@ const TodayWritePage = () => {
           </div>
         </div>
       </div>
-      <TodayWriteAlertDialog
-        open={alertOpen}
-        onOpenChange={setAlertOpen}
-        title={alertInfo.title}
-        message={alertInfo.message}
-        confirmText={alertInfo.confirmText}
-        confirmColor={alertInfo.confirmColor}
-      />
     </div>
   );
 };
