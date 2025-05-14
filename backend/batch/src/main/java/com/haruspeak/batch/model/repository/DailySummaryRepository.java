@@ -60,7 +60,7 @@ public class DailySummaryRepository {
                     params.addValue("writeDate", summary.getWriteDate());
                     params.addValue("title", summary.getTitle());
                     params.addValue("content", summary.getContent());
-//                    params.addValue("imageUrl", summary.getImageUrl());
+                    params.addValue("imageUrl", summary.getImageUrl());
                     params.addValue("momentCount", summary.getMomentCount());
                     return params;
                 })
