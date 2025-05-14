@@ -13,7 +13,9 @@ const NavigationBar = () => {
   const location = useLocation();
 
   const getActiveColor = (path: string) =>
-    location.pathname === path ? 'text-haru-green' : 'text-haru-gray-4';
+    location.pathname === path
+      ? 'text-haru-green hover:text-haru-green'
+      : 'text-haru-gray-4';
 
   const handleLogout = async () => {
     await userLogout();
