@@ -19,32 +19,33 @@ export const useGetDiary = (summaryId: string) =>
 export const useRegenerateImage = () => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: regenerateImage,
     onSuccess: (_, summaryId) => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
     },
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message || '이미지 재생성 중 오류가 발생했습니다.');
     },
   });
-  return mutate;
+  return { mutate, isPending };
 };
 
 export const useRegenerateContent = () => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: regenerateContent,
     onSuccess: (_, summaryId) => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
+      toast.success('요약 재생성이 완료되었습니다.');
     },
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message || '요약 재생성 중 오류가 발생했습니다.');
     },
   });
 
-  return mutate;
+  return { mutate, isPending };
 };
 
 // export const useGetImage = (summaryId: string) =>
@@ -56,7 +57,7 @@ export const useRegenerateContent = () => {
 export const useEditDiary = () => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       summaryId,
       title,
@@ -72,10 +73,11 @@ export const useEditDiary = () => {
         queryKey: ['diary', variables.summaryId],
       });
       queryClient.invalidateQueries({ queryKey: ['library'] });
+      toast.success('일기 수정이 완료되었습니다.');
     },
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message || '일기 수정 중 오류가 발생했습니다.');
     },
   });
-  return mutate;
+  return { mutate, isPending };
 };

@@ -1,6 +1,8 @@
 // Library 페이지에서 일기 선택 및 삭제 관련 로직을 관리하는 훅
 import { useCallback, useState } from 'react';
 
+import { toast } from 'react-toastify';
+
 import { useDeleteDiary } from '@/hooks/useLibraryQuery';
 
 export const useLibraryDelete = () => {
@@ -28,38 +30,31 @@ export const useLibraryDelete = () => {
     setSelectedIds([]);
   }, []);
 
-  // 삭제 버튼 클릭 시 Dialog 열기
+  // 삭제 버튼 클릭 시 확인
   const handleDeleteClick = useCallback(() => {
-    if (selectedIds.length > 0) {
-      setIsDeleteDialogOpen(true);
+    if (selectedIds.length === 0) {
+      toast.warning('선택된 일기가 없습니다.');
+      return;
     }
+    setIsDeleteDialogOpen(true);
   }, [selectedIds]);
 
-  // 실제 삭제 처리 (개별 요청)
-  const handleConfirmDelete = useCallback(async () => {
+  // 실제 삭제 처리
+  const handleConfirmDelete = useCallback(() => {
     if (selectedIds.length === 0) return;
 
-    try {
-      setIsDeleting(true);
-      console.log('삭제 시작:', selectedIds);
+    setIsDeleting(true);
 
-      // 각 일기를 순차적으로 개별 삭제 (Promise.all 대신 for문 사용)
-      for (const id of selectedIds) {
-        try {
-          await deleteDiary(id);
-          console.log(`일기 ${id} 삭제 성공`);
-        } catch (error) {
-          console.error(`일기 ${id} 삭제 실패:`, error);
-        }
-      }
-      setIsSelectionMode(false);
-      setSelectedIds([]);
-      setIsDeleteDialogOpen(false);
-    } catch (error) {
-      console.error('일기 삭제 중 오류 발생:', error);
-    } finally {
-      setIsDeleting(false);
-    }
+    // 단순히 mutation 함수 호출 - 성공/실패 처리는 useMutation에서 자동 처리
+    Promise.all(selectedIds.map(id => deleteDiary.mutateAsync(id))).finally(
+      () => {
+        // 성공/실패와 무관하게 상태 정리
+        setIsDeleting(false);
+        setIsSelectionMode(false);
+        setSelectedIds([]);
+        setIsDeleteDialogOpen(false);
+      },
+    );
   }, [deleteDiary, selectedIds]);
 
   return {
