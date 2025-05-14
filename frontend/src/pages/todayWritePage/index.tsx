@@ -98,8 +98,8 @@ const TodayWritePage = () => {
 
         {/* 안내 문구 */}
         {!hasContent && (
-          <div className='text-center text-sm text-gray-400'>
-            오늘 일기를 작성해주세요
+          <div className='flex min-h-[60vh] items-center justify-center text-center text-sm text-gray-400'>
+            오늘의 순간을 기록해주세요!
           </div>
         )}
 

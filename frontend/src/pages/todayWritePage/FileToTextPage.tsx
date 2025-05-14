@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Mic } from 'lucide-react';
 import MicRecorder from 'mic-recorder-to-mp3-fixed';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { useFileToTextMutation } from '@/hooks/useTodayWriteQuery';
 import { TodayWriteStore } from '@/store/todayWriteStore';
@@ -35,8 +36,8 @@ const FileToTextPage = () => {
       setRecording(true);
       setConvertedText('');
       setShowVoiceInput(false);
-    } catch (err) {
-      console.error('녹음 시작 실패:', err);
+    } catch {
+      toast.error('마이크 권한을 허용해야 녹음을 시작할 수 있습니다.');
     }
   };
 
@@ -47,8 +48,8 @@ const FileToTextPage = () => {
       const [, blob] = await recorder.current.stop().getMp3();
       setAudioBlob(blob);
       setRecording(false);
-    } catch (err) {
-      console.error('녹음 중지 실패:', err);
+    } catch {
+      toast.error('녹음 중지에 실패했습니다.');
     }
   };
 
