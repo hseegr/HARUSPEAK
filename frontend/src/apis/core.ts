@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
 export const DOMAIN = import.meta.env.VITE_API_DOMAIN;
 
@@ -15,7 +14,6 @@ axiosInstance.interceptors.request.use(
   config => {
     // 오프라인 상태 체크
     if (!navigator.onLine) {
-      toast.error('인터넷 연결이 끊겼습니다. 오프라인 모드로 전환됩니다.');
       return Promise.reject(new Error('오프라인 상태입니다.'));
     }
     return config;
@@ -31,7 +29,6 @@ axiosInstance.interceptors.response.use(
 
     // 네트워크 에러 처리
     if (!error.response) {
-      toast.error('네트워크 연결을 확인해주세요.');
       return Promise.reject(error);
     }
 
