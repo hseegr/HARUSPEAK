@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import ImageSkeleton from '@/components/ImageSkeleton';
 import { useFilterDialogs } from '@/hooks/useFilterDialogs';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useLibraryDelete } from '@/hooks/useLibraryDelete';
@@ -67,7 +68,7 @@ const Library = () => {
   } = selectionActions;
 
   // 무한 스크롤 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useGetLibrary({
       limit: 30,
       startDate,
@@ -109,22 +110,27 @@ const Library = () => {
 
         {/* 일기 목록 */}
         <div className='grid grid-cols-1 gap-6 px-4'>
-          {data?.pages?.map(page =>
-            page.data?.map(diary => (
-              <DiaryFrame
-                key={diary.summaryId}
-                summaryId={diary.summaryId}
-                diaryDate={diary.diaryDate}
-                imageUrl={diary.imageUrl}
-                title={diary.title}
-                momentCount={diary.momentCount}
-                isSelectionMode={isSelectionMode}
-                isSelected={selectedIds.includes(diary.summaryId)}
-                onSelect={handleSelect}
-                isImageGenerating={diary.isImageGenerating}
-              />
-            )),
-          )}
+          {isPending
+            ? // 여러 개의 다이어리 스켈레톤 표시 (6개로 고정)
+              Array.from({ length: 6 }).map((_, index) => (
+                <ImageSkeleton key={`skeleton-${index}`} />
+              ))
+            : data?.pages?.map(page =>
+                page.data?.map(diary => (
+                  <DiaryFrame
+                    key={diary.summaryId}
+                    summaryId={diary.summaryId}
+                    diaryDate={diary.diaryDate}
+                    imageUrl={diary.imageUrl}
+                    title={diary.title}
+                    momentCount={diary.momentCount}
+                    isSelectionMode={isSelectionMode}
+                    isSelected={selectedIds.includes(diary.summaryId)}
+                    onSelect={handleSelect}
+                    isImageGenerating={diary.isImageGenerating}
+                  />
+                )),
+              )}
         </div>
 
         {/* 데이터가 없을 때 */}
