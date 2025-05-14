@@ -1,9 +1,9 @@
 import { Home, LogOut, Plus } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { userLogout } from '@/apis/accountApi';
 import LibraryIcon from '@/assets/icons/LibraryIcon';
 import TodayIcon from '@/assets/icons/TodayIcon';
+import { useLogoutQuery } from '@/hooks/useLogoutQuery';
 
 const baseButtonClasses =
   'flex w-1/2 flex-col items-center justify-center text-xs transition-colors duration-200';
@@ -11,16 +11,12 @@ const baseButtonClasses =
 const NavigationBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { mutate: handleLogout } = useLogoutQuery();
 
   const getActiveColor = (path: string) =>
     location.pathname === path
       ? 'text-haru-green hover:text-haru-green'
       : 'text-haru-gray-4 hover:text-haru-gray-5';
-
-  const handleLogout = async () => {
-    await userLogout();
-    navigate('/login', { replace: true });
-  };
 
   return (
     <nav className='fixed bottom-0 flex h-[70px] w-full max-w-96 items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
@@ -64,8 +60,8 @@ const NavigationBar = () => {
 
       {/* 로그아웃 */}
       <button
-        className={`${baseButtonClasses} text-haru-gray-4`}
-        onClick={handleLogout}
+        className={`${baseButtonClasses} text-haru-gray-4 hover:text-haru-gray-5`}
+        onClick={() => handleLogout()}
         aria-label='로그아웃'
       >
         <LogOut />
