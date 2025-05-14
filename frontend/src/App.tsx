@@ -8,8 +8,8 @@ import ToastProvider from './components/toast/ToastProvider';
 const App = () => {
   return (
     <LoginProvider>
-      <RouterProvider router={router} />
       <ToastProvider />
+      <RouterProvider router={router} />
     </LoginProvider>
   );
 };
