@@ -1,11 +1,11 @@
-import { useMomentDelete } from '@/hooks/useMomentDelete';
+import { useMomentDelete } from '@/hooks/useTodayQuery';
 import { formatMomentTime } from '@/lib/timeUtils';
 
 interface MomentDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   momentTime: string;
-  createdAt?: string;
+  createdAt: string;
 }
 
 const MomentDeleteDialog = ({
@@ -19,19 +19,6 @@ const MomentDeleteDialog = ({
   if (!open) return null;
 
   const formattedTime = formatMomentTime(momentTime);
-
-  const handleDelete = () => {
-    if (!createdAt) {
-      console.error('createdAt이 없습니다.');
-      return;
-    }
-
-    deleteMomentMutation(createdAt, {
-      onSuccess: () => {
-        onOpenChange(false);
-      },
-    });
-  };
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-haru-black bg-opacity-50'>
@@ -47,8 +34,12 @@ const MomentDeleteDialog = ({
             취소
           </button>
           <button
-            onClick={handleDelete}
-            disabled={isPending || !createdAt}
+            onClick={() => {
+              deleteMomentMutation(createdAt, {
+                onSuccess: () => onOpenChange(false),
+              });
+            }}
+            disabled={isPending}
             className='rounded bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green disabled:opacity-50'
             aria-label='순간 기록 삭제 진행'
           >

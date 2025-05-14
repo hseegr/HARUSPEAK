@@ -1,8 +1,5 @@
 import { ChangeEvent, useCallback, useState } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
-
-import { updateMoment } from '@/apis/todayApi';
 import {
   convert24To12HourFormat,
   get24HourFormat,
@@ -12,17 +9,20 @@ import {
 import { MomentContent } from '@/types/common';
 import { UpdateMomentRequest } from '@/types/today';
 
+import { useMomentEdit as useMomentEditMutation } from './useTodayQuery';
+
 export const useMomentEdit = (
   initialMoment: MomentContent,
   onClose: () => void,
 ) => {
-  const queryClient = useQueryClient();
   const [editedMoment, setEditedMoment] =
     useState<MomentContent>(initialMoment);
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const createdAt = initialMoment.createdAt;
+
+  const { mutate: updateMomentMutation } = useMomentEditMutation();
 
   // 순간 기록의 날짜와 시간 파싱
   const { date } = parseMomentTime(editedMoment.momentTime);
@@ -86,29 +86,22 @@ export const useMomentEdit = (
 
   // 저장 핸들러 : 서버 전송 & 성공 시 캐시 무효화 & 실패 시 에러 로깅
   const handleSave = async () => {
-    try {
-      setIsSaving(true);
+    setIsSaving(true);
 
-      const updateData: UpdateMomentRequest = {
-        momentTime: editedMoment.momentTime,
-        content: editedMoment.content,
-        images: editedMoment.images,
-        tags: editedMoment.tags,
-        deletedImages,
-      };
-
-      if (!createdAt) {
-        throw new Error('createdAt이 없습니다.');
-      }
-
-      await updateMoment(createdAt, updateData);
-      await queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
-      onClose();
-    } catch (error) {
-      console.error('저장 실패:', error);
-    } finally {
+    if (!createdAt) {
       setIsSaving(false);
+      return;
     }
+
+    const updateData: UpdateMomentRequest = {
+      ...editedMoment,
+      createdAt,
+      deletedImages,
+    };
+
+    updateMomentMutation({ createdAt, data: updateData });
+    onClose();
+    setIsSaving(false);
   };
 
   // 상태 초기화 함수 : 다이얼로그 열리거나 수정 취소 시 돌려놓기용
