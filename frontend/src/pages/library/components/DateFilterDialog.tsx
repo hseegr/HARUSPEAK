@@ -1,4 +1,3 @@
-// components/DateFilterDialog.tsx
 import { useEffect, useState } from 'react';
 
 import { CalendarIcon } from '@radix-ui/react-icons';
@@ -36,8 +35,14 @@ const DateFilterDialog = ({
   initialStartDate,
   initialEndDate,
 }: DateFilterDialogProps) => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  // 다이얼로그가 마운트될 때마다 초기값으로 상태 초기화
+  const [startDate, setStartDate] = useState<Date | null>(
+    initialStartDate ? new Date(initialStartDate) : null,
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    initialEndDate ? new Date(initialEndDate) : null,
+  );
+
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,26 +50,6 @@ const DateFilterDialog = ({
   // 오늘 날짜 설정 (시간은 00:00:00으로 설정)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // 초기값 설정
-  useEffect(() => {
-    if (initialStartDate) {
-      setStartDate(new Date(initialStartDate));
-    }
-    if (initialEndDate) {
-      setEndDate(new Date(initialEndDate));
-    }
-  }, [initialStartDate, initialEndDate, open]);
-
-  // 필터 적용 버튼 활성화 여부 확인
-  const isButtonDisabled = () => {
-    // 양쪽 날짜 모두 선택되지 않았거나
-    // 한쪽만 선택되었거나
-    // 시작일이 종료일보다 나중이면 비활성화
-    return (
-      !startDate || !endDate || (startDate && endDate && startDate > endDate)
-    );
-  };
 
   // 오류 메시지 업데이트 (날짜 선택 상태에 따라)
   useEffect(() => {
@@ -80,6 +65,13 @@ const DateFilterDialog = ({
       setError(null);
     }
   }, [startDate, endDate]);
+
+  // 필터 적용 버튼 활성화 여부 확인
+  const isButtonDisabled = () => {
+    return (
+      !startDate || !endDate || (startDate && endDate && startDate > endDate)
+    );
+  };
 
   const handleApply = () => {
     // 버튼이 비활성화되어 있으면 함수 실행 중지
