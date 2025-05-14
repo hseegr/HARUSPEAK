@@ -66,6 +66,12 @@ const VoiceToTextPage = () => {
 
   return (
     <div className='flex min-h-[calc(100vh-150px)] w-full flex-col items-center justify-center gap-6'>
+      {/* ✅ 베타 기능 안내 문구 */}
+      <div className='mb-4 w-full px-4 py-2 text-center text-xs text-haru-gray-5'>
+        해당 기능은 <span className='font-semibold'>베타 버전</span>으로,
+        <br />
+        일부 브라우저에서는 지원하지 않을 수 있습니다.
+      </div>
       <div className='flex flex-col items-center justify-center'>
         <div className='relative mb-6'>
           <div className='h-20 w-20 animate-ping rounded-full bg-haru-beige opacity-75'></div>
