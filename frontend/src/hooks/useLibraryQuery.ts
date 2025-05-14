@@ -33,14 +33,15 @@ export const useGetLibrary = ({
 export const useDeleteDiary = () => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: deleteDiary,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['library'] });
+      toast.success('일기가 성공적으로 삭제되었습니다.');
     },
     onError: error => {
       toast.error(error.message);
     },
   });
-  return mutateAsync;
+  return { mutateAsync, isPending };
 };
