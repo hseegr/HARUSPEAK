@@ -4,9 +4,9 @@ import com.haruspeak.batch.model.TodayDiary;
 import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
+import java.util.Set;
 
 @Slf4j
 public class TodayDiaryReader implements ItemReader<TodayDiary> {
@@ -16,7 +16,6 @@ public class TodayDiaryReader implements ItemReader<TodayDiary> {
 
     private Iterator<String> keyIterator;
 
-    //    @Value("#{jobParameters['date']}") String date;
     public TodayDiaryReader(TodayDiaryRedisRepository repository, String date) {
         this.repository = repository;
         this.date = date;
@@ -24,16 +23,27 @@ public class TodayDiaryReader implements ItemReader<TodayDiary> {
 
     @Override
     public TodayDiary read() throws Exception {
-        log.debug("🐛 STEP2/3.READ - 오늘의 일기 조회 FOR Tags Step");
-
         if (keyIterator == null) {
-            keyIterator = repository.getAllKeys(date).iterator();
+            Set<String> keys = repository.getAllKeys(date);
+            this.keyIterator = keys.iterator();
         }
 
         if (!keyIterator.hasNext()) {
+            log.debug("🐛 오늘의 다이어리 조회 커서 종료");
             return null;
         }
 
-        return repository.getTodayDiaryByKey(keyIterator.next());
+        String key = keyIterator.next();
+        log.debug("🐛 [READER] 오늘의 요약/순간 일기 조회 - {}", key);
+
+        try {
+            return repository.getTodayDiaryByKey(key);
+        } catch (Exception e) {
+            log.error("💥 Diary 조회 중 예외 발생 key={}, error={}", key, e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
+
+
     }
 }

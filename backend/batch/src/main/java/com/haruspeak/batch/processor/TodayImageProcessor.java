@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @NoArgsConstructor
@@ -19,9 +20,15 @@ public class TodayImageProcessor implements ItemProcessor <TodayDiary, List<Dail
 
     @Override
     public List<DailyMoment> process(TodayDiary diary) {
-        log.debug("🐛 STEP3.PROCESS - 이미지 ");
-        return diary.getDailyMoments();
+        log.debug("🐛 [PROCESSOR] 이미지가 포함된 순간 일기 필터링");
+        return getMomentsWithNonZeroImages(diary.getDailyMoments());
 
+    }
+
+    private List<DailyMoment> getMomentsWithNonZeroImages(List<DailyMoment> moments) {
+        return moments.stream()
+                .filter(moment -> moment.getImageCount() > 0)
+                .toList();
     }
 
 }

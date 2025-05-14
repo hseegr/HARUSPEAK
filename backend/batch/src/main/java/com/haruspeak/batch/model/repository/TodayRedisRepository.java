@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +28,8 @@ public class TodayRedisRepository {
         return Integer.parseInt(key.split(":")[1]);
     }
 
-    private String getKey(String userId, String date) {
-        return "user:" + userId + ":" + date;
+    public String getKey(String userId, String date) {
+        return "user:" + userId + ":moment:" + date;
     }
 
     public Set<String> getAllKeys (String date) {
@@ -80,7 +81,12 @@ public class TodayRedisRepository {
 
 
     public void delete(String userId, String date) {
-        apiRedisTemplate.opsForHash().delete(getKey(userId, date));
+        try {
+            apiRedisTemplate.delete(getKey(userId, date));
+        } catch (Exception e) {
+            log.error("💥 [SUMMARY STEP] 완료된 하루 일기 API REDIS 삭제 실패 - userId:{}, date:{}", userId, date, e);
+            throw e;
+        }
     }
 
 

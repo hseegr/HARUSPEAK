@@ -19,20 +19,41 @@ public class TodaySummaryService {
     private final S3Service s3Service;
 
     public DailySummaryResponse generateDailySummary(String totalTodayContent) {
-      log.debug("🐛 STEP1.PROCESS - 오늘의 제목 및 요약 내용 생성 요청");
-      return dailySummaryClient.getDailySummary(totalTodayContent);
+      log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청");
+      try {
+          return dailySummaryClient.getDailySummary(totalTodayContent);
+      }catch (Exception e) {
+          log.error("💥 오늘의 요약 생성 중 에러 발생: {}", e.getMessage());
+          throw e;
+      }
     }
 
     public String generateThumbnailUrl(String todaySummaryContent){
-        log.debug("🐛 STEP1.PROCESS - 오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
-        return uploadThumbnailAndGetS3Url(generateThumbnailBase64(todaySummaryContent));
+        log.debug("🐛 오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
+        try {
+            return uploadThumbnailAndGetS3Url(generateThumbnailBase64(todaySummaryContent));    
+        }catch (Exception e) {
+            log.error("💥 오늘의 썸네일 생성 및 S3 저장 중 오류 발생: {}", e.getMessage());
+            throw e;
+        }
+        
     }
 
     private String generateThumbnailBase64(String totalTodayContent) {
-        return dailyThumbnailClient.getDailyThumbnail(totalTodayContent).base64();
+        try {
+            return dailyThumbnailClient.getDailyThumbnail(totalTodayContent).base64();
+        }catch (Exception e) {
+            log.error("💥 오늘의 썸네일 생성 요청 중 오류 발생: {}", e.getMessage());
+            throw e;
+        }
     }
 
     private String uploadThumbnailAndGetS3Url(String base64){
-        return s3Service.uploadImagesAndGetUrls(base64);
+        try {
+            return s3Service.uploadImagesAndGetUrls(base64);
+        }catch (Exception e) {
+            log.error("💥 오늘의 썸네일 S3 저장 중 오류 발생: {}", e.getMessage());
+            throw e;
+        }
     }
 }

@@ -23,6 +23,9 @@ public class TodayDiaryJobRunner {
 
     private final JobLauncher jobLauncher;
     private final Job todayDiaryJob;
+    private final Job todayDiarySaveJob;
+    private final Job todayDiaryTagStepStartJob;
+    private final Job todayDiaryImageStepStartJob;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -47,6 +50,79 @@ public class TodayDiaryJobRunner {
 
         } catch (Exception e) {
             log.error("🐛 [{}] 하루 일기 배치 실행 실패 - {}", date, e.getMessage(), e);
+        }
+    }
+
+    public void runTodayDiarySaveJob(String date) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("date", date)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
+        try {
+            log.info("🐛 [{}]하루 일기 배치(SAVE) 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
+            Instant start = Instant.now();
+
+            JobExecution execution = jobLauncher.run(todayDiarySaveJob, jobParameters);
+            Duration duration = Duration.between(start, Instant.now());
+
+            log.info("🐛 [{}]하루 일기 배치(SAVE) 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+
+            if (execution.getStatus() != BatchStatus.COMPLETED) {
+                log.warn("🐛 [{}]하루 일기 배치(SAVE) 실행 중 일부 실패 또는 중단: {}", date,  execution.getExitStatus());
+            }
+
+        } catch (Exception e) {
+            log.error("🐛 [{}] 하루 일기 배치(SAVE) 실행 실패 - {}", date, e.getMessage(), e);
+        }
+    }
+
+
+    public void runTodayDiaryTagStepStartJob(String date) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("date", date)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
+        try {
+            log.info("🐛 [{}]하루 일기 Tag step start 배치 부터 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
+            Instant start = Instant.now();
+
+            JobExecution execution = jobLauncher.run(todayDiaryTagStepStartJob, jobParameters);
+            Duration duration = Duration.between(start, Instant.now());
+
+            log.info("🐛 [{}]하루 일기 Tag step start 배치 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+
+            if (execution.getStatus() != BatchStatus.COMPLETED) {
+                log.warn("🐛 [{}]하루 일기 배치 Tag step start 실행 중 일부 실패 또는 중단: {}", date,  execution.getExitStatus());
+            }
+
+        } catch (Exception e) {
+            log.error("🐛 [{}] 하루 일기 배치 Tag step start 실행 실패 - {}", date, e.getMessage(), e);
+        }
+    }
+
+    public void runTodayDiaryImageStepStartJob(String date) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("date", date)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
+        try {
+            log.info("🐛 [{}]하루 일기 Image step start 배치 부터 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
+            Instant start = Instant.now();
+
+            JobExecution execution = jobLauncher.run(todayDiaryImageStepStartJob, jobParameters);
+            Duration duration = Duration.between(start, Instant.now());
+
+            log.info("🐛 [{}]하루 일기 Image step start 배치 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+
+            if (execution.getStatus() != BatchStatus.COMPLETED) {
+                log.warn("🐛 [{}]하루 일기 배치 Image step start 실행 중 일부 실패 또는 중단: {}", date,  execution.getExitStatus());
+            }
+
+        } catch (Exception e) {
+            log.error("🐛 [{}] 하루 일기 배치 Image step start 실행 실패 - {}", date, e.getMessage(), e);
         }
     }
 
