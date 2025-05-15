@@ -52,8 +52,8 @@ const EmojiSelector = ({ isOpen, onClose }: EmojiSelectorProps) => {
               onClick={() => handleToggleEmoji(emoji)}
               className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl transition-all duration-200 ease-in-out ${
                 tempSelected.includes(emoji)
-                  ? 'bg-haru-green text-white hover:bg-haru-light-green'
-                  : 'bg-gray-100 hover:bg-haru-light-green'
+                  ? 'border border-haru-green bg-haru-light-green text-white hover:bg-haru-green'
+                  : 'bg-gray-100 hover:bg-haru-light-green/60'
               }`}
             >
               {emoji}
