@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import EmptyState from '@/components/EmptyState';
 import ImageSkeleton from '@/components/ImageSkeleton';
 import { useFilterDialogs } from '@/hooks/useFilterDialogs';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -135,9 +136,10 @@ const Library = () => {
 
         {/* 데이터가 없을 때 */}
         {hasData === false && !isFetchingNextPage && (
-          <div className='py-4 text-center text-gray-500'>
-            표시할 일기가 없습니다.
-          </div>
+          <EmptyState
+            title='표시할 일기가 없습니다'
+            description='오늘부터 기록을 시작해보세요'
+          />
         )}
 
         {/* Intersection Observer 타겟 요소 */}

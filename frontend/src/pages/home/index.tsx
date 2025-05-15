@@ -53,8 +53,11 @@ const Home = () => {
               ) : (
                 <div className='flex h-80 flex-col items-center justify-center'>
                   <span className='animate-bounce-and-rotate text-4xl'>😊</span>
-                  <p className='mt-2 text-center font-leeseyoon text-lg text-haru-gray-5'>
-                    오늘 하루의 소중한 순간을 남겨보세요
+                  <p className='mt-2 text-center text-xl font-bold text-haru-green'>
+                    하루 기록이 없어요
+                  </p>
+                  <p className='mt-2 text-center text-sm text-haru-gray-5'>
+                    소중한 순간을 남겨보세요
                   </p>
                 </div>
               )}
