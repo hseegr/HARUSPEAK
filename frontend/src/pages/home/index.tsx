@@ -23,7 +23,7 @@ const Home = () => {
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
+            <section className='w-full flex-1 items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayCount} />
               <p className='w-full text-center font-leeseyoon text-haru-gray-5'>
                 <span className='mr-1'>오늘</span>

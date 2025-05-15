@@ -1,28 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { useDrag } from '../hooks/useDrag';
-import { useEmojiParticles } from '../hooks/useEmojiParticles';
-import { Dimensions, ParticleStyle } from '../types/moment';
+import { useDrag } from '@/hooks/useDrag';
+import { useEmojiParticles } from '@/hooks/useEmojiParticles';
+import { Dimensions, ParticleStyle } from '@/types/moment';
 
 // 상수 정의
 const emojiSize = 36;
-const containerClasses = 'mb-3 flex h-80 w-full flex-col items-center p-4';
+const containerClasses = 'mb-3 flex h-80 w-full flex-col items-center px-4';
 const particleContainerClasses = 'relative h-full w-full bg-transparent';
 const particleClasses =
-  'absolute cursor-grab select-none active:cursor-grabbing';
+  'absolute cursor-grab select-none active:cursor-grabbing touch-none';
 
 interface TodayMomentsProps {
   momentCount: number;
 }
 
-const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
+const TodayMoments = ({ momentCount }: TodayMomentsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<Dimensions>({
     width: 0,
     height: 0,
   });
 
-  const { dragState, handleMouseDown } = useDrag(containerRef);
+  const { dragState, handleStart } = useDrag(containerRef);
   const particles = useEmojiParticles(dimensions, momentCount, dragState);
 
   const updateDimensions = () => {
@@ -56,7 +56,8 @@ const TodayMoments: React.FC<TodayMomentsProps> = ({ momentCount }) => {
             key={particle.id}
             className={particleClasses}
             style={getParticleStyle(particle)}
-            onMouseDown={e => handleMouseDown(e, particle)}
+            onMouseDown={e => handleStart(e, particle)}
+            onTouchStart={e => handleStart(e, particle)}
           >
             {particle.emoji}
           </div>
