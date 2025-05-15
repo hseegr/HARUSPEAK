@@ -37,7 +37,7 @@ const EmojiSelector = ({
   };
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+    <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50'>
       <div className='w-96 rounded-lg bg-white p-6'>
         <div className='mb-4 flex items-center justify-between'>
           <h2 className='text-xl font-bold'>이모지 선택</h2>
@@ -55,7 +55,7 @@ const EmojiSelector = ({
             <button
               key={emoji}
               onClick={() => handleToggleEmoji(emoji)}
-              className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl ${
+              className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl transition-all duration-200 ease-in-out ${
                 tempSelected.includes(emoji)
                   ? 'bg-haru-green text-white hover:bg-haru-light-green'
                   : 'bg-gray-100 hover:bg-haru-light-green'
@@ -67,16 +67,21 @@ const EmojiSelector = ({
         </div>
         <div className='flex justify-end gap-2'>
           <button
-            onClick={onClose}
-            className='rounded-lg bg-gray-200 px-4 py-2'
+            onClick={handleSave}
+            disabled={tempSelected.length === 0}
+            className={`rounded-lg px-4 py-2 text-white transition-all duration-200 ease-in-out ${
+              tempSelected.length === 0
+                ? 'cursor-not-allowed bg-gray-300'
+                : 'bg-haru-light-green hover:bg-haru-green'
+            }`}
           >
-            취소
+            {tempSelected.length === 0 ? '이모지를 선택해주세요' : '저장'}
           </button>
           <button
-            onClick={handleSave}
-            className='rounded-lg bg-haru-light-green px-4 py-2 text-white hover:bg-haru-green'
+            onClick={onClose}
+            className='rounded-lg bg-gray-200 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-gray-300'
           >
-            저장
+            취소
           </button>
         </div>
       </div>
