@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 
 import { googleLogin } from '@/apis/accountApi';
 import googleLogo from '@/assets/images/googlelogin.png';
+import logoimg from '@/assets/images/loginlogoimg.png';
 import useAuthStore from '@/store/userStore';
 
 const LoginPage = () => {
@@ -19,12 +20,15 @@ const LoginPage = () => {
   return (
     // 기존 baselayout 스타일 유지하기 위해 동일하게 구현 (현재 로그인 페이지는 baselayout 사용하지 않음)
     <div className='flex flex-col items-center bg-gray-100'>
-      <div className='min-h-lvh w-full max-w-96 bg-white'>
-        <div className='flex min-h-[100vh] w-full flex-col items-center justify-center gap-20'>
+      <div className='min-h-lvh w-full max-w-96 bg-haru-green text-white'>
+        <div className='flex min-h-[100vh] w-full flex-col items-center justify-center gap-12'>
+          <div>
+            <img src={logoimg} alt='logo' className='w-24' />
+          </div>
           <div className='flex flex-col items-center gap-2'>
-            <div className='text-2xl font-bold'>하루스픽</div>
-            <div className='text-sm font-medium'>
-              간편하게 로그인하고 Haru's Peak 시작하기
+            <div className='font-mont text-4xl font-bold'>Haru's Peak</div>
+            <div className='text-xs font-medium'>
+              간편하게 로그인하고 하루스픽 시작하기
             </div>
           </div>
           <div className='flex w-1/2 justify-center'>
