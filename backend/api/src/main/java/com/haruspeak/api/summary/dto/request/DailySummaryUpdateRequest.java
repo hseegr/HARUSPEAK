@@ -9,6 +9,7 @@ public record DailySummaryUpdateRequest(
         @Size(max=50, message = "제목은 50자 이하여야 합니다.")
         String title,
         @Schema(description = "하루 일기 요약 내용")
+        @Size(max=200, message = "내용은 200자 이하여야 합니다.")
         String content
 ) {
 }
