@@ -9,7 +9,7 @@ const emojiSize = 36;
 const containerClasses = 'mb-3 flex h-80 w-full flex-col items-center px-4';
 const particleContainerClasses = 'relative h-full w-full bg-transparent';
 const particleClasses =
-  'absolute cursor-grab select-none active:cursor-grabbing touch-none';
+  'absolute cursor-grab select-none active:cursor-grabbing touch-none z-40';
 
 interface TodayMomentsProps {
   momentCount: number;

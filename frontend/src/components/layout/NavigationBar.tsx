@@ -19,7 +19,7 @@ const NavigationBar = () => {
       : 'text-haru-gray-4 hover:text-haru-gray-5';
 
   return (
-    <nav className='fixed bottom-0 flex h-[70px] w-full max-w-96 items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
+    <nav className='fixed bottom-0 z-50 flex h-[70px] w-full max-w-96 items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
       {/* Home */}
       <button
         className={`${baseButtonClasses} ${getActiveColor('/')}`}

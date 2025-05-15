@@ -6,11 +6,11 @@ import {
   handleParticleCollision,
   handleWallCollision,
 } from '../lib/physics';
+import { defaultEmojis } from '../types/common';
 import { Dimensions, EmojiParticle } from '../types/moment';
 
 // 이모지 크기와 사용 가능한 이모지 목록
 const emojiSize = 36;
-const EMOJIS = ['🌟', '💖', '✨', '😊', '🌈', '🌱', '🌸', '🙌', '💫', '🍀'];
 
 export const useEmojiParticles = (
   dimensions: Dimensions,
@@ -26,6 +26,12 @@ export const useEmojiParticles = (
   const isVisibleRef = useRef(true);
   const lastTimeRef = useRef(performance.now());
   const isFirstFrameRef = useRef(true);
+
+  // 선택된 이모지 가져오기
+  const getSelectedEmojis = () => {
+    const savedEmojis = localStorage.getItem('selectedEmojis');
+    return savedEmojis ? JSON.parse(savedEmojis) : defaultEmojis;
+  };
 
   // 페이지 가시성 체크
   useEffect(() => {
@@ -43,10 +49,12 @@ export const useEmojiParticles = (
   useEffect(() => {
     if (dimensions.width > 0 && dimensions.height > 0 && momentCount > 0) {
       const maxEmojis = Math.min(momentCount, 24);
+      const selectedEmojis = getSelectedEmojis();
       const newParticles = Array.from({ length: maxEmojis }).map(
         (_, index) => ({
           id: `emoji-${index}`,
-          emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+          emoji:
+            selectedEmojis[Math.floor(Math.random() * selectedEmojis.length)],
           x: Math.random() * (dimensions.width - emojiSize),
           y: -emojiSize - index * (emojiSize * 1.5),
           vx: (Math.random() - 0.5) * 2,
