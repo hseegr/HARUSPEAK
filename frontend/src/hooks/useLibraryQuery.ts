@@ -28,6 +28,15 @@ export const useGetLibrary = ({
       return lastPage.resInfo.nextCursor;
     },
     structuralSharing: true,
+    // 이미지 생성 중인 항목이 있는지 확인하고 폴링 설정
+    refetchInterval: query => {
+      // 모든 페이지의 모든 다이어리 데이터를 확인
+      const hasGeneratingImage = query.state.data?.pages.some(page =>
+        page.data?.some(diary => diary.isImageGenerating),
+      );
+      return hasGeneratingImage ? 8000 : false;
+    },
+    refetchIntervalInBackground: true,
   });
 
 export const useDeleteDiary = () => {

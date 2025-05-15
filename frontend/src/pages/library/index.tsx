@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { toast } from 'react-toastify';
 
 import ImageSkeleton from '@/components/ImageSkeleton';
 import { useFilterDialogs } from '@/hooks/useFilterDialogs';
@@ -17,6 +19,8 @@ import FilterBadge from './components/FilterBadge';
 import FilterDialog from './components/FilterDialog';
 
 const Library = () => {
+  // 이미지 생성 중인 일기 ID를 추적
+  const [generatingImageIds, setGeneratingImageIds] = useState<number[]>([]);
   // key 상태를 추가하여 Dialog 강제 리마운트에 사용
   const [dialogKey, setDialogKey] = useState(0);
 
@@ -75,6 +79,27 @@ const Library = () => {
       endDate,
       userTags: filterParams.userTags,
     });
+
+  useEffect(() => {
+    if (!data?.pages) return;
+
+    // 현재 이미지 생성 중인 모든 일기 ID 수집
+    const currentGeneratingIds = data.pages.flatMap(
+      page =>
+        page.data
+          ?.filter(diary => diary.isImageGenerating)
+          .map(diary => diary.summaryId) || [],
+    );
+
+    // 이미지가 생성 완료된 경우에만 알림 표시
+    // (현재 생성 중인 이미지가 있었다가 없어졌을 때)
+    if (currentGeneratingIds.length === 0 && generatingImageIds.length > 0) {
+      toast.success('일기 이미지 재생성이 완료되었습니다.');
+    }
+
+    // 현재 생성 중인 ID로 상태 업데이트
+    setGeneratingImageIds(currentGeneratingIds);
+  }, [data, generatingImageIds.length]);
 
   // 교차 관찰자 설정
   const observerRef = useIntersectionObserver({
