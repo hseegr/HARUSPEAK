@@ -87,27 +87,29 @@ const Library = () => {
 
   return (
     <div className='w-full'>
-      <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
-          <FilterBadge onClick={handleFilterClick} />
-          <DateFilterBadge onClick={handleDateFilterClick} />
+      {!isPending && hasData && (
+        <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
+          <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
+            <FilterBadge onClick={handleFilterClick} />
+            <DateFilterBadge onClick={handleDateFilterClick} />
+          </div>
+          <DeleteBtn
+            isSelectionMode={isSelectionMode}
+            onToggleSelection={handleToggleSelection}
+            onDelete={handleDeleteClick}
+            selectedCount={selectedIds.length}
+            onReset={handleReset}
+            isLoading={isDeleting}
+          />
         </div>
-        <DeleteBtn
-          isSelectionMode={isSelectionMode}
-          onToggleSelection={handleToggleSelection}
-          onDelete={handleDeleteClick}
-          selectedCount={selectedIds.length}
-          onReset={handleReset}
-          isLoading={isDeleting}
-        />
-      </div>
+      )}
 
-      <div className='pt-8'>
-        <div className='mb-4'>
-          {(startDate || endDate) && (
+      <div className={!isPending && hasData ? 'pt-8' : ''}>
+        {!isPending && hasData && (startDate || endDate) && (
+          <div className='mb-4'>
             <DateRangeDisplay startDate={startDate} endDate={endDate} />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* 일기 목록 */}
         <div className='grid grid-cols-1 gap-4'>
@@ -143,7 +145,7 @@ const Library = () => {
         )}
 
         {/* Intersection Observer 타겟 요소 */}
-        <div ref={observerRef} className='h-10' />
+        {hasData && <div ref={observerRef} className='h-10' />}
 
         {/* 로딩 상태 표시 */}
         {isFetchingNextPage && (

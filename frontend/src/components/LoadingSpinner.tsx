@@ -6,13 +6,13 @@ const LoadingSpinner = () => {
           {`
             @keyframes wave {
               0% {
-                transform: scaleY(1);
+                height: 0px;
               }
               50% {
-                transform: scaleY(0.2);
+                height: 64px;
               }
               100% {
-                transform: scaleY(1);
+                height: 0px;
               }
             }
           `}
@@ -21,7 +21,7 @@ const LoadingSpinner = () => {
           {[...Array(5)].map((_, index) => (
             <div
               key={index}
-              className='h-16 w-2 rounded-full bg-haru-green'
+              className='h-0 w-2 rounded-full bg-haru-green'
               style={{
                 animation: `wave 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite`,
                 transformOrigin: 'center',
