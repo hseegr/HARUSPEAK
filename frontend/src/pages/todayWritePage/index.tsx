@@ -79,13 +79,13 @@ const TodayWritePage = () => {
         },
         {
           onSuccess: () => {
-            toast.success('순간 일기가 저장되었습니다.');
+            toast.success('순간 기록이이 저장되었습니다.');
             clearAll();
             setIsSaving(false);
             navigate('/today');
           },
           onError: () => {
-            toast.error('순간 일기 저장에 실패했습니다.');
+            toast.error('순간 기록 저장에 실패했습니다.');
             setIsSaving(false);
           },
         },
