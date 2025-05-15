@@ -6,6 +6,21 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      keyframes: {
+        'bounce-and-rotate': {
+          '0%': { transform: 'translateX(-100%) rotate(0deg)' },
+          '50%': { transform: 'translateX(100%) rotate(360deg)' },
+          '100%': { transform: 'translateX(-100%) rotate(0deg)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'bounce-and-rotate': 'bounce-and-rotate 4s ease-in-out infinite',
+        'fade-in': 'fade-in 1s ease-in-out 1s forwards',
+      },
       fontFamily: {
         mont: ['Montserrat', 'sans-serif'],
         pretendard: ['Pretendard', 'sans-serif'],

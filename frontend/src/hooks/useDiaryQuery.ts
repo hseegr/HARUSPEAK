@@ -14,6 +14,13 @@ export const useGetDiary = (summaryId: string) =>
     queryKey: ['diary', summaryId],
     queryFn: () => getDiary(summaryId),
     enabled: !!summaryId, // summaryId가 없으면 쿼리 실행 안함
+    // 조건부 폴링: 이미지 생성 중일 때만 8초마다 재요청
+    refetchInterval: query => {
+      const isGenerating = query.state.data?.summary?.isImageGenerating;
+      return isGenerating ? 8000 : false;
+    },
+    // 백그라운드에서도 폴링을 유지
+    refetchIntervalInBackground: true,
   });
 
 export const useRegenerateImage = () => {
@@ -23,6 +30,8 @@ export const useRegenerateImage = () => {
     mutationFn: regenerateImage,
     onSuccess: (_, summaryId) => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
+      queryClient.invalidateQueries({ queryKey: ['library'] });
+      toast.info('이미지를 재생성하고 있습니다. 잠시만 기다려주세요.');
     },
     onError: error => {
       toast.error(error.message || '이미지 재생성 중 오류가 발생했습니다.');

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import MomentCard from '@/components/MomentCard';
 import { useContentHandler } from '@/hooks/useContentHandler';
@@ -20,6 +21,8 @@ const Diary = () => {
   const { data, isPending, isError } = useGetDiary(summaryId || '');
   // 삭제 확인 다이얼로그 상태
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  // 이미지 생성 상태 추적
+  const [wasGenerating, setWasGenerating] = useState(false);
 
   // 기존 useDeleteDiary 훅 사용
   const { mutateAsync: deleteDiary, isPending: isDeleting } = useDeleteDiary();
@@ -60,6 +63,16 @@ const Diary = () => {
     }
   }, [data, isEditing, setEditTitle, setEditContent]);
 
+  // 이미지 생성 상태 변화 감지
+  useEffect(() => {
+    if (!data) return;
+    const isGenerating = data.summary.isImageGenerating;
+    if (wasGenerating && !isGenerating) {
+      toast.success('이미지 재생성이 완료되었습니다.');
+    }
+    setWasGenerating(isGenerating);
+  }, [data, wasGenerating]);
+
   // 삭제 버튼 클릭 핸들러
   const handleDeleteClick = () => {
     setDeleteDialogOpen(true);
@@ -93,7 +106,7 @@ const Diary = () => {
   }
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className='flex w-full flex-col gap-4'>
       {/* 상단 헤더 및 제목 */}
       <DiaryHeader
         title={data.summary.title}

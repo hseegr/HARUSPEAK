@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Mic } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,19 +14,30 @@ import VoiceInput from './components/VoiceInput';
 const VoiceToTextPage = () => {
   const navigate = useNavigate();
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   // 추가: 버튼 클릭 한 번으로 권한 요청 + 음성 인식 시작
   const handleStart = async () => {
     try {
-      // 1) 사용자 제스처 내에서 권한 요청 (팝업)
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // 마이크 스트림 저장
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+
+      // 음성 인식 시작
       SpeechRecognition.startListening({
-        continuous: false, // 한 번만 듣고 자동 종료
-        interimResults: true, // 중간 결과 즉시 반환
+        continuous: true,
         language: 'ko',
       });
     } catch {
       toast.error('마이크 권한을 허용해야 녹음을 시작할 수 있습니다.');
+    }
+  };
+
+  // 마이크 스트림 종료
+  const stopMicrophone = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
     }
   };
 
@@ -36,6 +47,7 @@ const VoiceToTextPage = () => {
     resetTranscript();
     return () => {
       SpeechRecognition.stopListening();
+      stopMicrophone();
     };
   }, []);
 
@@ -50,8 +62,9 @@ const VoiceToTextPage = () => {
 
   // 취소 버튼 클릭
   const handleCancle = () => {
-    resetTranscript();
     SpeechRecognition.abortListening();
+    stopMicrophone();
+    resetTranscript();
     navigate('/todaywrite');
   };
 
@@ -61,6 +74,7 @@ const VoiceToTextPage = () => {
       TodayWriteStore.getState().addTextBlock(transcript.trim());
     }
     SpeechRecognition.abortListening();
+    stopMicrophone();
     navigate('/todaywrite');
   };
 
@@ -70,7 +84,7 @@ const VoiceToTextPage = () => {
       <div className='mb-4 w-full px-4 py-2 text-center text-xs text-haru-gray-5'>
         해당 기능은 <span className='font-semibold'>베타 버전</span>으로,
         <br />
-        일부 브라우저에서는 지원하지 않을 수 있습니다.
+        일부 기기 및 브라우저에서는 지원하지 않을 수 있습니다.
       </div>
       <div className='flex flex-col items-center justify-center'>
         <div className='relative mb-6'>

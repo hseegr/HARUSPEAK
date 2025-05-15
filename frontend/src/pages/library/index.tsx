@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { toast } from 'react-toastify';
+
+import EmptyState from '@/components/EmptyState';
 import ImageSkeleton from '@/components/ImageSkeleton';
 import { useFilterDialogs } from '@/hooks/useFilterDialogs';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
@@ -17,6 +20,8 @@ import FilterBadge from './components/FilterBadge';
 import FilterDialog from './components/FilterDialog';
 
 const Library = () => {
+  // 이미지 생성 중인 일기 ID를 추적
+  const [generatingImageIds, setGeneratingImageIds] = useState<number[]>([]);
   // key 상태를 추가하여 Dialog 강제 리마운트에 사용
   const [dialogKey, setDialogKey] = useState(0);
 
@@ -76,6 +81,27 @@ const Library = () => {
       userTags: filterParams.userTags,
     });
 
+  useEffect(() => {
+    if (!data?.pages) return;
+
+    // 현재 이미지 생성 중인 모든 일기 ID 수집
+    const currentGeneratingIds = data.pages.flatMap(
+      page =>
+        page.data
+          ?.filter(diary => diary.isImageGenerating)
+          .map(diary => diary.summaryId) || [],
+    );
+
+    // 이미지가 생성 완료된 경우에만 알림 표시
+    // (현재 생성 중인 이미지가 있었다가 없어졌을 때)
+    if (currentGeneratingIds.length === 0 && generatingImageIds.length > 0) {
+      toast.success('일기 이미지 재생성이 완료되었습니다.');
+    }
+
+    // 현재 생성 중인 ID로 상태 업데이트
+    setGeneratingImageIds(currentGeneratingIds);
+  }, [data, generatingImageIds.length]);
+
   // 교차 관찰자 설정
   const observerRef = useIntersectionObserver({
     onIntersect: fetchNextPage,
@@ -86,30 +112,32 @@ const Library = () => {
 
   return (
     <div className='w-full'>
-      <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        <div className='flex items-center gap-2'>
-          <FilterBadge onClick={handleFilterClick} />
-          <DateFilterBadge onClick={handleDateFilterClick} />
+      {!isPending && hasData && (
+        <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
+          <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
+            <FilterBadge onClick={handleFilterClick} />
+            <DateFilterBadge onClick={handleDateFilterClick} />
+          </div>
+          <DeleteBtn
+            isSelectionMode={isSelectionMode}
+            onToggleSelection={handleToggleSelection}
+            onDelete={handleDeleteClick}
+            selectedCount={selectedIds.length}
+            onReset={handleReset}
+            isLoading={isDeleting}
+          />
         </div>
-        <DeleteBtn
-          isSelectionMode={isSelectionMode}
-          onToggleSelection={handleToggleSelection}
-          onDelete={handleDeleteClick}
-          selectedCount={selectedIds.length}
-          onReset={handleReset}
-          isLoading={isDeleting}
-        />
-      </div>
+      )}
 
-      <div className='pt-12'>
-        <div className='mb-4 px-4'>
-          {(startDate || endDate) && (
+      <div className={!isPending && hasData ? 'pt-8' : ''}>
+        {!isPending && hasData && (startDate || endDate) && (
+          <div className='mb-4'>
             <DateRangeDisplay startDate={startDate} endDate={endDate} />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* 일기 목록 */}
-        <div className='grid grid-cols-1 gap-6 px-4'>
+        <div className='grid grid-cols-1 gap-4'>
           {isPending
             ? // 여러 개의 다이어리 스켈레톤 표시 (6개로 고정)
               Array.from({ length: 6 }).map((_, index) => (
@@ -135,13 +163,14 @@ const Library = () => {
 
         {/* 데이터가 없을 때 */}
         {hasData === false && !isFetchingNextPage && (
-          <div className='py-4 text-center text-gray-500'>
-            표시할 일기가 없습니다.
-          </div>
+          <EmptyState
+            title='표시할 일기가 없습니다'
+            description='오늘부터 기록을 시작해보세요'
+          />
         )}
 
         {/* Intersection Observer 타겟 요소 */}
-        <div ref={observerRef} className='h-10' />
+        {hasData && <div ref={observerRef} className='h-10' />}
 
         {/* 로딩 상태 표시 */}
         {isFetchingNextPage && (

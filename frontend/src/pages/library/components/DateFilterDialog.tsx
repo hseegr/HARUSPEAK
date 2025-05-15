@@ -103,7 +103,7 @@ const DateFilterDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent className='max-w-sm rounded-lg'>
         <DialogHeader>
           <DialogTitle>일기 기간 설정</DialogTitle>
         </DialogHeader>

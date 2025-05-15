@@ -10,7 +10,7 @@ export const formatMomentTime = (momentTime: string): string => {
 };
 
 export const formatDate = (dateString: string): string => {
-  return dateString.split('T')[0].replace(/-/g, '.');
+  return dateString.split('T')[0].replace(/-/g, '-');
 };
 
 export const parseMomentTime = (momentTime: string): ParsedTime => {

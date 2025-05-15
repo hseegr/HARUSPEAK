@@ -1,5 +1,6 @@
 import { PropsWithChildren, useEffect } from 'react';
 
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { useUserInfoQuery } from '@/hooks/useLoginQuery';
 import useAuthStore from '@/store/userStore';
 
@@ -16,7 +17,7 @@ const LoginProvider = ({ children }: PropsWithChildren) => {
 
   // 로딩 중일 때는 로딩 UI 표시
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   return <>{children}</>;
