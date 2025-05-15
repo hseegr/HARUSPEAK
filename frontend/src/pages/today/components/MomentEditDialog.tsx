@@ -202,7 +202,7 @@ const MomentEditDialog = ({
               onChange={e => handleContentChange(e.target.value)}
               rows={4}
               maxLength={1000}
-              className='max-h-[250px] min-h-[100px] w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-haru-green'
+              className='text-md max-h-[250px] min-h-[100px] w-full resize-none rounded-md border border-gray-300 p-2 focus:outline-haru-green'
               placeholder='순간의 기록을 입력하세요'
               style={{
                 height: 'auto',
@@ -263,7 +263,7 @@ const MomentEditDialog = ({
               />
               <button
                 onClick={() => setShouldResetTags(true)}
-                className='text-sm font-bold text-red-500 hover:text-red-700 disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
+                className='text-sm font-bold text-red-600/80 hover:text-red-600 disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
                 disabled={editedMoment.tags.length > 0 ? false : true}
               >
                 태그 목록 초기화
@@ -275,12 +275,12 @@ const MomentEditDialog = ({
               {editedMoment.tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-sm'
+                  className='flex items-center gap-1 rounded-full bg-haru-gray-2 px-3 py-1 font-leeseyoon text-sm'
                 >
                   {tag}
                   <button
                     onClick={() => handleDeleteTag(idx)}
-                    className='text-gray-500 hover:text-red-600'
+                    className='text-haru-gray-5 hover:text-red-600'
                   >
                     ✕
                   </button>

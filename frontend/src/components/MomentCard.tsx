@@ -57,18 +57,20 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         </section>
 
         {/* 하단 */}
-        <section className='flex items-start'>
-          <div className='flex w-full flex-wrap items-center gap-2'>
-            {moment.tags.map((tag: string, idx: number) => (
-              <TagBadge key={`${tag}-${idx}`} tag={tag} />
-            ))}
-          </div>
-          <AutoTagGenerator
-            moment={moment}
-            initialTags={moment.tags}
-            isToday={isToday}
-          />
-        </section>
+        {(moment.tags.length > 0 || moment.content) && (
+          <section className='flex items-start'>
+            <div className='flex h-full w-full flex-wrap items-center gap-2'>
+              {moment.tags.map((tag: string, idx: number) => (
+                <TagBadge key={`${tag}-${idx}`} tag={tag} />
+              ))}
+            </div>
+            <AutoTagGenerator
+              moment={moment}
+              initialTags={moment.tags}
+              isToday={isToday}
+            />
+          </section>
+        )}
       </article>
       <MomentEditDialog
         open={isDialogOpen}
