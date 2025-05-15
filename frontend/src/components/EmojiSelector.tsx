@@ -1,20 +1,15 @@
 import { useState } from 'react';
 
+import { useEmojiStore } from '@/store/emojiStore';
 import { defaultEmojis } from '@/types/common';
 
 interface EmojiSelectorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (emojis: string[]) => void;
-  selectedEmojis: string[];
 }
 
-const EmojiSelector = ({
-  isOpen,
-  onClose,
-  onSelect,
-  selectedEmojis,
-}: EmojiSelectorProps) => {
+const EmojiSelector = ({ isOpen, onClose }: EmojiSelectorProps) => {
+  const { selectedEmojis, setSelectedEmojis } = useEmojiStore();
   const [tempSelected, setTempSelected] = useState<string[]>(selectedEmojis);
 
   if (!isOpen) return null;
@@ -32,7 +27,7 @@ const EmojiSelector = ({
   };
 
   const handleSave = () => {
-    onSelect(tempSelected);
+    setSelectedEmojis(tempSelected);
     onClose();
   };
 

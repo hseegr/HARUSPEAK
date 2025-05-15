@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useDrag } from '@/hooks/useDrag';
 import { useEmojiParticles } from '@/hooks/useEmojiParticles';
+import { useEmojiStore } from '@/store/emojiStore';
 import { Dimensions, ParticleStyle } from '@/types/moment';
 
 // 상수 정의
@@ -21,9 +22,15 @@ const TodayMoments = ({ momentCount }: TodayMomentsProps) => {
     width: 0,
     height: 0,
   });
+  const selectedEmojis = useEmojiStore(state => state.selectedEmojis);
 
   const { dragState, handleStart } = useDrag(containerRef);
-  const particles = useEmojiParticles(dimensions, momentCount, dragState);
+  const particles = useEmojiParticles(
+    dimensions,
+    momentCount,
+    dragState,
+    selectedEmojis,
+  );
 
   const updateDimensions = () => {
     if (containerRef.current) {
