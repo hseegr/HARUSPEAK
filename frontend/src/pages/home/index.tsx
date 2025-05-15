@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import EmojiSelector from '@/components/EmojiSelector';
+import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
 import { useHomeStatisticsQuery } from '@/hooks/useHomeStatisticsQuery';
 import useAuthStore from '@/store/userStore';
@@ -9,9 +10,27 @@ const Home = () => {
   const { user } = useAuthStore();
   const { data: statistics } = useHomeStatisticsQuery();
   const [isEmojiSelectorOpen, setIsEmojiSelectorOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const lastLoginTime = sessionStorage.getItem('lastLoginTime');
+      const currentTime = new Date().toISOString();
+
+      if (!lastLoginTime) {
+        setShowSplash(true);
+        sessionStorage.setItem('lastLoginTime', currentTime);
+      }
+    }
+  }, [user]);
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
+      {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
       <div className='flex h-full flex-1 flex-col justify-between'>
         {/* 인사말 섹션 */}
         <section className='text-center text-lg'>
@@ -53,8 +72,11 @@ const Home = () => {
               ) : (
                 <div className='flex h-80 flex-col items-center justify-center'>
                   <span className='animate-bounce-and-rotate text-4xl'>😊</span>
-                  <p className='mt-2 text-center font-leeseyoon text-lg text-haru-gray-5'>
-                    오늘 하루의 소중한 순간을 남겨보세요
+                  <p className='mt-2 text-center text-xl font-bold text-haru-green'>
+                    하루 기록이 없어요
+                  </p>
+                  <p className='mt-2 text-center text-sm text-haru-gray-5'>
+                    소중한 순간을 남겨보세요
                   </p>
                 </div>
               )}

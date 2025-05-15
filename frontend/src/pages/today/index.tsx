@@ -1,3 +1,4 @@
+import EmptyState from '@/components/EmptyState';
 import MomentCard from '@/components/MomentCard';
 import { useToday } from '@/hooks/useTodayQuery';
 import { formatDate } from '@/lib/timeUtils';
@@ -10,12 +11,10 @@ const TodayPage = () => {
   if (!data?.data || data.dataCount === 0)
     return (
       <div className='flex h-[80vh] w-full flex-col items-center justify-center gap-4'>
-        <div className='text-center'>
-          <h2 className='mb-2 text-xl font-semibold text-haru-green'>
-            오늘의 기록이 없어요
-          </h2>
-          <p className='text-haru-light-green'>새로운 순간을 기록해보세요</p>
-        </div>
+        <EmptyState
+          title='오늘의 기록이 없어요'
+          description='새로운 순간을 기록해보세요'
+        />
       </div>
     );
 
