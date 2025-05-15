@@ -37,6 +37,23 @@ if (!self.define) {
         })
       
       .then(() => {
+    uri = new URL(uri + ".js", parentUri).href;
+    return registry[uri] || (
+      
+        new Promise(resolve => {
+          if ("document" in self) {
+            const script = document.createElement("script");
+            script.src = uri;
+            script.onload = resolve;
+            document.head.appendChild(script);
+          } else {
+            nextDefineUri = uri;
+            importScripts(uri);
+            resolve();
+          }
+        })
+      
+      .then(() => {
         let promise = registry[uri];
         if (!promise) {
           throw new Error(`Module ${uri} didn’t register its module`);
@@ -48,6 +65,7 @@ if (!self.define) {
 
   self.define = (depsNames, factory) => {
     const uri = nextDefineUri || ("document" in self ? document.currentScript.src : "") || location.href;
+    const uri = nextDefineUri || ("document" in self ? document.currentScript.src : "") || location.href;
     if (registry[uri]) {
       // Module is already loading or loaded.
       return;
@@ -58,7 +76,11 @@ if (!self.define) {
       module: { uri },
       exports,
       require
+      require
     };
+    registry[uri] = Promise.all(depsNames.map(
+      depName => specialDeps[depName] || require(depName)
+    )).then(deps => {
     registry[uri] = Promise.all(depsNames.map(
       depName => specialDeps[depName] || require(depName)
     )).then(deps => {
@@ -67,6 +89,7 @@ if (!self.define) {
     });
   };
 }
+define(['./workbox-86c9b217'], (function (workbox) { 'use strict';
 define(['./workbox-86c9b217'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
@@ -82,9 +105,14 @@ define(['./workbox-86c9b217'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.efn3dtq24a"
+    "revision": "0.8hpi5okf2cg"
   }], {});
   workbox.cleanupOutdatedCaches();
+  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
+    allowlist: [/^\/$/]
+  }));
+
+}));
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
