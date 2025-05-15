@@ -1,24 +1,18 @@
 package com.haruspeak.batch.processor;
 
 import com.haruspeak.batch.dto.ThumbnailUpdateDTO;
-import com.haruspeak.batch.dto.response.DailySummaryResponse;
-import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
 import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.service.TodaySummaryService;
-import com.haruspeak.batch.service.TodayThumbnailService;
+import com.haruspeak.batch.service.ThumbnailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class TodayThumbnailProcessor implements ItemProcessor <TodayDiary, ThumbnailUpdateDTO>{
 
-    private final TodayThumbnailService todayThumbnailService;
+    private final ThumbnailService todayThumbnailService;
 
-    public TodayThumbnailProcessor(TodayThumbnailService todayThumbnailService) {
+    public TodayThumbnailProcessor(ThumbnailService todayThumbnailService) {
         this.todayThumbnailService = todayThumbnailService;
     }
 

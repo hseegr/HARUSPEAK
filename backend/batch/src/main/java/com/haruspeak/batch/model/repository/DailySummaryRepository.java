@@ -29,14 +29,15 @@ public class DailySummaryRepository {
     private static final String SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL =
             """
             INSERT INTO daily_summary 
-            (user_id, write_date, title, content, moment_count) 
-            VALUES (:userId, :writeDate, :title, :content, :momentCount)
+            (user_id, write_date, title, content, moment_count, image_generate_count) 
+            VALUES (:userId, :writeDate, :title, :content, :momentCount, 0)
             """;
 
     private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL =
             """
             UPDATE daily_summary
             SET image_url = :imageUrl
+            AND image_generate_count = 1
             WHERE user_id = :userId
             AND write_date = :writeDate
             """;

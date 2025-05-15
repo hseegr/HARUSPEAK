@@ -1,8 +1,6 @@
 package com.haruspeak.batch.writer;
 
 import com.haruspeak.batch.dto.ThumbnailUpdateDTO;
-import com.haruspeak.batch.model.DailySummary;
-import com.haruspeak.batch.model.TodayDiary;
 import com.haruspeak.batch.model.repository.DailySummaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TodayThumbnailWriter implements ItemWriter <ThumbnailUpdateDTO> {
+public class ThumbnailUpdateWriter implements ItemWriter <ThumbnailUpdateDTO> {
 
     private final DailySummaryRepository dailySummaryRepository;
 

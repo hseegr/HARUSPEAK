@@ -14,7 +14,7 @@ import com.haruspeak.batch.reader.TodayMomentByUserReader;
 import com.haruspeak.batch.reader.TodayMomentReader;
 import com.haruspeak.batch.service.TodayDiaryService;
 import com.haruspeak.batch.service.TodaySummaryService;
-import com.haruspeak.batch.service.TodayThumbnailService;
+import com.haruspeak.batch.service.ThumbnailService;
 import com.haruspeak.batch.writer.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class TodayDiaryStepConfig {
     private final MomentImageRepository momentImageRepository;
 
     private final TodaySummaryService todaySummaryService;
-    private final TodayThumbnailService todayThumbnailService;
+    private final ThumbnailService todayThumbnailService;
     private final TodayDiaryService todayDiaryService;
 
 
@@ -239,8 +239,8 @@ public class TodayDiaryStepConfig {
 
     @Bean
     @StepScope
-    public TodayThumbnailWriter todayThumbnailWriter() {
-        return new TodayThumbnailWriter(dailySummaryRepository);
+    public ThumbnailUpdateWriter todayThumbnailWriter() {
+        return new ThumbnailUpdateWriter(dailySummaryRepository);
     }
 
     @Bean
