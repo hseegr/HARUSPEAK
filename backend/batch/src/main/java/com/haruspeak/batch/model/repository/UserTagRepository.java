@@ -1,30 +1,21 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.TodayDiaryTag;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 public class UserTagRepository {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SqlExecutor sqlExecutor;
 
-    public UserTagRepository (@Qualifier("apiNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public UserTagRepository (SqlExecutor sqlExecutor) {
+        this.sqlExecutor = sqlExecutor;
     }
 
     private static final String SQL_INSERT_USER_TAGS =
@@ -47,7 +38,7 @@ public class UserTagRepository {
     public void bulkInsertUserTags(List<TodayDiaryTag> diaryTags, String date) {
         log.debug("🐛 INSERT INTO USER_TAGS 실행");
         SqlParameterSource[] params = buildParams(diaryTags, date);
-        executeBatchUpdate(params);
+        sqlExecutor.executeBatchUpdate(SQL_INSERT_USER_TAGS, params);
     }
 
     private SqlParameterSource[] buildParams(List<TodayDiaryTag> diaryTags, String date) {
@@ -63,27 +54,5 @@ public class UserTagRepository {
                             return params;
                         })
                 ).toArray(SqlParameterSource[]::new);
-    }
-
-    private void executeBatchUpdate(SqlParameterSource[] params) {
-        try {
-            int[] updateCounts = namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_USER_TAGS, params);
-
-            if (log.isDebugEnabled()) {
-                int successCount = 0;
-                int totalCount = updateCounts.length;
-
-                for (int count : updateCounts) {
-                    if (count > 0) {
-                        successCount++;
-                    }
-                }
-
-                log.debug("🐛 INSERT INTO USER_TAGS - {}/{}건", successCount, totalCount);
-            }
-        } catch (Exception e) {
-            log.error("💥 USER_TAGS 삽입 실패", e);
-            throw e;
-        }
     }
 }
