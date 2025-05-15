@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import EmojiSelector from '@/components/EmojiSelector';
+import SplashScreen from '@/components/SplashScreen';
 import TodayMoments from '@/components/TodayMoments';
 import { useHomeStatisticsQuery } from '@/hooks/useHomeStatisticsQuery';
 import useAuthStore from '@/store/userStore';
@@ -9,9 +10,27 @@ const Home = () => {
   const { user } = useAuthStore();
   const { data: statistics } = useHomeStatisticsQuery();
   const [isEmojiSelectorOpen, setIsEmojiSelectorOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const lastLoginTime = sessionStorage.getItem('lastLoginTime');
+      const currentTime = new Date().toISOString();
+
+      if (!lastLoginTime) {
+        setShowSplash(true);
+        sessionStorage.setItem('lastLoginTime', currentTime);
+      }
+    }
+  }, [user]);
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
+      {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
       <div className='flex h-full flex-1 flex-col justify-between'>
         {/* 인사말 섹션 */}
         <section className='text-center text-lg'>
