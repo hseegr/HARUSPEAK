@@ -23,6 +23,19 @@ export const useEmojiParticles = (
 ) => {
   const [particles, setParticles] = useState<EmojiParticle[]>([]);
   const animationRef = useRef<number | null>(null);
+  const isVisibleRef = useRef(true);
+
+  // 페이지 가시성 체크
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = document.visibilityState === 'visible';
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   // 초기 파티클 생성 : 순간 기록 개수에 따라 이모지 파티클을 생성하고 초기 위치 설정
   useEffect(() => {
@@ -53,9 +66,23 @@ export const useEmojiParticles = (
       return;
 
     let lastTime = performance.now();
+    let isFirstFrame = true;
 
     const animate = (currentTime: number) => {
-      const deltaTime = (currentTime - lastTime) / 16.67;
+      // 페이지가 보이지 않을 때는 애니메이션 일시 중지
+      if (!isVisibleRef.current) {
+        lastTime = currentTime; // 마지막 시간 업데이트
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      // 첫 프레임이거나 탭 전환 후 첫 프레임인 경우
+      if (isFirstFrame) {
+        lastTime = currentTime;
+        isFirstFrame = false;
+      }
+
+      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 5); // 최대 deltaTime 제한
       lastTime = currentTime;
 
       setParticles(prevParticles =>
