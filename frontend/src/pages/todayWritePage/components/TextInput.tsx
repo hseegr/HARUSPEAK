@@ -12,6 +12,7 @@ const TextInput = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const addTextBlock = TodayWriteStore(state => state.addTextBlock);
 
+  // 텍스트 입력창 높이 자동 조절
   const handleResizeHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -20,22 +21,27 @@ const TextInput = () => {
     }
   };
 
+  // 텍스트 입력창 값 변경
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
 
+  // 텍스트 입력창 높이 자동 조절
   useEffect(() => {
     handleResizeHeight();
   }, [text]);
 
+  // 텍스트 저장
   const handleSubmit = () => {
     if (!text.trim()) return;
     addTextBlock(text.trim());
     setText('');
   };
 
+  // 모바일 환경 확인
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+  // 엔터 키 입력 시 텍스트 저장
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
       e.preventDefault();
