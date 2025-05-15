@@ -79,13 +79,13 @@ const TodayWritePage = () => {
         },
         {
           onSuccess: () => {
-            // 저장 성공 후 스토어 초기화
+            toast.success('순간 일기가 저장되었습니다.');
             clearAll();
             setIsSaving(false);
             navigate('/today');
           },
-          onError: error => {
-            console.error('일기 저장 실패:', error);
+          onError: () => {
+            toast.error('순간 일기 저장에 실패했습니다.');
             setIsSaving(false);
           },
         },
