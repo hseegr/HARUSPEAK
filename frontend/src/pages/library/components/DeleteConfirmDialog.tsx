@@ -26,7 +26,7 @@ const DeleteConfirmDialog = ({
 }: DeleteConfirmDialogProps) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className='max-w-sm rounded-lg'>
         <AlertDialogHeader>
           <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
           <AlertDialogDescription className='whitespace-normal'>

@@ -15,7 +15,7 @@ const DeleteBtn = ({
   onReset,
 }: DeleteBtnProps) => {
   return (
-    <div className='flex items-center gap-1'>
+    <div className='flex items-center gap-1 text-sm font-medium'>
       {isSelectionMode && (
         <button
           onClick={onToggleSelection}
