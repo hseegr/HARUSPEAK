@@ -130,7 +130,10 @@ export const useEmojiParticles = (
             ...updatedParticle,
             x: updatedParticle.x + updatedParticle.vx * deltaTime,
             y: updatedParticle.y + updatedParticle.vy * deltaTime,
-            rotation: updatedParticle.rotation + updatedParticle.vx * deltaTime,
+            rotation:
+              updatedParticle.rotation +
+              updatedParticle.vx * deltaTime * 2 +
+              updatedParticle.vy * deltaTime,
           };
         }),
       );
