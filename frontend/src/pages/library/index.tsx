@@ -87,7 +87,7 @@ const Library = () => {
   return (
     <div className='w-full'>
       <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
-        <div className='flex flex-shrink-0 items-center gap-1 overflow-hidden'>
+        <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
           <FilterBadge onClick={handleFilterClick} />
           <DateFilterBadge onClick={handleDateFilterClick} />
         </div>
@@ -101,7 +101,7 @@ const Library = () => {
         />
       </div>
 
-      <div className='pt-12'>
+      <div className='pt-8'>
         <div className='mb-4 px-4'>
           {(startDate || endDate) && (
             <DateRangeDisplay startDate={startDate} endDate={endDate} />
