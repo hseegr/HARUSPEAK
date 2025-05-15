@@ -1,3 +1,6 @@
+import { useState } from 'react';
+
+import EmojiSelector from '@/components/EmojiSelector';
 import TodayMoments from '@/components/TodayMoments';
 import { useHomeStatisticsQuery } from '@/hooks/useHomeStatisticsQuery';
 import useAuthStore from '@/store/userStore';
@@ -5,17 +8,21 @@ import useAuthStore from '@/store/userStore';
 const Home = () => {
   const { user } = useAuthStore();
   const { data: statistics } = useHomeStatisticsQuery();
+  const [isEmojiSelectorOpen, setIsEmojiSelectorOpen] = useState(false);
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
-      <div className='flex h-full flex-1 flex-col justify-between gap-3'>
+      <div className='flex h-full flex-1 flex-col justify-between'>
         {/* 인사말 섹션 */}
-        <section className='pt-2 text-center'>
+        <section className='text-center text-lg'>
           <p>
             안녕하세요
             {user?.name && (
-              <span className='ml-1 font-bold'>{user.name}님</span>
+              <span className='ml-1 font-bold text-haru-green'>
+                {user.name}
+              </span>
             )}
+            님
           </p>
           <p>오늘 하루 잘 보내고 계신가요?</p>
         </section>
@@ -23,15 +30,34 @@ const Home = () => {
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='min-h-96 w-full flex-1 items-center rounded-lg'>
-              <TodayMoments momentCount={statistics.todayCount} />
-              <p className='w-full text-center font-leeseyoon text-haru-gray-5'>
-                <span className='mr-1'>오늘</span>
-                <span className='font-bold text-haru-green'>
-                  {statistics.todayCount}
-                </span>
-                <span>개의 순간을 기록했어요</span>
-              </p>
+            <section className='w-full items-center rounded-lg'>
+              {statistics.todayCount > 0 ? (
+                <>
+                  <TodayMoments momentCount={statistics.todayCount} />
+                  <p className='w-full text-center font-leeseyoon text-lg text-haru-gray-5'>
+                    <span className='mr-1'>오늘</span>
+                    <span className='font-bold text-haru-green'>
+                      {statistics.todayCount}
+                    </span>
+                    <span>개의 순간을 기록했어요</span>
+                  </p>
+                  <div className='mt-2 flex justify-center'>
+                    <button
+                      onClick={() => setIsEmojiSelectorOpen(true)}
+                      className='text-sm font-bold text-haru-light-green hover:text-haru-green'
+                    >
+                      이모지 선택
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className='flex h-80 flex-col items-center justify-center'>
+                  <span className='animate-bounce-and-rotate text-4xl'>😊</span>
+                  <p className='mt-2 text-center font-leeseyoon text-lg text-haru-gray-5'>
+                    오늘 하루의 소중한 순간을 남겨보세요
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* 전체 통계 섹션 */}
@@ -52,6 +78,11 @@ const Home = () => {
           </>
         )}
       </div>
+
+      <EmojiSelector
+        isOpen={isEmojiSelectorOpen}
+        onClose={() => setIsEmojiSelectorOpen(false)}
+      />
     </div>
   );
 };
