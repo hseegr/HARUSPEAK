@@ -164,7 +164,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent className='max-w-sm rounded-lg'>
         <DialogHeader>
           <DialogTitle>순간 찾기</DialogTitle>
         </DialogHeader>
