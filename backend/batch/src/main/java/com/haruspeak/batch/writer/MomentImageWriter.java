@@ -1,24 +1,18 @@
 package com.haruspeak.batch.writer;
 
 import com.haruspeak.batch.model.DailyMoment;
-import com.haruspeak.batch.model.DailySummary;
-import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.repository.DailyMomentRepository;
-import com.haruspeak.batch.model.repository.DailySummaryRepository;
 import com.haruspeak.batch.model.repository.MomentImageRepository;
-import com.haruspeak.batch.service.TodayDiaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TodayImageWriter implements ItemWriter<List<DailyMoment>> {
+public class MomentImageWriter implements ItemWriter<List<DailyMoment>> {
 
     private final MomentImageRepository momentImageRepository;
 

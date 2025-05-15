@@ -24,7 +24,7 @@ public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDi
 
     @Override
     public TodayDiary process(TodayDiary todayDiary) throws Exception {
-        log.debug("🐛 [PROCESSOR] - 오늘 하루 일기 요약 및 썸네일 생성");
+        log.debug("🐛 [PROCESSOR] - 오늘 하루 일기 요약 생성");
 
         try {
             String totalContent = buildTotalContent(todayDiary.getDailyMoments());
@@ -32,13 +32,8 @@ public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDi
 
             DailySummaryResponse summaries = todaySummaryService.generateDailySummary(totalContent);
             log.debug("🔎 {}", summaries.toString());
-            String imageUrl = todaySummaryService.generateThumbnailUrl(summaries.summary());
-            log.debug("🔎 imageUrl={}", imageUrl);
 
-//            DailySummaryResponse summaries = new DailySummaryResponse("title", "content");
-//            String imageUrl = "이미지주소";
-
-            setDailySummary(todayDiary.getDailySummary(), summaries, imageUrl);
+            setDailySummary(todayDiary.getDailySummary(), summaries);
             return todayDiary;
 
         }catch (Exception e) {
@@ -52,8 +47,8 @@ public class TodaySummaryProcessor implements ItemProcessor <TodayDiary, TodayDi
                 .collect(Collectors.joining());
     }
 
-    private void setDailySummary(DailySummary dailySummary, DailySummaryResponse summaries, String imageUrl) {
-        dailySummary.setSummaries(summaries.title(), summaries.summary(), imageUrl);
+    private void setDailySummary(DailySummary dailySummary, DailySummaryResponse summaries) {
+        dailySummary.setSummaries(summaries.title(), summaries.summary());
     }
 
 

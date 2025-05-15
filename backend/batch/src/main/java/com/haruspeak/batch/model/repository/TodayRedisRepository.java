@@ -62,7 +62,7 @@ public class TodayRedisRepository {
         return DailyMoment.builder()
                 .userId(userId)
                 .createdAt(entry.getKey().toString())
-                .momentTime(value.get("momentTime").toString())
+                .momentTime(value.get("momentTime").toString().substring(0, 19))
                 .content(value.get("content").toString())
                 .images(images)
                 .tags(tags)

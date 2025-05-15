@@ -1,4 +1,4 @@
-package com.haruspeak.batch.common.util;
+package com.haruspeak.batch.model.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,10 +30,10 @@ public class SqlExecutor {
                     }
                 }
 
-                log.debug("🐛 INSERT - {}/{}건 완료", successCount, totalCount);
+                log.debug("🐛 SQL 실행 - {}/{}건 완료", successCount, totalCount);
             }
         } catch (Exception e) {
-            log.error("💥 INSERT 실패", e);
+            log.error("💥 SQL 실행 실패", e);
             throw e;
         }
     }

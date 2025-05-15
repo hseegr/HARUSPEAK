@@ -9,17 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TodayTagWriter implements ItemWriter<TodayDiaryTag>{
+public class MomentTagWriter implements ItemWriter<TodayDiaryTag>{
 
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
