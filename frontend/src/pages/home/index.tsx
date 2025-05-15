@@ -22,14 +22,13 @@ const Home = () => {
 
   return (
     <div className='flex min-h-[80vh] w-full flex-col'>
-      <div className='flex h-full flex-1 flex-col justify-between gap-3'>
+      <div className='flex h-full flex-1 flex-col justify-between'>
         {/* 인사말 섹션 */}
-        <section className='pt-2 text-center'>
+        <section className='text-center text-lg'>
           <p>
             안녕하세요
-            {user?.name && (
-              <span className='ml-1 font-bold'>{user.name}님</span>
-            )}
+            {user?.name && <span className='ml-1 font-bold'>{user.name}</span>}
+            님
           </p>
           <p>오늘 하루 잘 보내고 계신가요?</p>
         </section>
@@ -37,7 +36,7 @@ const Home = () => {
         {statistics && (
           <>
             {/* 오늘의 순간 섹션 */}
-            <section className='w-full flex-1 items-center rounded-lg'>
+            <section className='w-full items-center rounded-lg'>
               <TodayMoments momentCount={statistics.todayCount} />
               <p className='w-full text-center font-leeseyoon text-lg text-haru-gray-5'>
                 <span className='mr-1'>오늘</span>
@@ -46,7 +45,7 @@ const Home = () => {
                 </span>
                 <span>개의 순간을 기록했어요</span>
               </p>
-              <div className='mb-2 flex justify-center'>
+              <div className='mt-2 flex justify-center'>
                 <button
                   onClick={() => setIsEmojiSelectorOpen(true)}
                   className='text-sm font-bold text-haru-light-green hover:text-haru-green'
