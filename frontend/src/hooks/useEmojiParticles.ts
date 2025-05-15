@@ -24,6 +24,8 @@ export const useEmojiParticles = (
   const [particles, setParticles] = useState<EmojiParticle[]>([]);
   const animationRef = useRef<number | null>(null);
   const isVisibleRef = useRef(true);
+  const lastTimeRef = useRef(performance.now());
+  const isFirstFrameRef = useRef(true);
 
   // 페이지 가시성 체크
   useEffect(() => {
@@ -37,56 +39,57 @@ export const useEmojiParticles = (
     };
   }, []);
 
-  // 초기 파티클 생성 : 순간 기록 개수에 따라 이모지 파티클을 생성하고 초기 위치 설정
+  // 초기 파티클 생성
   useEffect(() => {
-    if (dimensions.width === 0 || dimensions.height === 0 || momentCount <= 0)
-      return;
-
-    const maxEmojis = Math.min(momentCount, 24);
-    const newParticles = Array.from({ length: maxEmojis }).map((_, index) => ({
-      id: `emoji-${index}`,
-      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-      x: Math.random() * (dimensions.width - emojiSize),
-      y: -emojiSize - index * (emojiSize * 1.5),
-      vx: (Math.random() - 0.5) * 2,
-      vy: 0,
-      rotation: Math.random() * 360,
-    }));
-
-    setParticles(newParticles);
+    if (dimensions.width > 0 && dimensions.height > 0 && momentCount > 0) {
+      const maxEmojis = Math.min(momentCount, 24);
+      const newParticles = Array.from({ length: maxEmojis }).map(
+        (_, index) => ({
+          id: `emoji-${index}`,
+          emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+          x: Math.random() * (dimensions.width - emojiSize),
+          y: -emojiSize - index * (emojiSize * 1.5),
+          vx: (Math.random() - 0.5) * 2,
+          vy: 0,
+          rotation: Math.random() * 360,
+        }),
+      );
+      setParticles(newParticles);
+    }
   }, [dimensions, momentCount]);
 
-  // 파티클 애니메이션 : 중력 & 벽-바닥-파티클 충돌 처리 & 드래그 파티클 위치
+  // 파티클 애니메이션
   useEffect(() => {
-    if (
-      dimensions.width === 0 ||
-      dimensions.height === 0 ||
-      particles.length === 0
-    )
+    if (dimensions.width === 0 || dimensions.height === 0) {
       return;
-
-    let lastTime = performance.now();
-    let isFirstFrame = true;
+    }
 
     const animate = (currentTime: number) => {
       // 페이지가 보이지 않을 때는 애니메이션 일시 중지
       if (!isVisibleRef.current) {
-        lastTime = currentTime; // 마지막 시간 업데이트
+        lastTimeRef.current = currentTime;
         animationRef.current = requestAnimationFrame(animate);
         return;
       }
 
-      // 첫 프레임이거나 탭 전환 후 첫 프레임인 경우
-      if (isFirstFrame) {
-        lastTime = currentTime;
-        isFirstFrame = false;
+      if (isFirstFrameRef.current) {
+        lastTimeRef.current = currentTime;
+        isFirstFrameRef.current = false;
       }
 
-      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 5); // 최대 deltaTime 제한
-      lastTime = currentTime;
+      const deltaTime = Math.min(
+        (currentTime - lastTimeRef.current) / 16.67,
+        5,
+      );
+      lastTimeRef.current = currentTime;
 
-      setParticles(prevParticles =>
-        prevParticles.map(particle => {
+      setParticles(prevParticles => {
+        // 파티클이 없으면 빈 배열 반환
+        if (prevParticles.length === 0) {
+          return prevParticles;
+        }
+
+        return prevParticles.map(particle => {
           if (dragState.emoji && particle.id === dragState.emoji.id) {
             return dragState.emoji;
           }
@@ -135,8 +138,8 @@ export const useEmojiParticles = (
               updatedParticle.vx * deltaTime * 2 +
               updatedParticle.vy * deltaTime,
           };
-        }),
-      );
+        });
+      });
 
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -149,13 +152,7 @@ export const useEmojiParticles = (
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [
-    dimensions,
-    particles.length,
-    dragState.emoji,
-    dragState.velocity.x,
-    dragState.velocity.y,
-  ]);
+  }, [dimensions, dragState]);
 
   return particles;
 };
