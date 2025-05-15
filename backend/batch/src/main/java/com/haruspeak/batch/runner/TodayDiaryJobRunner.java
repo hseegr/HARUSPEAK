@@ -23,7 +23,7 @@ public class TodayDiaryJobRunner {
 
     private final JobLauncher jobLauncher;
     private final Job todayDiaryJob;
-    private final Job todayDiarySaveJob;
+    private final Job retryTodayDiaryJob;
     private final Job todayDiaryTagStepStartJob;
     private final Job todayDiaryImageStepStartJob;
 
@@ -63,7 +63,7 @@ public class TodayDiaryJobRunner {
             log.info("🐛 [{}]하루 일기 배치(SAVE) 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
             Instant start = Instant.now();
 
-            JobExecution execution = jobLauncher.run(todayDiarySaveJob, jobParameters);
+            JobExecution execution = jobLauncher.run(retryTodayDiaryJob, jobParameters);
             Duration duration = Duration.between(start, Instant.now());
 
             log.info("🐛 [{}]하루 일기 배치(SAVE) 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());

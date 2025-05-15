@@ -27,8 +27,7 @@ public class TagRepository {
 
     private static final String SQL_INSERT_TAGS =
             """
-            INSERT INTO tags (name) VALUES (:name)
-            ON DUPLICATE KEY UPDATE name = :name
+            INSERT IGNORE INTO tags (name) VALUES (:name)
             """;
 
     /**

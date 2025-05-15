@@ -1,6 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.dto.ThumbnailUpdateDTO;
+import com.haruspeak.batch.dto.context.ThumbnailUpdateContext;
 import com.haruspeak.batch.model.DailySummary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,8 +36,8 @@ public class DailySummaryRepository {
     private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL =
             """
             UPDATE daily_summary
-            SET image_url = :imageUrl
-            AND image_generate_count = 1
+            SET image_url = :imageUrl,
+            image_generate_count = 1
             WHERE user_id = :userId
             AND write_date = :writeDate
             """;
@@ -56,7 +56,7 @@ public class DailySummaryRepository {
      * summary의 썸네일 업데이트
      * @param thumbnails
      */
-    public void bulkUpdateThumbnailForDailySummaries(List<ThumbnailUpdateDTO> thumbnails) {
+    public void bulkUpdateThumbnailForDailySummaries(List<ThumbnailUpdateContext> thumbnails) {
         log.debug("🐛 UPDATE DAILY_SUMMARY SET THUMBNAIL 실행");
         SqlParameterSource[] params = buildUpdateParamsThumbnail(thumbnails);
         sqlExecutor.executeBatchUpdate(SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL, params);
@@ -76,7 +76,7 @@ public class DailySummaryRepository {
                 .toArray(SqlParameterSource[]::new);
     }
 
-    private SqlParameterSource[] buildUpdateParamsThumbnail(List<ThumbnailUpdateDTO> thumbnails) {
+    private SqlParameterSource[] buildUpdateParamsThumbnail(List<ThumbnailUpdateContext> thumbnails) {
         return thumbnails.stream()
                 .map(thumbnail ->{
                     MapSqlParameterSource params = new MapSqlParameterSource();

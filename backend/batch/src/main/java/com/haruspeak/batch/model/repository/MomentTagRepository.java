@@ -20,14 +20,13 @@ public class MomentTagRepository {
 
     private static final String SQL_INSERT_MOMENT_TAGS =
             """
-            INSERT INTO moment_tags (moment_id, user_tag_id)
+            INSERT IGNORE INTO moment_tags (moment_id, user_tag_id)
             SELECT m.moment_id, t.user_tag_id
             FROM active_daily_moments m, user_tag_details t
             WHERE m.user_id = :userId
             AND m.moment_time = :momentTime
             AND t.user_id = :userId
             AND t.name = :name
-            ON DUPLICATE KEY UPDATE moment_id = m.moment_id
             """;
 
     public void bulkInsertMomentTags(List<DailyMoment> dailyMoments) {

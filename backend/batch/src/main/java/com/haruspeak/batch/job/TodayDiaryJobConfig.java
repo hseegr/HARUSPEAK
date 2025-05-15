@@ -17,10 +17,10 @@ public class TodayDiaryJobConfig {
     private final JobRepository jobRepository;
 
     private final Step todayDiarySaveStep;
-    private final Step todayDiarySaveByUserStep;
+    private final Step retryTodayDiarySaveStep;
     private final Step todayTagSaveStep;
     private final Step todayImageSaveStep;
-    private final Step todayThumbnailUpdateStep;
+
 
     @Bean
     public Job todayDiaryJob() {
@@ -28,17 +28,15 @@ public class TodayDiaryJobConfig {
                 .start(todayDiarySaveStep)
                 .next(todayTagSaveStep)
                 .next(todayImageSaveStep)
-                .next(todayThumbnailUpdateStep)
                 .build();
     }
 
     @Bean
-    public Job todayDiarySaveJob() {
-        return new JobBuilder("todayDiarySaveJob", jobRepository)
-                .start(todayDiarySaveByUserStep)
+    public Job retryTodayDiaryJob() {
+        return new JobBuilder("retryTodayDiaryJob", jobRepository)
+                .start(retryTodayDiarySaveStep)
                 .next(todayTagSaveStep)
                 .next(todayImageSaveStep)
-                .next(todayThumbnailUpdateStep)
                 .build();
     }
 
@@ -47,7 +45,6 @@ public class TodayDiaryJobConfig {
         return new JobBuilder("todayDiaryTagStepStartJob", jobRepository)
                 .start(todayTagSaveStep)
                 .next(todayImageSaveStep)
-                .next(todayThumbnailUpdateStep)
                 .build();
     }
 
@@ -55,7 +52,6 @@ public class TodayDiaryJobConfig {
     public Job todayDiaryImageStepStartJob() {
         return new JobBuilder("todayDiaryImageStepStartJob", jobRepository)
                 .start(todayImageSaveStep)
-                .next(todayThumbnailUpdateStep)
                 .build();
     }
 
@@ -79,20 +75,5 @@ public class TodayDiaryJobConfig {
                 .start(todayImageSaveStep)
                 .build();
     }
-
-    @Bean
-    public Job todayThumbnailStepJob() {
-        return new JobBuilder("todayThumbnailStepJob", jobRepository)
-                .start(todayThumbnailUpdateStep)
-                .build();
-    }
-
-    @Bean
-    public Job dailySummaryStepByUserJob() {
-        return new JobBuilder("dailySummaryStepByUserJob", jobRepository)
-                .start(todayDiarySaveByUserStep)
-                .build();
-    }
-
 
 }

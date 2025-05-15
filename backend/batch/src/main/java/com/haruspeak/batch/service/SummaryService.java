@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TodaySummaryService {
+public class SummaryService {
 
     private final DailySummaryClient dailySummaryClient;
 
@@ -22,4 +22,5 @@ public class TodaySummaryService {
           throw e;
       }
     }
+
 }

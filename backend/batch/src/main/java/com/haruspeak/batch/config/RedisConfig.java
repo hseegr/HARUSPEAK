@@ -1,20 +1,22 @@
 package com.haruspeak.batch.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
+import com.haruspeak.batch.model.MomentImage;
 import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.model.TodayDiaryTag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.List;
 import java.util.TimeZone;
@@ -71,6 +73,36 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
         return applyDefaultSerializers(template);
     }
+
+    @Bean
+    public RedisTemplate<String, String> processingKeyRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return applyDefaultSerializers(template);
+    }
+
+    @Bean
+    public RedisTemplate<String, TodayDiaryTag> tagStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, TodayDiaryTag> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return applyDefaultSerializers(template);
+    }
+
+    @Bean
+    public RedisTemplate<String, List<MomentImage>> imageStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, List<MomentImage>> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return applyDefaultSerializers(template);
+    }
+
+
+    @Bean
+    public RedisTemplate<String, ThumbnailGenerateContext> thumbnailStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, ThumbnailGenerateContext> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return applyDefaultSerializers(template);
+    }
+
 
     /////////////////////////// API //////////////////////////////////////////////////
 

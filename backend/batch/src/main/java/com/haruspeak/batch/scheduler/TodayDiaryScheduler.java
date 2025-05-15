@@ -23,7 +23,7 @@ public class TodayDiaryScheduler {
     /**
      * 매일 자정
      */
-    @Scheduled(cron = "30 22 0 * * ?")
+    @Scheduled(cron = "55 09 0 * * ?")
     public void scheduleBidNoticeFetch() {
         String yesterday = LocalDate.now().minusDays(1).format(DATE_FORMAT);
         log.info("🐛 하루 일기 배치 스케줄 시작 - DATE: {}", yesterday);

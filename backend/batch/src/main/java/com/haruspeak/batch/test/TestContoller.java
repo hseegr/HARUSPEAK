@@ -4,7 +4,7 @@ import com.haruspeak.batch.common.client.fastapi.DailyThumbnailClient;
 import com.haruspeak.batch.common.s3.S3Service;
 import com.haruspeak.batch.model.TodayDiary;
 import com.haruspeak.batch.model.repository.TagRepository;
-import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
+import com.haruspeak.batch.service.redis.TodayDiaryRedisService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class TestContoller {
     private final S3Service s3Service;
     private final DailyThumbnailClient dailyThumnailClient;
 
-    private final TodayDiaryRedisRepository todayDiaryRedisRepository;
+    private final TodayDiaryRedisService todayDiaryRedisService;
     private final TestRepository testRepository;
     private final TagRepository apiTagRepository;
 
@@ -37,22 +37,6 @@ public class TestContoller {
         String url = s3Service.uploadImagesAndGetUrls(base64);
         log.info("Successfully uploaded image");
         return url;
-    }
-
-    @PostMapping("/test/redis/save")
-    public String saveRedisDiary(@RequestBody TodayDiary diary) {
-        String userId = "1";
-        String date = "2025-05-12";
-        todayDiaryRedisRepository.saveTodayDiaryToRedis(userId, date, diary);
-        return "success";
-    }
-
-    @GetMapping("/test/redis/find")
-    public TodayDiary findRedisDiary() {
-        String userId = "1";
-        String date = "2025-05-12";
-        String key = "user:" + userId + ":" + date;
-        return todayDiaryRedisRepository.getTodayDiaryByKey(key);
     }
 
     @PostMapping("/test/db/connection")

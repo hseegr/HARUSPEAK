@@ -2,32 +2,26 @@ package com.haruspeak.batch.service;
 
 import com.haruspeak.batch.model.DailySummary;
 import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
-import com.haruspeak.batch.model.repository.TodayRedisRepository;
+import com.haruspeak.batch.service.redis.TodayRedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class TodayDiaryService {
 
-    private final TodayRedisRepository todayRedisRepository;
-    private final TodayDiaryRedisRepository todayDiaryRedisRepository;
+    private final TodayRedisService todayRedisService;
 
-    public void saveToRedis(List<TodayDiary> diaries) {
-        log.debug("🐛 TodayDiary API REDIS 삭제 및 BATCH REDIS 저장 실행");
-
+    public void deleteSummaryStepData(List<TodayDiary> diaries, String date){
         for (TodayDiary todayDiary : diaries) {
             DailySummary summary = todayDiary.getDailySummary();
             String userId = String.valueOf(summary.getUserId());
-            String date = summary.getWriteDate();
-
-            todayRedisRepository.delete(userId, date);
-            todayDiaryRedisRepository.saveTodayDiaryToRedis(userId, date, todayDiary);
+            todayRedisService.delete(userId, date);
         }
     }
+
 }

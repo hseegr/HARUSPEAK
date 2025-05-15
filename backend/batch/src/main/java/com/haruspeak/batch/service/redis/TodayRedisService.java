@@ -1,26 +1,26 @@
-package com.haruspeak.batch.model.repository;
+package com.haruspeak.batch.service.redis;
 
+import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
 import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.DailyMoment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@Component
-public class TodayRedisRepository {
+@Service
+public class TodayRedisService {
 
     @Qualifier("apiRedisTemplate")
     private final RedisTemplate<String, Object> apiRedisTemplate;
 
-    public TodayRedisRepository(@Qualifier("apiRedisTemplate")RedisTemplate<String, Object> apiRedisTemplate) {
+    public TodayRedisService(@Qualifier("apiRedisTemplate") RedisTemplate<String, Object> apiRedisTemplate) {
         this.apiRedisTemplate = apiRedisTemplate;
     }
 
@@ -32,7 +32,7 @@ public class TodayRedisRepository {
         return "user:" + userId + ":moment:" + date;
     }
 
-    public Set<String> getAllKeys (String date) {
+    public Set<String> getAllKeys(String date) {
         return apiRedisTemplate.keys(getKey("*", date));
     }
 
@@ -47,6 +47,7 @@ public class TodayRedisRepository {
 
     private List<DailyMoment> getMomentsFromRedis(String key, int userId) {
         Map<Object, Object> data = apiRedisTemplate.opsForHash().entries(key);
+
         return data.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> value = (Map<String, Object>) entry.getValue();
@@ -54,6 +55,7 @@ public class TodayRedisRepository {
                     List<String> tags = (List<String>) value.get("tags");
                     return createDailyMoment(entry, value, images, tags, userId);
                 })
+                .sorted(Comparator.comparing(DailyMoment::getMomentTime))
                 .toList();
     }
 
@@ -62,7 +64,7 @@ public class TodayRedisRepository {
         return DailyMoment.builder()
                 .userId(userId)
                 .createdAt(entry.getKey().toString())
-                .momentTime(value.get("momentTime").toString().substring(0, 19))
+                .momentTime(value.get("momentTime").toString().substring(0, 19)) // yyyy-MM-dd'T'HH:mm:ss
                 .content(value.get("content").toString())
                 .images(images)
                 .tags(tags)
@@ -79,7 +81,6 @@ public class TodayRedisRepository {
         return new TodayDiary(dailySummary, moments);
     }
 
-
     public void delete(String userId, String date) {
         try {
             apiRedisTemplate.delete(getKey(userId, date));
@@ -88,8 +89,4 @@ public class TodayRedisRepository {
             throw e;
         }
     }
-
-
-
-
 }
