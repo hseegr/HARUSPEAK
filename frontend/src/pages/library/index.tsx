@@ -102,7 +102,7 @@ const Library = () => {
       </div>
 
       <div className='pt-8'>
-        <div className='mb-4 px-4'>
+        <div className='mb-4'>
           {(startDate || endDate) && (
             <DateRangeDisplay startDate={startDate} endDate={endDate} />
           )}
