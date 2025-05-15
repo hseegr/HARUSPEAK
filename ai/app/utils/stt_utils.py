@@ -31,6 +31,6 @@ async def stt_fasterwhisper(file: UploadFile = File(...)) -> str:
     contents = await file.read()
     audio_file = io.BytesIO(contents)
     segments, _ = batched_model.transcribe(
-        audio_file, batch_size=16, language="ko", vad_filter=True
+        audio_file, batch_size=16, vad_filter=True, initial_prompt="Please print it out in the same language"
     )
     return " ".join([segment.text for segment in segments])
