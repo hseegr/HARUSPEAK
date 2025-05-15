@@ -93,7 +93,7 @@ const Diary = () => {
   }
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className='flex w-full flex-col gap-4'>
       {/* 상단 헤더 및 제목 */}
       <DiaryHeader
         title={data.summary.title}

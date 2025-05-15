@@ -15,11 +15,11 @@ const DeleteBtn = ({
   onReset,
 }: DeleteBtnProps) => {
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center gap-1'>
       {isSelectionMode && (
         <button
           onClick={onToggleSelection}
-          className='rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
+          className='whitespace-nowrap rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
         >
           취소
         </button>
@@ -28,14 +28,14 @@ const DeleteBtn = ({
       {isSelectionMode && onReset && (
         <button
           onClick={onReset}
-          className='rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
+          className='whitespace-nowrap rounded-full px-1 py-1 text-haru-gray-5 hover:text-haru-green'
         >
           초기화
         </button>
       )}
       <button
         onClick={isSelectionMode ? onDelete : onToggleSelection}
-        className={`text-mg px-1 py-1 ${
+        className={`text-mg whitespace-nowrap px-1 py-1 ${
           isSelectionMode
             ? 'text-haru-green hover:text-haru-green'
             : 'text-haru-gray-4 hover:text-haru-green'
