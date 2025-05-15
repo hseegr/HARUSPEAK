@@ -166,7 +166,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>순간 일기 찾기</DialogTitle>
+          <DialogTitle>순간 찾기</DialogTitle>
         </DialogHeader>
         <div className='space-y-4'>
           <div className='flex gap-2'>
