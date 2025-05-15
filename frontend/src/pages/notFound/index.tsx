@@ -10,7 +10,7 @@ const NotFound = () => {
       <div className='relative h-[350px] w-full'>
         <TodayMoments momentCount={8} />
       </div>
-      <div className='animate-fade-in absolute text-9xl font-bold text-haru-light-green opacity-0'>
+      <div className='absolute animate-fade-in text-9xl font-bold text-haru-light-green opacity-0'>
         404
       </div>
       <button
