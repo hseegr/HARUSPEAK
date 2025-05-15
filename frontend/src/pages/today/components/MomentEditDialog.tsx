@@ -130,7 +130,12 @@ const MomentEditDialog = ({
         </DialogDescription>
         <DialogHeader className='flex flex-row items-center justify-between'>
           <DialogClose asChild>
-            <button onClick={handleCancel}>취소</button>
+            <button
+              onClick={handleCancel}
+              className='text-haru-gray-5 hover:text-black'
+            >
+              취소
+            </button>
           </DialogClose>
           <DialogTitle>오늘의 순간 수정</DialogTitle>
           <button
@@ -140,14 +145,14 @@ const MomentEditDialog = ({
             className={`rounded-full px-3 py-1.5 text-sm ${
               isSaving || isSaveDisabled
                 ? 'cursor-not-allowed bg-gray-300 text-haru-gray-5'
-                : 'bg-haru-green text-white'
+                : 'bg-haru-light-green text-white hover:bg-haru-green'
             }`}
           >
             {isSaving ? '...' : '저장'}
           </button>
         </DialogHeader>
         <div className='flex flex-col gap-2'>
-          <div className='text-end text-sm text-haru-gray-5'>{date}</div>
+          <div className='text-md'>{date}</div>
         </div>
         <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
           {/* 날짜 & 시간 */}
@@ -156,37 +161,39 @@ const MomentEditDialog = ({
               type='time'
               value={currentTime}
               onChange={handleTimeChange}
-              className='rounded-full border bg-haru-yellow p-2 text-sm focus:outline-haru-green'
+              className='rounded-full border bg-haru-yellow p-2 text-sm hover:cursor-pointer focus:outline-haru-green'
             />
           </div>
 
           {/* 이미지 리스트 */}
-          <div className='grid grid-cols-3 gap-2'>
-            {Array.from({ length: editedMoment.images.length }).map(
-              (_, idx) => (
-                <div
-                  key={idx}
-                  className='relative h-24 w-full rounded-lg bg-haru-gray-2'
-                >
-                  {editedMoment.images[idx] ? (
-                    <>
-                      <img
-                        src={editedMoment.images[idx]}
-                        alt={`image-${idx}`}
-                        className='h-full w-full rounded-lg object-cover'
-                      />
-                      <button
-                        onClick={() => handleDeleteImage(idx)}
-                        className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
-                      >
-                        ✕
-                      </button>
-                    </>
-                  ) : null}
-                </div>
-              ),
-            )}
-          </div>
+          {editedMoment.images.length > 0 && (
+            <div className='grid grid-cols-3 gap-2'>
+              {Array.from({ length: editedMoment.images.length }).map(
+                (_, idx) => (
+                  <div
+                    key={idx}
+                    className='relative h-24 w-full rounded-lg bg-haru-gray-2'
+                  >
+                    {editedMoment.images[idx] ? (
+                      <>
+                        <img
+                          src={editedMoment.images[idx]}
+                          alt={`image-${idx}`}
+                          className='h-full w-full rounded-lg object-cover'
+                        />
+                        <button
+                          onClick={() => handleDeleteImage(idx)}
+                          className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : null}
+                  </div>
+                ),
+              )}
+            </div>
+          )}
 
           {/* 순간 기록 */}
           <div className='flex flex-col gap-1'>
@@ -194,18 +201,38 @@ const MomentEditDialog = ({
               value={editedMoment.content}
               onChange={e => handleContentChange(e.target.value)}
               rows={4}
-              className='w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-[#41644A]'
+              maxLength={1000}
+              className='max-h-[250px] min-h-[100px] w-full resize-none rounded-md border border-gray-300 p-2 text-sm focus:outline-haru-green'
               placeholder='순간의 기록을 입력하세요'
+              style={{
+                height: 'auto',
+                overflowY: 'auto',
+              }}
+              onInput={e => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = `${Math.min(target.scrollHeight, 250)}px`;
+              }}
             />
           </div>
 
           {/* 태그 추가 */}
-          <div className='flex flex-col gap-2'>
-            <form onSubmit={handleSubmit(onSubmit)} className='flex gap-2'>
+          <div className='flex flex-col'>
+            <div>
+              {errors.tag && errors.tag.type !== 'too_small' && (
+                <div className='mb-2 text-xs text-red-500'>
+                  {errors.tag?.message || tagError}
+                </div>
+              )}
+            </div>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className='mb-2 flex items-center gap-2'
+            >
               <input
                 {...register('tag')}
                 onKeyDown={handleKeyPress}
-                className={`flex-1 rounded-md border p-2 text-sm focus:outline-[#41644A] ${
+                className={`w-[calc(100%-80px)] rounded-md border p-2 text-sm focus:outline-haru-green ${
                   errors.tag && errors.tag.type !== 'too_small'
                     ? 'border-red-500'
                     : 'border-gray-300'
@@ -220,18 +247,13 @@ const MomentEditDialog = ({
               <button
                 type='submit'
                 disabled={editedMoment.tags.length >= 10 || !watch('tag')}
-                className='rounded-full bg-[#41644A] px-3 py-1.5 text-sm font-bold text-white disabled:bg-gray-300 disabled:text-gray-500'
+                className='whitespace-nowrap rounded-full bg-haru-green px-3 py-2 text-xs font-bold text-white disabled:bg-gray-300 disabled:text-gray-500'
               >
                 태그 추가
               </button>
             </form>
-            {errors.tag && errors.tag.type !== 'too_small' && (
-              <div className='text-sm text-red-500'>
-                {errors.tag?.message || tagError}
-              </div>
-            )}
-
-            <div className='flex flex-row-reverse justify-between'>
+            {/* 태그 관련 버튼 */}
+            <div className='mb-2 flex flex-row-reverse justify-between'>
               <AutoTagGenerator
                 moment={editedMoment}
                 initialTags={editedMoment.tags}
@@ -253,7 +275,7 @@ const MomentEditDialog = ({
               {editedMoment.tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs'
+                  className='flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-sm'
                 >
                   {tag}
                   <button
@@ -268,7 +290,7 @@ const MomentEditDialog = ({
           </div>
         </div>
         {isSaveDisabled && (
-          <div className='mt-2 text-center text-sm text-red-500'>
+          <div className='mt-2 text-center text-sm font-bold text-red-500'>
             내용과 이미지가 모두 비어있어 저장할 수 없습니다.
           </div>
         )}

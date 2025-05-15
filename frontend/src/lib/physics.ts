@@ -27,21 +27,34 @@ export const handleFloorCollision = (
     const frictionFactor = Math.min(0.95, 0.7 + absVy * 0.05);
     const newVx = particle.vx * frictionFactor;
 
+    // 충돌 시 위쪽 방향으로만 튀도록 수정 (0도 ~ 45도 사이의 랜덤 각도)
+    const randomAngle = Math.random() * Math.PI * 0.25; // 0도 ~ 45도 사이의 랜덤 각도
+    const speed = Math.sqrt(newVx * newVx + newVy * newVy);
+    const newVxWithAngle =
+      speed * Math.sin(randomAngle) * (Math.random() > 0.5 ? 1 : -1);
+    const newVyWithAngle = -speed * Math.cos(randomAngle);
+
+    // 회전 속도 업데이트 (충돌 시 회전도 반전)
+    const rotationSpeed = (newVxWithAngle + newVyWithAngle) * 0.5;
+    const newRotation = particle.rotation + rotationSpeed;
+
     // 아주 작은 속도는 0으로 (정지 상태)
-    if (Math.abs(newVx) < 0.1 && Math.abs(newVy) < 0.2) {
+    if (Math.abs(newVxWithAngle) < 0.1 && Math.abs(newVyWithAngle) < 0.2) {
       return {
         ...particle,
         y: newY,
         vy: 0,
         vx: 0,
+        rotation: newRotation,
       };
     }
 
     return {
       ...particle,
       y: newY,
-      vy: newVy,
-      vx: newVx,
+      vy: newVyWithAngle,
+      vx: newVxWithAngle,
+      rotation: newRotation,
     };
   }
   return particle;
