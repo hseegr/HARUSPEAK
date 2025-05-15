@@ -68,9 +68,9 @@ const ImageDialog = ({
 
         {/* 상단 헤더 */}
         <div className='absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-4'>
-          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 font-leeseyoon text-lg'>
-            <span>{formattedTime}</span>
-            <span className='text-sm'>의 기록</span>
+          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 text-lg'>
+            <span className='mr-1'>{formattedTime}</span>
+            <span className='mr-2 font-leeseyoon text-sm'>의 기록</span>
           </div>
           <DialogClose className='p-2 text-haru-light-green hover:text-red-600'>
             <span className='sr-only'>닫기</span>
