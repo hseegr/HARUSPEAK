@@ -34,7 +34,7 @@ const DiaryHeader = ({
         <div className='mb-1'>{date}</div>
 
         {/* 제목과 수정/삭제 버튼을 가로로 배치 */}
-        <div className='flex items-center justify-between'>
+        <div className='flex flex-col'>
           <div className='flex-grow'>
             <EditTitle
               title={isEditing ? editTitle : title}
@@ -44,7 +44,7 @@ const DiaryHeader = ({
           </div>
 
           {/* 수정/삭제 버튼 또는 저장/취소 버튼 */}
-          <div className='flex shrink-0'>
+          <div className='flex justify-end'>
             {!isEditing && (
               <div className='flex gap-1'>
                 <ContentEditBtn onClick={onEditStart} isEditing={isEditing} />

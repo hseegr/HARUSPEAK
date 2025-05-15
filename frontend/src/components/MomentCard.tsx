@@ -24,12 +24,14 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           {isToday && (
             <div className='flex gap-2'>
               <button
+                className='text-sm font-bold text-haru-gray-5 hover:text-haru-green'
                 onClick={() => setIsDialogOpen(true)}
                 aria-label='순간 기록 수정'
               >
                 수정
               </button>
               <button
+                className='text-sm font-bold text-haru-gray-5 hover:text-haru-green'
                 onClick={() => setIsDeleteDialogOpen(true)}
                 aria-label='순간 기록 삭제'
               >
@@ -46,24 +48,29 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
             momentTime={moment.momentTime}
             momentId={moment.momentId}
           />
-          <div className='font-leeseyoon' style={{ whiteSpace: 'pre-wrap' }}>
+          <div
+            className='font-leeseyoon text-lg'
+            style={{ whiteSpace: 'pre-wrap' }}
+          >
             {moment.content}
           </div>
         </section>
 
         {/* 하단 */}
-        <section className='flex items-start'>
-          <div className='flex flex-1 flex-wrap items-center gap-2'>
-            {moment.tags.map((tag: string, idx: number) => (
-              <TagBadge key={`${tag}-${idx}`} tag={tag} />
-            ))}
-          </div>
-          <AutoTagGenerator
-            moment={moment}
-            initialTags={moment.tags}
-            isToday={isToday}
-          />
-        </section>
+        {(moment.tags.length > 0 || moment.content) && (
+          <section className='flex items-start'>
+            <div className='flex h-full w-full flex-wrap items-center gap-2'>
+              {moment.tags.map((tag: string, idx: number) => (
+                <TagBadge key={`${tag}-${idx}`} tag={tag} />
+              ))}
+            </div>
+            <AutoTagGenerator
+              moment={moment}
+              initialTags={moment.tags}
+              isToday={isToday}
+            />
+          </section>
+        )}
       </article>
       <MomentEditDialog
         open={isDialogOpen}

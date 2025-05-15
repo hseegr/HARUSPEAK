@@ -148,7 +148,11 @@ export default [
     settings: {
       'import/resolver': {
         typescript: {
-          project: './tsconfig.json', // shadcn 설치하면서 eslint 에러발생해서 추가.
+          project: './tsconfig.json',
+          alwaysTryTypes: true,
+        },
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
     },

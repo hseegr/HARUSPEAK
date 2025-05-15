@@ -28,8 +28,8 @@ const AutoTagGenerator = ({
 
   const buttonClassName =
     buttonStyle === 'default'
-      ? 'rounded-full bg-[#41644A] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
-      : 'text-sm font-bold text-[#41644A] disabled:cursor-not-allowed disabled:opacity-50';
+      ? 'rounded-full bg-haru-light-green hover:bg-haru-green px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+      : 'text-sm font-bold text-haru-light-green hover:text-haru-green disabled:cursor-not-allowed disabled:opacity-50';
 
   return (
     <div className='flex-shrink-0 pl-1'>
