@@ -79,7 +79,7 @@ const TodayWritePage = () => {
         },
         {
           onSuccess: () => {
-            toast.success('순간 기록이이 저장되었습니다.');
+            toast.success('순간 기록이 저장되었습니다.');
             clearAll();
             setIsSaving(false);
             navigate('/today');
