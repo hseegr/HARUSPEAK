@@ -28,9 +28,8 @@ public class DailySummary {
         this.momentCount = momentCount;
     }
 
-    public void setSummaries(String title, String content, String imageUrl) {
+    public void setSummaries(String title, String content) {
         this.title = title;
         this.content = content;
-        this.imageUrl = imageUrl;
     }
 }

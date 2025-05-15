@@ -25,6 +25,7 @@ public class TodayDiaryJobStepRunner {
     private final Job dailySummaryStepJob;
     private final Job todayTagStepJob;
     private final Job todayImageStepJob;
+    private final Job todayThumbnailStepJob;
     private final Job dailySummaryStepByUserJob;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -101,6 +102,31 @@ public class TodayDiaryJobStepRunner {
             log.error("🐛 [{}] 하루 일기 배치 Image STEP 실행 실패 - {}", date, e.getMessage(), e);
         }
     }
+
+    public void runTodayThumbnailStepJob(String date) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("date", date)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
+        try {
+            log.info("🐛 [{}] 하루 일기 배치 Thumbnail STEP 실행 - {}", date, LocalDateTime.now().format(TIME_FORMATTER));
+            Instant start = Instant.now();
+
+            JobExecution execution = jobLauncher.run(todayThumbnailStepJob, jobParameters);
+            Duration duration = Duration.between(start, Instant.now());
+
+            log.info("🐛 [{}] 하루 일기 배치 Thumbnail STEP 실행 완료 상태 - {}, 소요: {}분({}초)", date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+
+            if (execution.getStatus() != BatchStatus.COMPLETED) {
+                log.warn("🐛 [{}] 하루 일기 배치 Thumbnail STEP 실행 중 일부 실패 또는 중단: {}", date,  execution.getExitStatus());
+            }
+
+        } catch (Exception e) {
+            log.error("🐛 [{}] 하루 일기 배치 실행 실패 - {}", date, e.getMessage(), e);
+        }
+    }
+
 
     public void runDailySummaryStepByUserJob(String date, String userId) {
         JobParameters jobParameters = new JobParametersBuilder()
