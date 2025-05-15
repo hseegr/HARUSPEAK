@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { Pause, Play } from 'lucide-react';
 
 import {
@@ -9,6 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import useAutoSlide from '@/hooks/useAutoSlide';
 import { formatMomentTime } from '@/lib/timeUtils';
 
 interface ImageDialogProps {
@@ -26,43 +25,20 @@ const ImageDialog = ({
   currentIndex: initialIndex,
   momentTime,
 }: ImageDialogProps) => {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const {
+    currentIndex,
+    isAutoPlaying,
+    setCurrentIndex,
+    handlePrevious,
+    handleNext,
+    toggleAutoPlay,
+  } = useAutoSlide({
+    totalImages: images.length,
+    initialIndex,
+    isOpen: open,
+  });
+
   const formattedTime = formatMomentTime(momentTime);
-
-  useEffect(() => {
-    let intervalId: number;
-
-    if (isAutoPlaying && open && images.length > 1) {
-      intervalId = window.setInterval(() => {
-        setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
-      }, 3000);
-    }
-
-    return () => {
-      if (intervalId) {
-        window.clearInterval(intervalId);
-      }
-    };
-  }, [isAutoPlaying, images.length, open]);
-
-  useEffect(() => {
-    if (images.length === 1) {
-      setIsAutoPlaying(false);
-    }
-  }, [images.length]);
-
-  const handlePrevious = () => {
-    setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlaying(prev => !prev);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -96,7 +72,7 @@ const ImageDialog = ({
             <span>{formattedTime}</span>
             <span className='text-sm'>의 기록</span>
           </div>
-          <DialogClose className='rounded-full p-2 text-haru-light-green hover:text-red-600'>
+          <DialogClose className='p-2 text-haru-light-green hover:text-red-600'>
             <span className='sr-only'>닫기</span>
             &#x2715;
           </DialogClose>

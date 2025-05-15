@@ -1,9 +1,4 @@
 import { useEffect, useState } from 'react';
-import type { KeyboardEvent } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import AutoTagGenerator from '@/components/AutoTagGenerator';
 import {
@@ -15,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useMomentEdit } from '@/hooks/useMomentEdit';
+import { useTagForm } from '@/hooks/useTagForm';
 import { MomentContent } from '@/types/common';
 
 interface MomentEditDialogProps {
@@ -22,20 +18,6 @@ interface MomentEditDialogProps {
   onOpenChange: (open: boolean) => void;
   moment: MomentContent;
 }
-
-// 태그 입력을 위한 스키마 정의
-const tagSchema = z.object({
-  tag: z
-    .string()
-    .min(1)
-    .max(10, '태그는 최대 10글자까지 작성 가능합니다')
-    .regex(
-      /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_]*$/,
-      '_를 제외한 공백과 특수문자는 입력 불가합니다',
-    ),
-});
-
-type TagFormData = z.infer<typeof tagSchema>;
 
 const MomentEditDialog = ({
   open,
@@ -56,43 +38,24 @@ const MomentEditDialog = ({
     resetState,
   } = useMomentEdit(moment, () => onOpenChange(false));
 
-  const [tagError, setTagError] = useState<string>('');
   const [shouldResetTags, setShouldResetTags] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    errors,
     reset,
     watch,
-  } = useForm<TagFormData>({
-    resolver: zodResolver(tagSchema),
-    defaultValues: {
-      tag: '',
+    tagError,
+    setTagError,
+    onSubmit,
+    handleKeyPress,
+  } = useTagForm({
+    tags: editedMoment.tags,
+    onTagAdd: tag => {
+      editedMoment.tags = [...editedMoment.tags, tag];
     },
-    mode: 'onChange',
   });
-
-  // 태그 추가 핸들러
-  const onSubmit = (data: TagFormData) => {
-    if (editedMoment.tags.length >= 10) {
-      setTagError('태그는 최대 10개까지 입력 가능합니다');
-      return;
-    }
-    // 태그를 직접 추가
-    editedMoment.tags = [...editedMoment.tags, data.tag];
-    reset();
-  };
-
-  // 엔터 키 핸들러
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (!errors.tag) {
-        handleSubmit(onSubmit)();
-      }
-    }
-  };
 
   // Dialog가 열릴 때마다 상태 초기화
   useEffect(() => {
@@ -101,7 +64,7 @@ const MomentEditDialog = ({
       reset();
       setTagError('');
     }
-  }, [open, resetState, reset]);
+  }, [open, resetState, reset, setTagError]);
 
   // 태그 초기화를 처리하는 useEffect
   useEffect(() => {
