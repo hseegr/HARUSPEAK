@@ -2,7 +2,9 @@ from dotenv import load_dotenv
 import os
 from langchain_core.prompts import PromptTemplate
 from openai import AsyncOpenAI
-
+from PIL import Image
+import base64
+import io
 
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
@@ -39,4 +41,13 @@ async def oa_generate_thumbnail_dalle(content: str) -> str:
         response_format="b64_json"
     )
 
-    return result.data[0].b64_json
+    image_bytes = base64.b64decode(result.data[0].b64_json)
+
+    image = Image.open(io.BytesIO(image_bytes))
+
+    image_resize = image.resize((256, 256))
+
+    buffered = io.BytesIO()
+    image_resize.save(buffered, format="PNG")
+
+    return base64.b64encode(buffered.getvalue()).decode('utf-8')
