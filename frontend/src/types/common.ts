@@ -20,3 +20,18 @@ export interface ParsedTime {
   date: string;
   time: string;
 }
+
+export const defaultEmojis = [
+  '🌟',
+  '💖',
+  '✨',
+  '😊',
+  '🌈',
+  '🌱',
+  '🌸',
+  '🙌',
+  '💫',
+  '🍀',
+] as const;
+
+export type Emoji = (typeof defaultEmojis)[number];

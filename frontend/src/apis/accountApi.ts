@@ -14,6 +14,8 @@ export const userLogout = async () => {
   queryClient.clear();
   await axiosInstance.post('/api/auth/logout');
   useAuthStore.getState().clearUser();
+  localStorage.removeItem('selectedEmojis');
+  sessionStorage.clear();
 
   // 워크박스(서비스워커) 캐시 삭제
   if ('caches' in window) {

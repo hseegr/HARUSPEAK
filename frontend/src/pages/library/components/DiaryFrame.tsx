@@ -44,21 +44,23 @@ const DiaryFrame = ({
     <div className='relative w-full'>
       <div
         onClick={handleClick}
-        className='flex w-full cursor-pointer flex-col gap-2 rounded-xl bg-haru-beige p-3'
+        className='flex w-full cursor-pointer flex-col gap-1 rounded-xl bg-haru-beige p-3'
       >
-        {/* 상단 부분: 날짜는 왼쪽, 체크박스는 오른쪽으로 이동 */}
-        <div className='flex items-center justify-between'>
-          <div className='rounded-full rounded-br-none bg-haru-yellow px-3 py-1 font-mont'>
+        <div className='flex items-center'>
+          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 font-mont'>
             {diaryDate}
+          </div>
+          <div className='px-3 font-leeseyoon text-haru-gray-5'>
+            {momentCount}개의 순간
           </div>
 
           {/* 선택 모드일 때만 체크박스 표시 */}
           {isSelectionMode && (
-            <div className='z-10 pr-1'>
+            <div className='pr-1'>
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={handleCheckedChange}
-                className='h-5 w-5 border-haru-gray-5 bg-white data-[state=checked]:border-haru-green data-[state=checked]:bg-haru-green'
+                className='absolute right-3 top-7 h-5 w-5 -translate-y-1/2 border-haru-gray-5 bg-white data-[state=checked]:border-haru-green data-[state=checked]:bg-haru-green'
                 onClick={e => e.stopPropagation()}
                 id={`checkbox-${summaryId}`}
               />
@@ -66,9 +68,8 @@ const DiaryFrame = ({
           )}
         </div>
 
-        <div className='mt-2 flex flex-col'>
-          <div className='font-mont'>{title}</div>
-          <div className='font-mont'>{momentCount}개의 순간</div>
+        <div className='flex flex-col'>
+          <div className='m-1 font-leeseyoon text-lg'>{title}</div>
           <div className='w-full overflow-hidden'>
             {isImageGenerating || !imageUrl ? (
               <ImageSkeleton />

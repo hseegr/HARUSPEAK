@@ -57,7 +57,7 @@ const Moments = () => {
   const hasData = Boolean(data?.pages?.[0]?.data?.length);
 
   return (
-    <div className='container mx-auto px-4 py-8'>
+    <div className='container mx-auto'>
       <div className='mb-6'>
         <h1 className='text-2xl font-bold'>순간 일기</h1>
         {(searchParams.get('startDate') || searchParams.get('endDate')) && (

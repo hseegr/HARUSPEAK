@@ -29,13 +29,12 @@ const DiaryHeader = ({
   onDeleteClick,
 }: DiaryHeaderProps) => {
   return (
-    <div className='mb-4'>
+    <div className=''>
       <div className='flex flex-col'>
-        {/* 날짜 표시 */}
-        <div className='mb-1 text-sm text-haru-gray-4'>{date}</div>
+        <div className='mb-1'>{date}</div>
 
         {/* 제목과 수정/삭제 버튼을 가로로 배치 */}
-        <div className='flex items-center justify-between'>
+        <div className='flex flex-col'>
           <div className='flex-grow'>
             <EditTitle
               title={isEditing ? editTitle : title}
@@ -45,12 +44,12 @@ const DiaryHeader = ({
           </div>
 
           {/* 수정/삭제 버튼 또는 저장/취소 버튼 */}
-          <div className='flex shrink-0'>
+          <div className='flex justify-end'>
             {!isEditing && (
-              <>
+              <div className='flex gap-1'>
                 <ContentEditBtn onClick={onEditStart} isEditing={isEditing} />
                 <DiaryDeleteBtn onClick={onDeleteClick} />
-              </>
+              </div>
             )}
             {isEditing && (
               <SaveCancelBtn
@@ -65,37 +64,5 @@ const DiaryHeader = ({
     </div>
   );
 };
-//   return (
-//     <div>
-//       <div>{date}</div>
-//       <div className='flex items-center justify-between'>
-//         <EditTitle
-//           title={isEditing ? editTitle : title}
-//           isEditing={isEditing}
-//           onTitleChange={onTitleChange}
-//         />
-
-//         <div className='flex justify-end gap-1'>
-//           {!isEditing && (
-//             <>
-//               <ContentEditBtn onClick={onEditStart} isEditing={isEditing} />
-//               <DiaryDeleteBtn />
-//             </>
-//           )}
-//         </div>
-
-//         <div className='flex justify-end gap-1'>
-//           {isEditing && (
-//             <SaveCancelBtn
-//               onSave={onEditSave}
-//               onCancel={onEditCancel}
-//               isSaving={isSaving}
-//             />
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 
 export default DiaryHeader;

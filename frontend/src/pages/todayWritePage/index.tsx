@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { compressImage, imageToBase64 } from '@/apis/todayWriteApi';
 import { useTodayWriteMutation } from '@/hooks/useTodayWriteQuery';
@@ -14,6 +15,14 @@ import TextInputList from './components/TextInputList';
 import VoiceToTextButton from './components/VoiceToTextButton';
 
 const TodayWritePage = () => {
+  // 모바일 크롬 확인
+  const isMobileChrome =
+    /Chrome/.test(navigator.userAgent) &&
+    /Mobile/.test(navigator.userAgent) &&
+    /Android/.test(navigator.userAgent);
+
+  console.log(isMobileChrome);
+
   const images = TodayWriteStore(state => state.images);
   const textBlocks = TodayWriteStore(state => state.textBlocks);
   const clearAll = TodayWriteStore(state => state.clearAll);
@@ -21,6 +30,8 @@ const TodayWritePage = () => {
 
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
+
+  const isTooLong = textBlocks.join('\n\n').length > 500;
 
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
@@ -40,6 +51,11 @@ const TodayWritePage = () => {
   // 저장 버튼 클릭 핸들러
   const handleSave = async () => {
     if (images.length === 0 && textBlocks.length === 0) return;
+
+    if (isTooLong) {
+      toast.error('최대 500자까지만 저장할 수 있습니다.');
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -63,13 +79,13 @@ const TodayWritePage = () => {
         },
         {
           onSuccess: () => {
-            // 저장 성공 후 스토어 초기화
+            toast.success('순간 기록이 저장되었습니다.');
             clearAll();
             setIsSaving(false);
             navigate('/today');
           },
-          onError: error => {
-            console.error('일기 저장 실패:', error);
+          onError: () => {
+            toast.error('순간 기록 저장에 실패했습니다.');
             setIsSaving(false);
           },
         },
@@ -127,7 +143,9 @@ const TodayWritePage = () => {
               <div className='flex gap-2'>
                 <ImageAttachButton onClick={handleImageButtonClick} />
                 <FileToTextButton onClick={handleFileButtonClick} />
-                <VoiceToTextButton onClick={handleVoiceButtonClick} />
+                {!isMobileChrome && (
+                  <VoiceToTextButton onClick={handleVoiceButtonClick} />
+                )}
               </div>
             </div>
 
