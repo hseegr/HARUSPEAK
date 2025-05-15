@@ -29,9 +29,9 @@ const DeleteConfirmDialog = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
-          <AlertDialogDescription>
-            선택한 {selectedCount}개의 일기가 삭제됩니다. 이 작업은 되돌릴 수
-            없습니다.
+          <AlertDialogDescription className='whitespace-normal'>
+            선택한 {selectedCount}개의 일기가 삭제됩니다.
+            <br />이 작업은 되돌릴 수 없습니다.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
