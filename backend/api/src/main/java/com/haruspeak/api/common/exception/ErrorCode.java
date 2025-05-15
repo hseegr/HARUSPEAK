@@ -17,6 +17,8 @@ public enum ErrorCode  {
     BLANK_BASE64(40021, "Base64 문자열이 비어있습니다."),
     INVALID_BASE64(40022, "유효하지 않은 Base64 문자열입니다."),
     INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
+    INVALID_TITLE_LENGTH(40030, "제목은 50자 이하여야 합니다."),
+    INVALID_CONTENT_LENGTH(40031, "내용은 200자 이하여야 합니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
