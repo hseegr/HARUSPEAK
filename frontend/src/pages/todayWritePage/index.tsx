@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { compressImage, imageToBase64 } from '@/apis/todayWriteApi';
 import { useTodayWriteMutation } from '@/hooks/useTodayWriteQuery';
@@ -30,6 +31,8 @@ const TodayWritePage = () => {
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
 
+  const isTooLong = textBlocks.join('\n\n').length > 500;
+
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
     navigate('/todaywrite/voice');
@@ -48,6 +51,11 @@ const TodayWritePage = () => {
   // 저장 버튼 클릭 핸들러
   const handleSave = async () => {
     if (images.length === 0 && textBlocks.length === 0) return;
+
+    if (isTooLong) {
+      toast.error('최대 500자까지만 저장할 수 있습니다.');
+      return;
+    }
 
     try {
       setIsSaving(true);
