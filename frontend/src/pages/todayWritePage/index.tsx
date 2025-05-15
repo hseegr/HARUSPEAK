@@ -14,6 +14,14 @@ import TextInputList from './components/TextInputList';
 import VoiceToTextButton from './components/VoiceToTextButton';
 
 const TodayWritePage = () => {
+  // 모바일 크롬 확인
+  const isMobileChrome =
+    /Chrome/.test(navigator.userAgent) &&
+    /Mobile/.test(navigator.userAgent) &&
+    /Android/.test(navigator.userAgent);
+
+  console.log(isMobileChrome);
+
   const images = TodayWriteStore(state => state.images);
   const textBlocks = TodayWriteStore(state => state.textBlocks);
   const clearAll = TodayWriteStore(state => state.clearAll);
@@ -127,7 +135,9 @@ const TodayWritePage = () => {
               <div className='flex gap-2'>
                 <ImageAttachButton onClick={handleImageButtonClick} />
                 <FileToTextButton onClick={handleFileButtonClick} />
-                <VoiceToTextButton onClick={handleVoiceButtonClick} />
+                {!isMobileChrome && (
+                  <VoiceToTextButton onClick={handleVoiceButtonClick} />
+                )}
               </div>
             </div>
 
