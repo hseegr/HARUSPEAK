@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +32,7 @@ public class MomentTagService {
 
         // 요청값 : 기존 태그, 컨텐츠 내용
         List<String> prevTagList = mtcr.tags();
+        if(hasDuplicate(prevTagList)) throw new HaruspeakException(ErrorCode.DUPLICATE_TAG_VALUE); // prevTagList 에 중복값이 있으면
         String content = mtcr.content(); // 요청 온 컨텐츠 내용
 
         // 1. 빈컨텐츠가 요청으로 전달될 때 - 기존태그
@@ -75,4 +78,11 @@ public class MomentTagService {
         return fastApiClient.getPrediction(uri, mtcr, MomentTagCreateResponse.class);
     }
 
+    private boolean hasDuplicate(List<String> tagList) {
+        Set<String> unique = new HashSet<>();
+        for (String tag : tagList) {
+            if (!unique.add(tag)) return true; // 중복 있으면
+        }
+        return false; // 중복 없음
+    }
 }
