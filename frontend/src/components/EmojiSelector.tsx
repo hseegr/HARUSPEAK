@@ -31,6 +31,11 @@ const EmojiSelector = ({ isOpen, onClose }: EmojiSelectorProps) => {
     onClose();
   };
 
+  const handleCancel = () => {
+    setTempSelected(selectedEmojis);
+    onClose();
+  };
+
   return (
     <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50'>
       <div className='w-96 rounded-lg bg-white p-6'>
@@ -73,7 +78,7 @@ const EmojiSelector = ({ isOpen, onClose }: EmojiSelectorProps) => {
             {tempSelected.length === 0 ? '이모지를 선택해주세요' : '저장'}
           </button>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className='rounded-lg bg-gray-200 px-4 py-2 transition-colors duration-200 ease-in-out hover:bg-gray-300'
           >
             취소
