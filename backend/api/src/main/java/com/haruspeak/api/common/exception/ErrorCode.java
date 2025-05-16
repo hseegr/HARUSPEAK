@@ -17,6 +17,8 @@ public enum ErrorCode  {
     BLANK_BASE64(40021, "Base64 문자열이 비어있습니다."),
     INVALID_BASE64(40022, "유효하지 않은 Base64 문자열입니다."),
     INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
+    NO_CONTENTS_AT_TAG_GENERATION(40041, "태그생성을 위한 컨텐츠 내용이 필요합니다. 내용을 입력해주세요."),
+    DUPLICATE_TAG_VALUE(40042, "요청된 태그 리스트에 중복된 값이 있습니다. 중복을 제거하고 다시 시도해주세요"),
     INVALID_TITLE_LENGTH(40030, "제목은 50자 이하여야 합니다."),
     INVALID_CONTENT_LENGTH(40031, "내용은 200자 이하여야 합니다."),
     INVALID_MOMENT_CONTENT_LENGTH(40041, "내용은 500자 이하여야 합니다."),
@@ -26,6 +28,7 @@ public enum ErrorCode  {
     INVALID_MOMENT_TAG_CHARACTER(40045,"태그에 허용되지 않은 특수문자가 포함되어 있습니다."),
     BLANK_MOMENT(40046,"내용이 존재해야합니다."),
     DUPLICATION_DELETE_IMAGE(40047,"이미지에 삭제할 이미지가 존재합니다."),
+    
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
     INVALID_TOKEN(40110, "유효하지 않은 토큰입니다."),
@@ -45,6 +48,7 @@ public enum ErrorCode  {
     MOMENT_CONFLICT(40920, "해당 시간의 일기가 이미 존재합니다."),
     THUMBNAIL_REGEN_CONFLICT(40921, "대기 중인 썸네일 재생성 요청이 이미 존재합니다."),
     THUMBNAIL_REGENERATING_CONFLICT(40922, "썸네일이 재생성 중입니다. 잠시 후에 시도해주세요."),
+    RECOMMEND_TAGS_ARRAY_EMPTY(40940, "응답값인 추천태그리스트가 비어있습니다. 올바르지 않은 응답입니다."),
 
     // 410 Gone
     DELETED_DIARY(41030, "요청된 하루 일기는 이미 삭제되었습니다. 더 이상 사용할 수 없습니다."),
