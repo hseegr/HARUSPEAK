@@ -42,10 +42,10 @@ const TextItem = ({ text, index }: TextItemProps) => {
         onChange={handleChange}
       />
       <button
-        className='absolute right-2 top-2 text-gray-400 hover:text-red-500'
+        className='absolute right-1.5 top-1.5 text-gray-400 hover:text-red-500'
         onClick={handleRemove}
       >
-        <X size={16} />
+        <X size={12} />
       </button>
     </div>
   );

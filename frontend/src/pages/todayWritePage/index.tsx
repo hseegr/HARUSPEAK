@@ -31,8 +31,8 @@ const TodayWritePage = () => {
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
 
-  // 프론트에서 토스트 메시지 처리
-  // const isTooLong = textBlocks.join('\n\n').length > 500;
+  // 텍스트 길이 체크
+  const checkTextLength = textBlocks.join('\n\n').length;
 
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
@@ -52,12 +52,6 @@ const TodayWritePage = () => {
   // 저장 버튼 클릭 핸들러
   const handleSave = async () => {
     if (images.length === 0 && textBlocks.length === 0) return;
-
-    // 프론트에서 토스트 메시지 처리
-    // if (isTooLong) {
-    //   toast.error('최대 500자까지만 저장할 수 있습니다.');
-    //   return;
-    // }
 
     try {
       setIsSaving(true);
@@ -104,6 +98,11 @@ const TodayWritePage = () => {
   return (
     <div className='relative h-full w-full'>
       <div className='flex h-full flex-col overflow-y-auto px-2 py-1 pb-[180px]'>
+        {/* 글자 수 표시 */}
+        <div className='mb-3 flex justify-end font-mont text-sm font-medium text-haru-gray-5'>
+          {checkTextLength}/500자
+        </div>
+
         {/* 이미지 첨부 리스트 */}
         <ImageInputList />
 
@@ -118,7 +117,7 @@ const TodayWritePage = () => {
         )}
 
         {/* 하단 고정 입력 영역 */}
-        <div className='fixed bottom-[70px] left-0 right-0 mx-auto w-full max-w-mobile bg-white px-2 pb-8 pt-2'>
+        <div className='max-w-mobile fixed bottom-[70px] left-0 right-0 mx-auto w-full bg-white px-2 pb-8 pt-2'>
           <div className='flex flex-col gap-4'>
             {hasContent && (
               <div className='flex flex-row justify-end px-4'>
