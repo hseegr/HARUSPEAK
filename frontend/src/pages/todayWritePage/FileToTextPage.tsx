@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Mic } from 'lucide-react';
 import MicRecorder from 'mic-recorder-to-mp3-fixed';
@@ -27,6 +27,21 @@ const FileToTextPage = () => {
   const [showVoiceInput, setShowVoiceInput] = useState(false);
 
   const { mutate: convertFile, isPending } = useFileToTextMutation();
+
+  useEffect(() => {
+    return () => {
+      // 언마운트 시 녹음 중이라면 중지
+      if (recorder.current && recording) {
+        recorder.current
+          .stop()
+          .getMp3()
+          .then(() => {
+            setRecording(false);
+          })
+          .catch(() => {});
+      }
+    };
+  }, [recording]);
 
   // 녹음 시작
   const handleStartRecording = async () => {

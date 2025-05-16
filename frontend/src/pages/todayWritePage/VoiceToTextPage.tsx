@@ -44,10 +44,13 @@ const VoiceToTextPage = () => {
   // 컴포넌트 처음 렌더링 시 실행
   // 의존성 배열 -> 빈 배열로 있어야 함 !!
   useEffect(() => {
+    SpeechRecognition.abortListening();
+    stopMicrophone();
     resetTranscript();
     return () => {
-      SpeechRecognition.stopListening();
+      SpeechRecognition.abortListening();
       stopMicrophone();
+      resetTranscript();
     };
   }, []);
 
@@ -55,6 +58,7 @@ const VoiceToTextPage = () => {
   const handleConvert = async () => {
     try {
       await SpeechRecognition.abortListening();
+      stopMicrophone();
     } catch {
       toast.error('abortListening 오류');
     }
@@ -87,14 +91,16 @@ const VoiceToTextPage = () => {
         일부 기기 및 브라우저에서는 지원하지 않을 수 있습니다.
       </div>
       <div className='flex flex-col items-center justify-center'>
-        <div className='relative mb-6'>
-          <div className='h-20 w-20 animate-ping rounded-full bg-haru-beige opacity-75'></div>
-          <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='flex h-14 w-14 items-center justify-center rounded-full bg-haru-beige'>
-              <Mic className='h-6 w-6 text-white' />
+        {listening && (
+          <div className='relative mb-6'>
+            <div className='h-20 w-20 animate-ping rounded-full bg-haru-beige opacity-75'></div>
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <div className='flex h-14 w-14 items-center justify-center rounded-full bg-haru-beige'>
+                <Mic className='h-6 w-6 text-white' />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <p className='mb-4 text-base font-semibold text-gray-700'>
           {listening ? '듣고 있어요!' : '녹음이 중지되었습니다'}
