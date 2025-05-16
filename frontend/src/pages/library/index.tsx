@@ -113,7 +113,7 @@ const Library = () => {
   return (
     <div className='w-full'>
       {!isPending && hasData && (
-        <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-2'>
+        <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-96 -translate-x-1/2 items-center justify-between bg-white px-4 py-1'>
           <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
             <FilterBadge onClick={handleFilterClick} />
             <DateFilterBadge onClick={handleDateFilterClick} />
@@ -131,13 +131,13 @@ const Library = () => {
 
       <div className={!isPending && hasData ? 'pt-8' : ''}>
         {!isPending && hasData && (startDate || endDate) && (
-          <div className='mb-4'>
+          <div className='mb-2 mt-2'>
             <DateRangeDisplay startDate={startDate} endDate={endDate} />
           </div>
         )}
 
         {/* 일기 목록 */}
-        <div className='grid grid-cols-1 gap-4'>
+        <div className='grid grid-cols-1 gap-3'>
           {isPending
             ? // 여러 개의 다이어리 스켈레톤 표시 (6개로 고정)
               Array.from({ length: 6 }).map((_, index) => (
