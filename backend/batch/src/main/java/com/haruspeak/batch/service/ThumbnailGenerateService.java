@@ -2,7 +2,7 @@ package com.haruspeak.batch.service;
 
 import com.haruspeak.batch.common.client.fastapi.DailyThumbnailClient;
 import com.haruspeak.batch.common.s3.S3Service;
-import com.haruspeak.batch.dto.context.ThumbnailProcessingResult;
+import com.haruspeak.batch.dto.context.result.ThumbnailProcessingResult;
 import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
 import com.haruspeak.batch.dto.context.ThumbnailUpdateContext;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +41,10 @@ public class ThumbnailGenerateService {
 
         contexts.parallelStream().forEach(context -> {
             try {
-                String s3Url = generateAndUploadThumbnail(context.content());
-                successList.add(new ThumbnailUpdateContext(context.userId(), context.writeDate(), s3Url));
+                String s3Url = generateAndUploadThumbnail(context.getContent());
+                successList.add(new ThumbnailUpdateContext(context.getUserId(), context.getWriteDate(), s3Url));
             } catch (Exception e) {
-                log.warn("⚠️ 썸네일 처리 실패 - userId: {}, date: {}", context.userId(), context.writeDate(), e);
+                log.warn("⚠️ 썸네일 처리 실패 - userId: {}, date: {}", context.getUserId(), context.getWriteDate(), e);
                 failedList.add(context);
             }
         });

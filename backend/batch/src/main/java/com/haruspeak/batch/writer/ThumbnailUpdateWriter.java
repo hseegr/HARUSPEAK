@@ -1,7 +1,7 @@
 package com.haruspeak.batch.writer;
 
 import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
-import com.haruspeak.batch.dto.context.ThumbnailProcessingResult;
+import com.haruspeak.batch.dto.context.result.ThumbnailProcessingResult;
 import com.haruspeak.batch.model.repository.DailySummaryRepository;
 import com.haruspeak.batch.service.ThumbnailGenerateService;
 import com.haruspeak.batch.service.redis.ThumbnailRedisService;
@@ -33,7 +33,7 @@ public class ThumbnailUpdateWriter implements ItemWriter <ThumbnailGenerateConte
         try {
             List<ThumbnailGenerateContext> failedList = result.failedList();
             if(failedList!=null && !failedList.isEmpty()){
-                String date = failedList.get(0).writeDate();
+                String date = failedList.get(0).getWriteDate();
                 redisService.pushAll(failedList, date);
             }
 

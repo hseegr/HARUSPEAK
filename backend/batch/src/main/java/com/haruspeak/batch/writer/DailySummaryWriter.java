@@ -1,10 +1,10 @@
 package com.haruspeak.batch.writer;
 
-import com.haruspeak.batch.dto.context.SummaryProcessingResult;
+import com.haruspeak.batch.dto.context.result.SummaryProcessingResult;
 import com.haruspeak.batch.dto.response.DailySummaryResponse;
 import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
-import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import com.haruspeak.batch.model.repository.DailySummaryRepository;
 import com.haruspeak.batch.service.SummaryService;
 import com.haruspeak.batch.service.redis.TodayDiaryRedisService;
@@ -23,23 +23,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @StepScope
 @Component
-public class DailySummaryWriter implements ItemWriter<TodayDiary> {
+public class DailySummaryWriter implements ItemWriter<TodayDiaryContext> {
 
     private final SummaryService todaySummaryService;
     private final TodayDiaryRedisService redisService;
     private final DailySummaryRepository dailySummaryRepository;
 
     @Override
-    public void write(Chunk<? extends TodayDiary> chunk) throws Exception {
+    public void write(Chunk<? extends TodayDiaryContext> chunk) throws Exception {
         log.debug("🐛 [WRITER] 오늘의 하루 일기 요약 저장 실행");
 
-        SummaryProcessingResult result = getTodayDiariesWithSummary((List<TodayDiary>) chunk.getItems());
+        SummaryProcessingResult result = getTodayDiariesWithSummary((List<TodayDiaryContext>) chunk.getItems());
 
         List<DailySummary> summaries = result.successList().stream()
-                .map(TodayDiary::getDailySummary).toList();
+                .map(TodayDiaryContext::getDailySummary).toList();
 
         try {
-            List<TodayDiary> failedList = result.failedList();
+            List<TodayDiaryContext> failedList = result.failedList();
             if(failedList!=null && !failedList.isEmpty()){
                 String date = failedList.get(0).getDailySummary().getWriteDate();
                 redisService.pushAll(failedList, date);
@@ -51,27 +51,25 @@ public class DailySummaryWriter implements ItemWriter<TodayDiary> {
             log.error("💥 오늘의 하루 일기 저장 작업 중 에러 발생", e);
             throw new RuntimeException("하루 일기 저장 중 에러 발생", e);
         }
-
-        log.debug("✅ 오늘의 하루 요약 생성 및 저장 성공 {}건, 실패 {}건", result.successList().size(), chunk.size() - result.successList().size());
     }
 
 
-    private SummaryProcessingResult getTodayDiariesWithSummary(List<TodayDiary> diaries) {
-        List<TodayDiary> successList = new ArrayList<>();
-        List<TodayDiary> failedList = new ArrayList<>();
+    private SummaryProcessingResult getTodayDiariesWithSummary(List<TodayDiaryContext> diaries) {
+        List<TodayDiaryContext> successList = new ArrayList<>();
+        List<TodayDiaryContext> failedList = new ArrayList<>();
          diaries.parallelStream().forEach(todayDiary -> {
             try {
                 String totalContent = buildTotalContent(todayDiary.getDailyMoments());
-                log.debug("🔎 totalContent={} ...", totalContent.substring(0, 10));
+                log.debug("🔎 userId: {} totalContent: {} ...", todayDiary.getDailySummary().getUserId(), totalContent.substring(0, Math.min(totalContent.length(), 10)));
 
                 DailySummaryResponse summaries = todaySummaryService.generateDailySummary(totalContent);
-                log.debug("🔎 {}", summaries.toString());
+                log.debug("🔎 userId:{}, {}",todayDiary.getDailySummary().getUserId(), summaries.toString());
                 setDailySummary(todayDiary.getDailySummary(), summaries);
                 successList.add(todayDiary);
 
             }catch (Exception e) {
-                log.warn("⚠️ 썸네일 처리 실패 - userId: {}, date: {}", todayDiary.getDailySummary().getUserId(), todayDiary.getDailySummary().getWriteDate(), e);
-                failedList.add(new TodayDiary(todayDiary.getDailySummary(), todayDiary.getDailyMoments()));
+                log.warn("⚠️ 요약 처리 실패 - userId: {}, date: {}", todayDiary.getDailySummary().getUserId(), todayDiary.getDailySummary().getWriteDate(), e);
+                failedList.add(new TodayDiaryContext(todayDiary.getDailySummary(), todayDiary.getDailyMoments()));
                 todayDiary.setDailySummary(null);
             }
          });
@@ -82,7 +80,7 @@ public class DailySummaryWriter implements ItemWriter<TodayDiary> {
     private String buildTotalContent(List<DailyMoment> moments) {
         return moments.stream()
                 .map(DailyMoment::getContent)
-                .collect(Collectors.joining("/n/n"));
+                .collect(Collectors.joining("\n\n"));
     }
 
     private void setDailySummary(DailySummary dailySummary, DailySummaryResponse summaries) {

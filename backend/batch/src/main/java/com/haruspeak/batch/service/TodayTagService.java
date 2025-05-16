@@ -1,8 +1,8 @@
 package com.haruspeak.batch.service;
 
 import com.haruspeak.batch.model.DailyMoment;
-import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
+import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
 import com.haruspeak.batch.service.redis.TagRedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,24 +20,25 @@ public class TodayTagService {
 
     private final TagRedisService redisService;
 
-    public void saveTagStepData(List<TodayDiary> diaries, String date) {
+    public void saveTagStepData(List<TodayDiaryContext> diaries, String date) {
         log.debug("🐛 태그 STEP DATA REDIS 저장 실행");
         try {
-            List<TodayDiaryTag> tagStepData = retrieveTagStepData(diaries);
+            List<TodayDiaryTagContext> tagStepData = retrieveTagStepData(diaries);
+            log.debug("TAG STEP DATA: {}건", tagStepData.size());
             redisService.pushAll(tagStepData, date);
         } catch (Exception e) {
             throw new RuntimeException("💥 태그 STEP DATA REDIS 저장 실패", e);
         }
     }
 
-    private List<TodayDiaryTag> retrieveTagStepData(List<TodayDiary> diaries) {
+    private List<TodayDiaryTagContext> retrieveTagStepData(List<TodayDiaryContext> diaries) {
         return diaries.stream()
                 .map(this::getDiaryTagIfExists)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    private TodayDiaryTag getDiaryTagIfExists(TodayDiary diary) {
+    private TodayDiaryTagContext getDiaryTagIfExists(TodayDiaryContext diary) {
         List<DailyMoment> filtered = diary.getDailyMoments().stream()
                 .filter(moment -> moment.getTagCount() > 0)
                 .toList();
@@ -45,7 +46,7 @@ public class TodayTagService {
         if (filtered.isEmpty()) return null;
 
         Map<String, Integer> tagCountMap = calculateTagCounts(filtered);
-        return new TodayDiaryTag(
+        return new TodayDiaryTagContext(
                 filtered,
                 tagCountMap,
                 diary.getDailySummary().getUserId(),

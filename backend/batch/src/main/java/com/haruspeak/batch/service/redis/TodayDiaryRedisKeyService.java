@@ -17,8 +17,8 @@ public class TodayDiaryRedisKeyService {
         this.redisTemplate = redisTemplate;
     }
 
-    private static final String TODAY_DIARY_KEYS = "TodayDiary:keys";
-    private static final String TODAY_DIARY_PROCESSING = "TodayDiary:processing";
+    private static final String TODAY_DIARY_KEYS = "todayDiary:keys";
+    private static final String TODAY_DIARY_PROCESSING = "todayDiary:processing";
 
     public void pushAllKeys(Set<String> keys){
         if (keys == null || keys.isEmpty()) return;

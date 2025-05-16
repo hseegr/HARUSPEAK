@@ -20,12 +20,17 @@ public class DailyMomentRepository {
 
     private static final String SQL_INSERT_DAILY_MOMENTS =
             """
-            INSERT IGNORE INTO daily_moments
+            INSERT INTO daily_moments
             (summary_id, content, moment_time, image_count, tag_count, created_at)
             SELECT summary_id, :content, :momentTime, :imageCount, :tagCount, :createdAt
             FROM daily_summary
             WHERE user_id = :userId
             AND write_date = date(:createdAt)
+            AND NOT EXISTS (
+                SELECT 1 FROM active_daily_moments 
+                WHERE user_id = :userId 
+                AND moment_time = :momentTime
+            ) 
             """;
 
     /**
@@ -48,6 +53,7 @@ public class DailyMomentRepository {
                     params.addValue("imageCount", moment.getImageCount());
                     params.addValue("tagCount", moment.getTagCount());
                     params.addValue("createdAt", moment.getCreatedAt());
+                    log.debug("daily_moments params {}", params);
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);

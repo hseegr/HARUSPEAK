@@ -20,7 +20,7 @@ public class ThumbnailRedisService {
     }
 
     public String getKeyByDate(String date){
-        return String.format("thumbnail:date:%s",date);
+        return String.format("step:thumbnail:date:%s",date);
     }
 
     public ThumbnailGenerateContext popByDate(String date){
@@ -35,7 +35,7 @@ public class ThumbnailRedisService {
         try {
             redisTemplate.opsForList().rightPush(getKeyByDate(date), context);
         } catch (Exception e) {
-            log.error("💥 썸네일 STEP DATA REDIS 저장 실패 - userId:{}, date:{}", context.userId(), context.writeDate(), e);
+            log.error("💥 썸네일 STEP DATA REDIS 저장 실패 - userId:{}, date:{}", context.getUserId(), context.getWriteDate(), e);
             throw e;
         }
     }

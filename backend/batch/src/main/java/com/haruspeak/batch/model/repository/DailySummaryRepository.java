@@ -30,7 +30,13 @@ public class DailySummaryRepository {
             """
             INSERT INTO daily_summary 
             (user_id, write_date, title, content, moment_count, image_generate_count) 
-            VALUES (:userId, :writeDate, :title, :content, :momentCount, 0)
+            SELECT :userId, :writeDate, :title, :content, :momentCount, 0
+            FROM DUAL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM daily_summary 
+                WHERE user_id = :userId 
+                AND write_date = :writeDate 
+            )
             """;
 
     private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL =
@@ -71,6 +77,7 @@ public class DailySummaryRepository {
                     params.addValue("title", summary.getTitle());
                     params.addValue("content", summary.getContent());
                     params.addValue("momentCount", summary.getMomentCount());
+                    log.debug("daily_summary params: {}", params);
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);

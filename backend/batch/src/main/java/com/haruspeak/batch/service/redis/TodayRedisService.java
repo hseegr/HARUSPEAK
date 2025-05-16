@@ -2,16 +2,13 @@ package com.haruspeak.batch.service.redis;
 
 import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
-import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,7 +33,7 @@ public class TodayRedisService {
         return apiRedisTemplate.keys(getKey("*", date));
     }
 
-    public TodayDiary getTodayMomentsByKey(String key, String writeDate) {
+    public TodayDiaryContext getTodayMomentsByKey(String key, String writeDate) {
         int userId = getUserId(key);
         List<DailyMoment> moments = getMomentsFromRedis(key, userId);
         DailySummary summary = createDailySummary(userId, writeDate, moments.size());
@@ -51,8 +48,8 @@ public class TodayRedisService {
         return data.entrySet().stream()
                 .map(entry -> {
                     Map<String, Object> value = (Map<String, Object>) entry.getValue();
-                    List<String> images = (List<String>) value.get("images");
-                    List<String> tags = (List<String>) value.get("tags");
+                    Set<String> images = new HashSet<>((List<String>) value.get("images"));
+                    Set<String> tags = new HashSet<>((List<String>) value.get("tags"));
                     return createDailyMoment(entry, value, images, tags, userId);
                 })
                 .sorted(Comparator.comparing(DailyMoment::getMomentTime))
@@ -60,7 +57,7 @@ public class TodayRedisService {
     }
 
     private DailyMoment createDailyMoment(Map.Entry<Object, Object> entry, Map<String, Object> value,
-                                          List<String> images, List<String> tags, int userId) {
+                                          Set<String> images, Set<String> tags, int userId) {
         return DailyMoment.builder()
                 .userId(userId)
                 .createdAt(entry.getKey().toString())
@@ -77,8 +74,8 @@ public class TodayRedisService {
         return new DailySummary(userId, writeDate, momentCount);
     }
 
-    private TodayDiary createTodayDiary(DailySummary dailySummary, List<DailyMoment> moments) {
-        return new TodayDiary(dailySummary, moments);
+    private TodayDiaryContext createTodayDiary(DailySummary dailySummary, List<DailyMoment> moments) {
+        return new TodayDiaryContext(dailySummary, moments);
     }
 
     public void delete(String userId, String date) {

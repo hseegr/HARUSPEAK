@@ -12,22 +12,23 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class ThumbnailJobConfig {
+public class TodayDiaryRetryJobConfig {
 
     private final JobRepository jobRepository;
-    private final Step todayThumbnailUpdateStep;
+
+    private final Step todayDiaryRetrySaveStep;
+    private final Step todayTagSaveStep;
+    private final Step todayImageSaveStep;
+
 
     @Bean
-    public Job thumbnailUpdateJob() {
-        return new JobBuilder("thumbnailUpdateJob", jobRepository)
-                .start(todayThumbnailUpdateStep)
+    public Job todayDiaryRetryJob() {
+        return new JobBuilder("todayDiaryRetryJob", jobRepository)
+                .start(todayDiaryRetrySaveStep)
+                .next(todayTagSaveStep)
+                .next(todayImageSaveStep)
                 .build();
     }
 
-//    @Bean
-//    public Job todayThumbnailStepJob() {
-//        return new JobBuilder("todayThumbnailStepJob", jobRepository)
-//                .start(todayThumbnailUpdateStep)
-//                .build();
-//    }
+
 }

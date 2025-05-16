@@ -1,12 +1,12 @@
 package com.haruspeak.batch.step;
 
-import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
-import com.haruspeak.batch.model.MomentImage;
-import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.TodayDiaryTag;
-import com.haruspeak.batch.reader.*;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
+import com.haruspeak.batch.listener.SummaryStepListener;
+import com.haruspeak.batch.reader.TodayDiaryReader;
+import com.haruspeak.batch.reader.TodayMomentReader;
 import com.haruspeak.batch.service.redis.*;
-import com.haruspeak.batch.writer.*;
+import com.haruspeak.batch.writer.DailyMomentWriter;
+import com.haruspeak.batch.writer.DailySummaryWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Step;
@@ -32,18 +32,14 @@ public class TodayDiaryStepConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
 
+    private final SummaryStepListener summaryStepListener;
+
     private final TodayRedisService todayRedisService;
     private final TodayDiaryRedisKeyService todayDiaryRedisKeyService;
     private final TodayDiaryRedisService todayDiaryRedisService;
-    private final TagRedisService tagRedisService;
-    private final ImageRedisService imageRedisService;
-    private final ThumbnailRedisService thumbnailRedisService;
 
     private final DailyMomentWriter dailyMomentWriter;
     private final DailySummaryWriter dailySummaryWriter;
-    private final MomentTagWriter momentTagWriter;
-    private final MomentImageWriter momentImageWriter;
-    private final ThumbnailUpdateWriter thumbnailUpdateWriter;
 
 
 
@@ -54,12 +50,13 @@ public class TodayDiaryStepConfig {
     @Bean
     public Step todayDiarySaveStep(){
         return new StepBuilder("todayDiarySaveStep", jobRepository)
-                .<TodayDiary, TodayDiary>chunk(CHUNK_SIZE, transactionManager)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
                 .reader(todayMomentReader(null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(2)
+                .listener(summaryStepListener)
                 .build();
     }
 
@@ -69,65 +66,14 @@ public class TodayDiaryStepConfig {
      * @return
      */
     @Bean
-    public Step retryTodayDiarySaveStep(){
-        return new StepBuilder("retryTodayDiarySaveStep", jobRepository)
-                .<TodayDiary, TodayDiary>chunk(CHUNK_SIZE, transactionManager)
+    public Step todayDiaryRetrySaveStep(){
+        return new StepBuilder("todayDiaryRetrySaveStep", jobRepository)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
                 .reader(todayDiaryReader(null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
                 .retry(Exception.class)
                 .retryLimit(2)
-                .build();
-    }
-
-    /**
-     * 하루 일기 태그
-     * @return
-     */
-    @Bean
-    public Step todayTagSaveStep(){
-        return new StepBuilder("todayTagSaveStep", jobRepository)
-                .<TodayDiaryTag, TodayDiaryTag>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayTagReader(null))
-                .writer(momentTagWriter)
-                .faultTolerant()
-                .retry(Exception.class)
-                .retryLimit(2)
-                .skip(Exception.class)
-                .build();
-    }
-
-    /**
-     * 하루 일기 이미지
-     * @return
-     */
-    @Bean
-    public Step todayImageSaveStep(){
-        return new StepBuilder("todayImageSaveStep", jobRepository)
-                .<List<MomentImage>, List<MomentImage>>chunk(CHUNK_SIZE, transactionManager)
-                .reader(todayImageReader(null))
-                .writer(momentImageWriter)
-                .faultTolerant()
-                .retry(Exception.class)
-                .retryLimit(2)
-                .skip(Exception.class)
-                .build();
-    }
-
-    /**
-     * 하루 썸네일 업데이트
-     * @return
-     */
-    @Bean
-    public Step todayThumbnailUpdateStep(){
-        return new StepBuilder("todayThumbnailUpdateStep", jobRepository)
-                .<ThumbnailGenerateContext, ThumbnailGenerateContext>chunk(CHUNK_SIZE, transactionManager)
-                .reader(thumbnailReader(null))
-                .writer(thumbnailUpdateWriter)
-                .faultTolerant()
-                .retry(Exception.class)
-                .retryLimit(2)
-                .skip(Exception.class)
                 .build();
     }
 
@@ -145,30 +91,12 @@ public class TodayDiaryStepConfig {
         return new TodayDiaryReader(todayDiaryRedisService, date);
     }
 
-    @Bean
-    @StepScope
-    public TodayTagReader todayTagReader(@Value("#{jobParameters['date']}") String date) {
-        return new TodayTagReader(tagRedisService, date);
-    }
 
     @Bean
-    @StepScope
-    public TodayImageReader todayImageReader(@Value("#{jobParameters['date']}") String date) {
-        return new TodayImageReader(imageRedisService, date);
-    }
+    public CompositeItemWriter<TodayDiaryContext> todayDiaryWriter() {
+        CompositeItemWriter<TodayDiaryContext> writer = new CompositeItemWriter<>();
 
-    @Bean
-    @StepScope
-    public ThumbnailReader thumbnailReader(@Value("#{jobParameters['date']}") String date) {
-        return new ThumbnailReader(thumbnailRedisService, date);
-    }
-
-
-    @Bean
-    public CompositeItemWriter<TodayDiary> todayDiaryWriter() {
-        CompositeItemWriter<TodayDiary> writer = new CompositeItemWriter<>();
-
-        List<ItemWriter<? super TodayDiary>> writers = new ArrayList<>();
+        List<ItemWriter<? super TodayDiaryContext>> writers = new ArrayList<>();
         writers.add(dailySummaryWriter);
         writers.add(dailyMomentWriter);
 

@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
-import com.haruspeak.batch.model.MomentImage;
-import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.dto.context.MomentImageContext;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
+import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,8 +68,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, TodayDiary> batchDiaryRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, TodayDiary> template = new RedisTemplate<>();
+    public RedisTemplate<String, TodayDiaryContext> batchDiaryRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, TodayDiaryContext> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return applyDefaultSerializers(template);
     }
@@ -82,15 +82,15 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, TodayDiaryTag> tagStepRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, TodayDiaryTag> template = new RedisTemplate<>();
+    public RedisTemplate<String, TodayDiaryTagContext> tagStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, TodayDiaryTagContext> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return applyDefaultSerializers(template);
     }
 
     @Bean
-    public RedisTemplate<String, List<MomentImage>> imageStepRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, List<MomentImage>> template = new RedisTemplate<>();
+    public RedisTemplate<String, MomentImageContext> imageStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, MomentImageContext> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return applyDefaultSerializers(template);
     }

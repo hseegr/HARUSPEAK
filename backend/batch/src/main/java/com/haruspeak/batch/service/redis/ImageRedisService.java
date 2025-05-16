@@ -1,6 +1,6 @@
 package com.haruspeak.batch.service.redis;
 
-import com.haruspeak.batch.model.MomentImage;
+import com.haruspeak.batch.dto.context.MomentImageContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,28 +13,30 @@ import java.util.List;
 public class ImageRedisService {
 
     @Qualifier("imageStepRedisTemplate")
-    private final RedisTemplate<String, List<MomentImage>> redisTemplate;
+    private final RedisTemplate<String, MomentImageContext> redisTemplate;
 
-    public ImageRedisService(@Qualifier("imageStepRedisTemplate") RedisTemplate<String, List<MomentImage>>  redisTemplate) {
+    public ImageRedisService(@Qualifier("imageStepRedisTemplate") RedisTemplate<String, MomentImageContext>  redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     public String getKeyByDate(String date) {
-        return String.format("image:date:%s",date);
+        return String.format("step:image:date:%s",date);
     }
 
-    public List<MomentImage> popByDate(String date){
+    public MomentImageContext popByDate(String date){
         return redisTemplate.opsForList().leftPop(getKeyByDate(date));
     }
 
     /**
      * 썸네일 스텝 데이터 한번에 저장 FIFO 구조 사용
-     * @param momentImages
+     * @param contexts
      * @param date
      */
-    public void pushAll(List<List<MomentImage>> momentImages, String date){
+    public void pushAll(List<MomentImageContext> contexts, String date){
         try {
-            redisTemplate.opsForList().rightPushAll(getKeyByDate(date), momentImages);
+            contexts.forEach(context -> {
+                redisTemplate.opsForList().rightPush(getKeyByDate(date), context);
+            });
         } catch (Exception e) {
             log.error("💥 이미지 STEP DATA REDIS 저장 실패 - date:{}", date, e);
             throw e;

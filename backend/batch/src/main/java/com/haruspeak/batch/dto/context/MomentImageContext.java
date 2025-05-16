@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThumbnailGenerateContext {
-        private int userId;
-        private String writeDate;
-        private String content;
+public class MomentImageContext {
+    private int userId;
+    private String momentTime;
+    private Set<String> images;
 }
+

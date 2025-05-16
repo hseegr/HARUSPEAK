@@ -14,11 +14,11 @@ public class SummaryService {
     private final DailySummaryClient dailySummaryClient;
 
     public DailySummaryResponse generateDailySummary(String totalTodayContent) {
-      log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청");
+      log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청 - {}", totalTodayContent.substring(0, Math.min(10, totalTodayContent.length())));
       try {
           return dailySummaryClient.getDailySummary(totalTodayContent);
       }catch (Exception e) {
-          log.error("💥 오늘의 요약 생성 중 에러 발생: {}", e.getMessage());
+          log.error("💥 오늘의 요약 생성 중 에러 발생 - totalTodayCount:{}", totalTodayContent, e);
           throw e;
       }
     }

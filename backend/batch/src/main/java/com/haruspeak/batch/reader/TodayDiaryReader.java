@@ -1,12 +1,12 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import com.haruspeak.batch.service.redis.TodayDiaryRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 
 @Slf4j
-public class TodayDiaryReader implements ItemReader<TodayDiary> {
+public class TodayDiaryReader implements ItemReader<TodayDiaryContext> {
 
     private final TodayDiaryRedisService service;
     private final String date;
@@ -17,7 +17,7 @@ public class TodayDiaryReader implements ItemReader<TodayDiary> {
     }
 
     @Override
-    public TodayDiary read() throws Exception {
+    public TodayDiaryContext read() throws Exception {
         log.debug("🐛 [READER] 오늘의 일기 조회");
         try {
             return service.popByDate(date);

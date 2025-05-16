@@ -1,13 +1,13 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.model.TodayDiary;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import com.haruspeak.batch.service.redis.TodayDiaryRedisKeyService;
 import com.haruspeak.batch.service.redis.TodayRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 
 @Slf4j
-public class TodayMomentReader implements ItemReader<TodayDiary> {
+public class TodayMomentReader implements ItemReader<TodayDiaryContext> {
 
     private final TodayDiaryRedisKeyService keyService;
     private final TodayRedisService service;
@@ -20,17 +20,20 @@ public class TodayMomentReader implements ItemReader<TodayDiary> {
     }
 
     @Override
-    public TodayDiary read() throws Exception {
+    public TodayDiaryContext read() throws Exception {
         String key = keyService.popOneKey();
+
+        if(key == null) {
+            return null;
+        }
+
         keyService.pushProcessingKey(key);
         log.debug("🐛 [READER] 오늘의 순간 일기 전체 조회 - {}", key);
 
         try {
-            TodayDiary diary = service.getTodayMomentsByKey(key, date);
+            TodayDiaryContext diary = service.getTodayMomentsByKey(key, date);
             if (diary == null) {
                 log.warn("⛔ getTodayMomentsByKey()가 null 반환! key={}, date={}", key, date);
-            } else {
-                log.debug("📘 diary.summary = {}", diary.getDailySummary());
             }
             return diary;
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 package com.haruspeak.batch.writer;
 
 import com.haruspeak.batch.model.DailyMoment;
-import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
 import com.haruspeak.batch.model.repository.MomentTagRepository;
 import com.haruspeak.batch.model.repository.TagRepository;
 import com.haruspeak.batch.model.repository.UserTagRepository;
@@ -22,7 +22,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @StepScope
 @Component
-public class MomentTagWriter implements ItemWriter<TodayDiaryTag>{
+public class MomentTagWriter implements ItemWriter<TodayDiaryTagContext>{
 
     private final TagRedisService tagRedisService;
     private final TagRepository tagRepository;
@@ -30,10 +30,10 @@ public class MomentTagWriter implements ItemWriter<TodayDiaryTag>{
     private final MomentTagRepository momentTagRepository;
 
     @Override
-    public void write(Chunk<? extends TodayDiaryTag> chunk) throws Exception {
+    public void write(Chunk<? extends TodayDiaryTagContext> chunk) throws Exception {
         log.debug("🐛 [WRITER] 오늘의 일기 태그 저장");
 
-        List<TodayDiaryTag> diaryTags = (List<TodayDiaryTag>) chunk.getItems();
+        List<TodayDiaryTagContext> diaryTags = (List<TodayDiaryTagContext>) chunk.getItems();
 
         try {
             tagRepository.bulkInsertTags(getTagList(diaryTags));
@@ -48,15 +48,15 @@ public class MomentTagWriter implements ItemWriter<TodayDiaryTag>{
     }
 
 
-    private List<String> getTagList(List<TodayDiaryTag> diaryTags) {
+    private List<String> getTagList(List<TodayDiaryTagContext> diaryTags) {
         Set<String> tagList = new HashSet<>();
-        for(TodayDiaryTag diaryTag : diaryTags) {
+        for(TodayDiaryTagContext diaryTag : diaryTags) {
             tagList.addAll(diaryTag.getTagCountMap().keySet());
         }
         return new ArrayList<>(tagList);
     }
 
-    private List<DailyMoment> getMomentsWithNonZeroTags(List<TodayDiaryTag> diaries) {
+    private List<DailyMoment> getMomentsWithNonZeroTags(List<TodayDiaryTagContext> diaries) {
         return diaries.stream()
                 .flatMap(diary -> diary.getMoments().stream()
                         .filter(moment -> moment.getTagCount() > 0)

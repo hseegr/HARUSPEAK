@@ -1,7 +1,6 @@
 package com.haruspeak.batch.service.redis;
 
-import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
-import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,17 +13,17 @@ import java.util.List;
 public class TagRedisService {
 
     @Qualifier("tagStepRedisTemplate")
-    private final RedisTemplate<String, TodayDiaryTag> redisTemplate;
+    private final RedisTemplate<String, TodayDiaryTagContext> redisTemplate;
 
-    public TagRedisService(@Qualifier("tagStepRedisTemplate") RedisTemplate<String, TodayDiaryTag>  redisTemplate) {
+    public TagRedisService(@Qualifier("tagStepRedisTemplate") RedisTemplate<String, TodayDiaryTagContext>  redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     public String getKeyByDate(String date) {
-        return String.format("tag:date:%s",date);
+        return String.format("step:tag:date:%s",date);
     }
 
-    public TodayDiaryTag popByDate(String date){
+    public TodayDiaryTagContext popByDate(String date){
         return redisTemplate.opsForList().leftPop(getKeyByDate(date));
     }
 
@@ -33,7 +32,7 @@ public class TagRedisService {
      * @param todayDiaryTags
      * @param date
      */
-    public void pushAll(List<TodayDiaryTag> todayDiaryTags, String date){
+    public void pushAll(List<TodayDiaryTagContext> todayDiaryTags, String date){
         try {
             redisTemplate.opsForList().rightPushAll(getKeyByDate(date), todayDiaryTags);
         } catch (Exception e) {

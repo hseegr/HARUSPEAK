@@ -1,7 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.model.DailyMoment;
-import com.haruspeak.batch.model.MomentImage;
+import com.haruspeak.batch.dto.context.MomentImageContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -26,7 +25,10 @@ public class MomentImageRepository {
             FROM active_daily_moments
             WHERE user_id = :userId
             AND moment_time = :momentTime
-            AND NOT EXISTS (SELECT 1 FROM moment_images WHERE image_url = :image)
+            AND NOT EXISTS (
+                SELECT 1 FROM moment_images 
+                WHERE image_url = :image
+            )
             """;
 
     /**
@@ -34,19 +36,19 @@ public class MomentImageRepository {
      * - Moment 별로 UNION을 이용하여 select 한 번으로 moment_id와 함께 insert rows를 만들어 bulk insert
      * @param momentImages
      */
-    public void bulkInsertMomentImages(List<MomentImage> momentImages) {
+    public void bulkInsertMomentImages(List<MomentImageContext> momentImages) {
         log.debug("🐛 INSERT INTO MOMENT_IMAGES 실행");
         SqlParameterSource[] params = buildParams(momentImages);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_MOMENT_IMAGES,params);
     }
 
-    private SqlParameterSource[] buildParams(List<MomentImage> dailyMoments) {
+    private SqlParameterSource[] buildParams(List<MomentImageContext> dailyMoments) {
         return dailyMoments.stream()
-                .flatMap(moment -> moment.images().stream()
+                .flatMap(moment -> moment.getImages().stream()
                         .map(image -> {
                             MapSqlParameterSource params = new MapSqlParameterSource();
-                            params.addValue("userId", moment.userId());
-                            params.addValue("momentTime", moment.momentTime());
+                            params.addValue("userId", moment.getUserId());
+                            params.addValue("momentTime", moment.getMomentTime());
                             params.addValue("image", image);
                             log.debug("moment_images parmas: {}", params);
                             return params;

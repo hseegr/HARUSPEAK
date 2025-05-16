@@ -36,7 +36,7 @@ public class SummaryStepListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        if(stepExecution.getExitStatus().equals(ExitStatus.FAILED)) {
+        if(!stepExecution.getExitStatus().equals(ExitStatus.COMPLETED)) {
             log.warn("❌ STEP 실패로 today key 목록 복구");
             todayDiaryRedisKeyService.recoverProcessingKeys();
         } else {

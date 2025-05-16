@@ -20,14 +20,24 @@ public class MomentTagRepository {
 
     private static final String SQL_INSERT_MOMENT_TAGS =
             """
-            INSERT IGNORE INTO moment_tags (moment_id, user_tag_id)
+            INSERT INTO moment_tags (moment_id, user_tag_id)
             SELECT m.moment_id, t.user_tag_id
             FROM active_daily_moments m, user_tag_details t
             WHERE m.user_id = :userId
             AND m.moment_time = :momentTime
             AND t.user_id = :userId
             AND t.name = :name
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM moment_tag_names mt
+                JOIN daily_moments dm
+                ON mt.moment_id = dm.moment_id
+                WHERE mt.user_id = :userId 
+                AND dm.moment_time = :momentTime
+                AND mt.name = :name
+            )
             """;
+
 
     public void bulkInsertMomentTags(List<DailyMoment> dailyMoments) {
         log.debug("🐛 INSERT INTO MOMENT_TAGS");

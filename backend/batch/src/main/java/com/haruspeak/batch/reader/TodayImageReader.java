@@ -1,6 +1,6 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.model.MomentImage;
+import com.haruspeak.batch.dto.context.MomentImageContext;
 import com.haruspeak.batch.service.redis.ImageRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
@@ -8,7 +8,7 @@ import org.springframework.batch.item.ItemReader;
 import java.util.List;
 
 @Slf4j
-public class TodayImageReader implements ItemReader<List<MomentImage>> {
+public class TodayImageReader implements ItemReader<MomentImageContext> {
 
     private final ImageRedisService service;
     private final String date;
@@ -19,7 +19,7 @@ public class TodayImageReader implements ItemReader<List<MomentImage>> {
     }
 
     @Override
-    public List<MomentImage> read() throws Exception {
+    public MomentImageContext read() throws Exception {
         log.debug("🐛 [READER] 오늘의 순간 일기 이미지 전체 조회");
 
         try {
