@@ -15,7 +15,7 @@ const DateRangeDisplay = ({ startDate, endDate }: DateRangeDisplayProps) => {
   };
 
   return (
-    <div className='mt-2 flex flex-wrap gap-1'>
+    <div className='flex flex-wrap gap-1'>
       <span className='text-sm text-gray-500'>기간 :</span>
       {startDate && (
         <span className='rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800'>
