@@ -44,7 +44,7 @@ const DiaryFrame = ({
     <div className='relative w-full'>
       <div
         onClick={handleClick}
-        className='flex w-full cursor-pointer flex-col gap-1 rounded-xl bg-haru-beige p-3'
+        className='mt-2 flex w-full cursor-pointer flex-col gap-1 rounded-xl bg-haru-beige p-3'
       >
         <div className='flex items-center'>
           <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 font-mont'>

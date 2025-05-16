@@ -46,6 +46,7 @@ const DateFilterDialog = ({
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isResetMode, setIsResetMode] = useState(false);
 
   // 오늘 날짜 설정 (시간은 00:00:00으로 설정)
   const today = new Date();
@@ -54,7 +55,7 @@ const DateFilterDialog = ({
   // 오류 메시지 업데이트 (날짜 선택 상태에 따라)
   useEffect(() => {
     if (!startDate && !endDate) {
-      setError('날짜를 선택해주세요');
+      setError(null);
     } else if (!startDate && endDate) {
       setError('시작 날짜를 선택해주세요');
     } else if (startDate && !endDate) {
@@ -68,12 +69,35 @@ const DateFilterDialog = ({
 
   // 필터 적용 버튼 활성화 여부 확인
   const isButtonDisabled = () => {
-    return (
-      !startDate || !endDate || (startDate && endDate && startDate > endDate)
-    );
+    // 두 날짜가 모두 없으면 버튼 활성화 (모든 일기 보기)
+    if (!startDate && !endDate) {
+      return false;
+    }
+
+    // 날짜 하나만 선택되었거나, 시작일이 종료일보다 나중인 경우 비활성화
+    if (
+      (!startDate && endDate) ||
+      (startDate && !endDate) ||
+      (startDate && endDate && startDate > endDate)
+    ) {
+      return true;
+    }
+
+    // 그 외의 경우 활성화
+    return false;
   };
 
   const handleApply = () => {
+    if (isResetMode) {
+      onApply({
+        startDate: undefined,
+        endDate: undefined,
+      });
+      onOpenChange(false);
+      // 초기화 모드 해제
+      setIsResetMode(false);
+      return;
+    }
     // 버튼이 비활성화되어 있으면 함수 실행 중지
     if (isButtonDisabled()) return;
 
@@ -89,16 +113,19 @@ const DateFilterDialog = ({
     setStartDate(null);
     setEndDate(null);
     setError(null);
+    setIsResetMode(true);
   };
 
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDate(date ?? null);
     setStartDateOpen(false); // 날짜 선택 후 달력 닫기
+    setIsResetMode(false);
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDate(date ?? null);
     setEndDateOpen(false); // 날짜 선택 후 달력 닫기
+    setIsResetMode(false);
   };
 
   return (
@@ -108,7 +135,6 @@ const DateFilterDialog = ({
           <DialogTitle>일기 기간 설정</DialogTitle>
         </DialogHeader>
         <div className='space-y-4'>
-          {/* 날짜 선택 - 시작/종료 날짜를 한 줄에 표시 */}
           <div className='flex gap-2'>
             <div className='flex-1'>
               <label className='mb-2 block text-sm font-medium'>
@@ -174,9 +200,9 @@ const DateFilterDialog = ({
                     onSelect={handleEndDateSelect}
                     initialFocus
                     locale={ko}
-                    disabled={date => date > today} // 오늘 이후 날짜는 선택 불가
-                    fromDate={undefined} // 가장 빠른 날짜 제한 없음
-                    toDate={today} // 오늘까지만 선택 가능
+                    disabled={date => date > today}
+                    fromDate={undefined}
+                    toDate={today}
                   />
                 </PopoverContent>
               </Popover>
@@ -201,7 +227,7 @@ const DateFilterDialog = ({
                   : 'bg-haru-green'
               }
             >
-              필터 적용
+              {!startDate && !endDate ? '모든 일기 보기' : '필터 적용'}
             </Button>
           </div>
         </div>
