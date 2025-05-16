@@ -9,6 +9,11 @@ import { queryClient } from '@/lib/queryClient';
 import App from './App.tsx';
 import './index.css';
 
+/**
+ * TODO : @/lib/queryClient 삭제 시 추가할 코드
+ * const queryClient = new QueryClient();
+.*/
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
