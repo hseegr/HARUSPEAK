@@ -47,6 +47,9 @@ public class DailySummaryService {
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
                 .orElseThrow(()->new HaruspeakException(ErrorCode.DIARY_NOT_FOUND));
 
+        if(request.title().length()>50){throw new HaruspeakException(ErrorCode.INVALID_TITLE_LENGTH);};
+        if(request.content().length()>200){throw new HaruspeakException(ErrorCode.INVALID_CONTENT_LENGTH);};
+
         try{
             dailySummary.updateSummary(request.title(), request.content());
         } catch (IllegalArgumentException e) {
