@@ -40,7 +40,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      <div className='flex h-full w-full max-w-96 items-center justify-center bg-haru-beige'>
+      <div className='flex h-full w-full max-w-mobile items-center justify-center bg-haru-beige'>
         <h1 className='text-4xl font-bold text-haru-green'>{displayText}</h1>
       </div>
     </div>

@@ -31,7 +31,7 @@ const CommonAlertDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className='max-w-96 rounded-xl bg-white'
+        className='max-w-mobile rounded-xl bg-white'
       >
         <DialogHeader>
           <DialogTitle className='text-base font-semibold'>{title}</DialogTitle>

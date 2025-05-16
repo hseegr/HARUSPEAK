@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 
 import {
@@ -8,6 +9,7 @@ import {
   regenerateImage,
 } from '@/apis/diaryApi';
 import { DiaryResponse } from '@/types/diary';
+import { ErrorResponse } from '@/types/error';
 
 export const useGetDiary = (summaryId: string) =>
   useQuery<DiaryResponse>({
@@ -33,8 +35,11 @@ export const useRegenerateImage = () => {
       queryClient.invalidateQueries({ queryKey: ['library'] });
       toast.info('이미지를 재생성하고 있습니다. 잠시만 기다려주세요.');
     },
-    onError: error => {
-      toast.error(error.message || '이미지 재생성 중 오류가 발생했습니다.');
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(
+        error.response?.data?.message ||
+          '이미지 재생성 중 오류가 발생했습니다.',
+      );
     },
   });
   return { mutate, isPending };
@@ -49,8 +54,10 @@ export const useRegenerateContent = () => {
       queryClient.invalidateQueries({ queryKey: ['diary', summaryId] });
       toast.success('요약 재생성이 완료되었습니다.');
     },
-    onError: error => {
-      toast.error(error.message || '요약 재생성 중 오류가 발생했습니다.');
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(
+        error.response?.data?.message || '요약 재생성 중 오류가 발생했습니다.',
+      );
     },
   });
 
