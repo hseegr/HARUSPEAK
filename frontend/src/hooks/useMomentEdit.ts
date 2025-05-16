@@ -20,6 +20,9 @@ export const useMomentEdit = (
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
+  const [contentLength, setContentLength] = useState(
+    initialMoment.content.length,
+  );
   const createdAt = initialMoment.createdAt;
 
   const { mutate: updateMomentMutation } = useMomentEditMutation();
@@ -30,9 +33,10 @@ export const useMomentEdit = (
     parseMomentTime(editedMoment.momentTime).time,
   );
 
-  // 저장 버튼 비활성화 조건: 내용과 이미지가 모두 비어있는 경우
+  // 저장 버튼 비활성화 조건: 내용과 이미지가 모두 비어있는 경우 또는 내용이 500자를 초과하는 경우
   const isSaveDisabled =
-    editedMoment.content.trim() === '' && editedMoment.images.length === 0;
+    (editedMoment.content.trim() === '' && editedMoment.images.length === 0) ||
+    contentLength > 500;
 
   // 시간 변경 핸들러 : 24시간 형식의 입력을 12시간 형식으로 변환하여 저장
   const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +56,7 @@ export const useMomentEdit = (
 
   // 내용 변경 핸들러
   const handleContentChange = (value: string) => {
+    setContentLength(value.length);
     setEditedMoment(prev => ({ ...prev, content: value }));
   };
 
@@ -120,6 +125,7 @@ export const useMomentEdit = (
     date,
     currentTime,
     isSaveDisabled,
+    contentLength,
     handleTimeChange,
     handleContentChange,
     handleDeleteImage,
