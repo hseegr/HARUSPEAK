@@ -40,14 +40,15 @@ public class MomentTagService {
         if (content.matches("^[^a-zA-Z0-9ㄱ-ㅎ가-힣]+$")) {
             List<String> specialCharacterList = new ArrayList<>(); // 초기화
             specialCharacterList.add("아무말"); // 아무말 담기
-            List<String> specialCharacterArrayMergedTags = createNonDuplicateMergedTagList(prevTagList, specialCharacterList); // 기존 리스트와 합치기
-            updateTagListInRedis(mtcr, specialCharacterArrayMergedTags, userId); // 레디스 저장
-            return new MomentTagCreateResponse(specialCharacterArrayMergedTags); // 반환
+            List<String> specialCharacterArrayMergedTagList = createNonDuplicateMergedTagList(prevTagList, specialCharacterList); // 기존 리스트와 합치기
+            updateTagListInRedis(mtcr, specialCharacterArrayMergedTagList, userId); // 레디스 저장
+            return new MomentTagCreateResponse(specialCharacterArrayMergedTagList); // 반환
         }
 
         // 3. FastApi 요청해서 추천받아오는 경우 - 기존태그 + "아무말"
         List<String> recommendedTags = getAiTagResponse(uri, mtcr).recommendTags(); // ai 서버에 프론트 요청값 전달 후 반환 받기
         List<String> mergedTagList = createNonDuplicateMergedTagList(prevTagList, recommendedTags); // 리스트 합치기
+        updateTagListInRedis(mtcr, mergedTagList, userId);
 
         if(mergedTagList.isEmpty()) throw new HaruspeakException(ErrorCode.RECOMMEND_TAGS_ARRAY_EMPTY); // 빈배열 반환시 에러처리
         return new MomentTagCreateResponse(mergedTagList); // 반환
