@@ -21,9 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 
@@ -219,12 +217,24 @@ public class TodayService {
      */
     private void validateTags(List<String> tags){
         if (tags == null) return;
-        if (tags.size()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_SIZE);
-        for(String tag:tags){
-            if(tag.length()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_LENGTH);
-            if(tag.trim().isEmpty()) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_FORMAT);
-            if (!tag.matches("^[a-zA-Z0-9 _가-힣]+$")) { // 공백/언더스코어 외 특수문자 금지
+        if (tags.size() > 10) {
+            throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_SIZE);
+        }
+
+        Set<String> seenTags = new HashSet<>();
+
+        for (String tag : tags) {
+            if (tag == null || tag.trim().isEmpty()) {
+                throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_FORMAT);
+            }
+            if (tag.length() > 10) {
+                throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_LENGTH);
+            }
+            if (!tag.matches("^[a-zA-Z0-9 _가-힣]+$")) {
                 throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_CHARACTER);
+            }
+            if (!seenTags.add(tag)) {
+                throw new HaruspeakException(ErrorCode.DUPLICATION_TAG);
             }
         }
     }
