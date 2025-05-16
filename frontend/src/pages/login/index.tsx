@@ -20,7 +20,7 @@ const LoginPage = () => {
   return (
     // 기존 baselayout 스타일 유지하기 위해 동일하게 구현 (현재 로그인 페이지는 baselayout 사용하지 않음)
     <div className='flex flex-col items-center bg-gray-100'>
-      <div className='max-w-mobile min-h-lvh w-full bg-haru-green text-white'>
+      <div className='min-h-lvh w-full max-w-mobile bg-haru-green text-white'>
         <div className='flex min-h-[100vh] w-full flex-col items-center justify-center gap-12'>
           <div>
             <img src={logoimg} alt='logo' className='w-24' />

@@ -113,7 +113,7 @@ const Library = () => {
   return (
     <div className='w-full'>
       {!isPending && hasData && (
-        <div className='max-w-mobile fixed left-1/2 top-12 z-10 flex w-full -translate-x-1/2 items-center justify-between bg-white px-4 py-1'>
+        <div className='fixed left-1/2 top-12 z-10 flex w-full max-w-mobile -translate-x-1/2 items-center justify-between bg-white px-4 py-1'>
           <div className='flex flex-shrink-0 items-center gap-2 overflow-hidden'>
             <FilterBadge onClick={handleFilterClick} />
             <DateFilterBadge onClick={handleDateFilterClick} />
