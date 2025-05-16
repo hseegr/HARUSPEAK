@@ -37,13 +37,12 @@ public class TodayService {
     private final S3Service s3Service;
     private final FastApiClient fastApiClient;
 
-
     public TodaySttResponse transferStt(
             String uri,
             MultipartFile file,
             Integer userId
     ) {
-        return fastApiClient.convertVoiceToText(uri, file, TodaySttResponse.class);
+        return fastApiClient.gpuConvertVoiceToText(uri, file, TodaySttResponse.class);
     }
 
     /**
@@ -52,6 +51,8 @@ public class TodayService {
      * @param userId
      */
     public void saveMoment(MomentWriteRequest request, Integer userId) {
+
+        if (request.content().trim().isEmpty() && request.images().isEmpty()) throw new HaruspeakException(ErrorCode.BLANK_MOMENT);
         LocalDateTime now = LocalDateTime.now();
         String key = redisKey(userId, now);
 
@@ -81,6 +82,14 @@ public class TodayService {
     public void updateMoment(String time, MomentUpdateRequest request, Integer userId){
 
         String key = redisKey(userId, LocalDateTime.now());
+        Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
+
+        if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
+        if (request.content().trim().isEmpty() && request.images().isEmpty()) throw new HaruspeakException(ErrorCode.BLANK_MOMENT);
+        if (request.content().length()>500) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_CONTENT_LENGTH);
+
+        validateTags(request.tags());
+        validateDeletedImages(request.images(),request.deletedImages());
 
         try {
             request.deletedImages().forEach(s3Service::deleteImages);
@@ -90,10 +99,6 @@ public class TodayService {
                             ? s3Service.uploadImagesAndGetUrls(image)
                             : image)
                     .toList();
-
-            Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
-
-            if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
 
             existingMoment.put("momentTime", request.momentTime());
             existingMoment.put("content", request.content());
@@ -179,6 +184,7 @@ public class TodayService {
 
             if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
 
+            validateTags(request.tags());
             existingMoment.put("tags", request.tags());
 
             redisTemplate.opsForHash().put(key, request.createdAt(), existingMoment);
@@ -207,5 +213,32 @@ public class TodayService {
         return "user:" + userId + ":moment:" + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
+    /**
+     * tag 검사 메서드
+     * @param tags
+     */
+    private void validateTags(List<String> tags){
+        if (tags == null) return;
+        if (tags.size()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_SIZE);
+        for(String tag:tags){
+            if(tag.length()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_LENGTH);
+            if(tag.trim().isEmpty()) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_FORMAT);
+            if (!tag.matches("^[a-zA-Z0-9 _가-힣]+$")) { // 공백/언더스코어 외 특수문자 금지
+                throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_CHARACTER);
+            }
+        }
+    }
 
+    /**
+     * 이미지와 삭제할 이미지 검사 메서드
+     * @param images
+     * @param deletedImages
+     */
+    private void validateDeletedImages(List<String> images, List<String> deletedImages){
+        for(String image:images){
+            if(deletedImages.contains(image)){
+                throw new HaruspeakException(ErrorCode.DUPLICATION_DELETE_IMAGE);
+            }
+        }
+    }
 }

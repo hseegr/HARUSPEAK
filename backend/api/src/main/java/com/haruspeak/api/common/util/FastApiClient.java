@@ -1,6 +1,8 @@
 package com.haruspeak.api.common.util;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -16,9 +18,14 @@ import reactor.core.publisher.Mono;
 public class FastApiClient {
 
     private final WebClient fastApiWebClient;
+    private final WebClient gpuSttWebClient;
 
-    public FastApiClient(WebClient fastApiWebClient) {
+    public FastApiClient(
+            @Qualifier("fastApiWebClient") WebClient fastApiWebClient,
+            @Qualifier("gpuSttWebClient") WebClient gpuSttWebClient
+    ) {
         this.fastApiWebClient = fastApiWebClient;
+        this.gpuSttWebClient = gpuSttWebClient;
     }
 
     public <T> T getPrediction(String uri, Object requestDto, Class<T> responseType) {
@@ -28,6 +35,17 @@ public class FastApiClient {
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,  // isError() 호출
                         this::handleError)
+                .bodyToMono(responseType)
+                .block(); // 동기 호출
+    }
+
+    public <T> T gpuConvertVoiceToText(String uri, MultipartFile file, Class<T> responseType) {
+        return gpuSttWebClient.post()
+                .uri(uri)
+                .contentType(MediaType.MULTIPART_FORM_DATA) // multipart/form-data로 설정
+                .body(BodyInserters.fromMultipartData("file", file.getResource())) // 파일만 멀티파트로 전송
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, this::handleError)
                 .bodyToMono(responseType)
                 .block(); // 동기 호출
     }

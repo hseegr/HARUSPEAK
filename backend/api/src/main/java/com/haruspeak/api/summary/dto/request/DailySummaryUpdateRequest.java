@@ -1,6 +1,7 @@
 package com.haruspeak.api.summary.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 
 @Schema(description = "하루 일기 요약 수정 요청")
 public record DailySummaryUpdateRequest(

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.IOException;
 import java.net.URI;
 
 @Slf4j
@@ -52,14 +55,16 @@ public class OAuthLoginController {
                     =   "구글 OAuth2 로그인 인증 과정을 시작합니다.\n" +
                         "요청 시 사용자는 구글 로그인 화면으로 리다이렉트되며, 로그인 완료 후 서버로 콜백됩니다."
     )
-    public ResponseEntity<Void> redirectToGoogle() {
+    public RedirectView redirectToGoogle() {
         log.info("[GET] api/auth/google/login 로그인 요청");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(authorizationUri));
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .headers(headers)
-                .build();
+        return new RedirectView("/oauth2/authorization/google");
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setLocation(URI.create(authorizationUri));
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .headers(headers)
+//                .build();
     }
+
 
 
     /**
