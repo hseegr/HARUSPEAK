@@ -21,8 +21,6 @@ const TodayWritePage = () => {
     /Mobile/.test(navigator.userAgent) &&
     /Android/.test(navigator.userAgent);
 
-  console.log(isMobileChrome);
-
   const images = TodayWriteStore(state => state.images);
   const textBlocks = TodayWriteStore(state => state.textBlocks);
   const clearAll = TodayWriteStore(state => state.clearAll);
