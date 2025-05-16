@@ -20,6 +20,10 @@ public enum ErrorCode  {
     INVALID_TITLE_LENGTH(40030, "제목은 50자 이하여야 합니다."),
     INVALID_CONTENT_LENGTH(40031, "내용은 200자 이하여야 합니다."),
     INVALID_MOMENT_CONTENT_LENGTH(40041, "내용은 500자 이하여야 합니다."),
+    INVALID_MOMENT_TAG_SIZE(40042,"태그는 최대 10개까지 등록할 수 있습니다"),
+    INVALID_MOMENT_TAG_LENGTH(40043,"태그는 10자 이내여야 합니다."),
+    INVALID_MOMENT_TAG_FORMAT(40044,"태그는 빈 문자열일 수 없습니다."),
+    INVALID_MOMENT_TAG_CHARACTER(40045,"태그에 허용되지 않은 특수문자가 포함되어 있습니다."),
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
     INVALID_TOKEN(40110, "유효하지 않은 토큰입니다."),

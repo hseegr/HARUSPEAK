@@ -85,6 +85,7 @@ public class TodayService {
         if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
         if (request.content().length()>500) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_CONTENT_LENGTH);
 
+        validateTags(request.tags());
         try {
             request.deletedImages().forEach(s3Service::deleteImages);
 
@@ -178,6 +179,7 @@ public class TodayService {
 
             if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
 
+            validateTags(request.tags());
             existingMoment.put("tags", request.tags());
 
             redisTemplate.opsForHash().put(key, request.createdAt(), existingMoment);
@@ -204,6 +206,18 @@ public class TodayService {
      */
     public String redisKey(Integer userId, LocalDateTime now){
         return "user:" + userId + ":moment:" + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    private void validateTags(List<String> tags){
+        if (tags == null) return;
+        if (tags.size()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_SIZE);
+        for(String tag:tags){
+            if(tag.length()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_LENGTH);
+            if(tag.trim().isEmpty()) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_FORMAT);
+            if (!tag.matches("^[a-zA-Z0-9 _가-힣]+$")) { // 공백/언더스코어 외 특수문자 금지
+                throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_CHARACTER);
+            }
+        }
     }
 
 
