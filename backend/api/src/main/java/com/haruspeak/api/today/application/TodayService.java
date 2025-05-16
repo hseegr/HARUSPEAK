@@ -89,6 +89,8 @@ public class TodayService {
         if (request.content().length()>500) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_CONTENT_LENGTH);
 
         validateTags(request.tags());
+        validateDeletedImages(request.images(),request.deletedImages());
+
         try {
             request.deletedImages().forEach(s3Service::deleteImages);
 
@@ -211,6 +213,10 @@ public class TodayService {
         return "user:" + userId + ":moment:" + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
+    /**
+     * tag 검사 메서드
+     * @param tags
+     */
     private void validateTags(List<String> tags){
         if (tags == null) return;
         if (tags.size()>10) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_SIZE);
@@ -223,5 +229,16 @@ public class TodayService {
         }
     }
 
-
+    /**
+     * 이미지와 삭제할 이미지 검사 메서드
+     * @param images
+     * @param deletedImages
+     */
+    private void validateDeletedImages(List<String> images, List<String> deletedImages){
+        for(String image:images){
+            if(deletedImages.contains(image)){
+                throw new HaruspeakException(ErrorCode.DUPLICATION_DELETE_IMAGE);
+            }
+        }
+    }
 }
