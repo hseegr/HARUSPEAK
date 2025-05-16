@@ -25,13 +25,26 @@ const ImageUploadPage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      const total = images.length + newFiles.length;
+
+      // 이미지 파일만 필터링 (MIME이 없거나 image/가 아니면 제외)
+      const imageFiles = newFiles.filter(
+        file => file.type && file.type.startsWith('image/'),
+      );
+
+      // 이미지 외 파일이 하나라도 있으면 토스트 알림
+      if (imageFiles.length < newFiles.length) {
+        toast.error('이미지 파일만 첨부할 수 있어요.');
+      }
+
+      // 10장 초과 시 제한
+      const total = images.length + imageFiles.length;
       if (total > 10) {
         toast.error('이미지는 10장까지 첨부할 수 있어요.');
         return;
       }
 
-      newFiles.forEach(file => addImages(file));
+      // 이미지 파일만 추가
+      imageFiles.forEach(file => addImages(file));
     }
   };
 
