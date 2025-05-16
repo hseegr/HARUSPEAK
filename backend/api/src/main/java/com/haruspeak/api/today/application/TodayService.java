@@ -80,6 +80,10 @@ public class TodayService {
     public void updateMoment(String time, MomentUpdateRequest request, Integer userId){
 
         String key = redisKey(userId, LocalDateTime.now());
+        Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
+
+        if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
+        if (request.content().length()>500) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_CONTENT_LENGTH);
 
         try {
             request.deletedImages().forEach(s3Service::deleteImages);
@@ -89,10 +93,6 @@ public class TodayService {
                             ? s3Service.uploadImagesAndGetUrls(image)
                             : image)
                     .toList();
-
-            Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
-
-            if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
 
             existingMoment.put("momentTime", request.momentTime());
             existingMoment.put("content", request.content());

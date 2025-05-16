@@ -19,7 +19,7 @@ public enum ErrorCode  {
     INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
     INVALID_TITLE_LENGTH(40030, "제목은 50자 이하여야 합니다."),
     INVALID_CONTENT_LENGTH(40031, "내용은 200자 이하여야 합니다."),
-
+    INVALID_MOMENT_CONTENT_LENGTH(40041, "내용은 500자 이하여야 합니다."),
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
     INVALID_TOKEN(40110, "유효하지 않은 토큰입니다."),
