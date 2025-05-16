@@ -16,7 +16,12 @@ const VoiceInput = ({ text, onSave, onCancle }: VoiceInputProps) => {
       <div className='flex justify-end gap-2 pr-2 text-sm'>
         <button
           onClick={onSave}
-          className='font-semibold text-haru-light-green hover:text-haru-green'
+          disabled={!text.trim()}
+          className={
+            !text.trim()
+              ? 'cursor-not-allowed font-semibold text-haru-gray-3'
+              : 'font-semibold text-haru-light-green hover:text-haru-green'
+          }
         >
           저장
         </button>

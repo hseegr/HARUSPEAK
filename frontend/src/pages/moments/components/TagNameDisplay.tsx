@@ -25,7 +25,7 @@ const TagNameDisplay = ({ tagIds }: TagNameDisplayProps) => {
   if (tagNames.length === 0) return null;
 
   return (
-    <div className='mt-2 flex flex-wrap gap-1'>
+    <div className='mt-4 flex flex-wrap gap-1'>
       <span className='text-sm text-gray-500'>선택된 태그 :</span>
       {tagNames.map((name, index) => (
         <span

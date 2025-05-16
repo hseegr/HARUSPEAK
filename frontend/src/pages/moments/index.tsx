@@ -58,7 +58,7 @@ const Moments = () => {
 
   return (
     <div className='container mx-auto'>
-      <div className='mb-6'>
+      <div className='mb-4'>
         <h1 className='text-2xl font-bold'>순간 일기</h1>
         {(searchParams.get('startDate') || searchParams.get('endDate')) && (
           <DateRangeDisplay

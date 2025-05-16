@@ -1,7 +1,7 @@
 const LoadingSpinner = () => {
   return (
     <div className='flex min-h-[100vh] w-full items-center justify-center bg-gray-100'>
-      <div className='flex min-h-lvh w-full max-w-96 flex-col items-center justify-center gap-4 bg-white'>
+      <div className='flex min-h-lvh w-full max-w-mobile flex-col items-center justify-center gap-4 bg-white'>
         <style>
           {`
             @keyframes wave {

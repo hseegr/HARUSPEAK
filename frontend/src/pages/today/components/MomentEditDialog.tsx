@@ -30,6 +30,7 @@ const MomentEditDialog = ({
     date,
     currentTime,
     isSaveDisabled,
+    contentLength,
     handleTimeChange,
     handleContentChange,
     handleDeleteImage,
@@ -85,7 +86,7 @@ const MomentEditDialog = ({
       <DialogContent
         showCloseButton={false}
         layout='stacked'
-        className='min-h-full max-w-96'
+        className='min-h-full max-w-mobile'
       >
         <DialogDescription className='sr-only'>
           오늘의 순간 기록을 수정하는 대화상자입니다. 시간, 내용, 이미지, 태그를
@@ -164,7 +165,6 @@ const MomentEditDialog = ({
               value={editedMoment.content}
               onChange={e => handleContentChange(e.target.value)}
               rows={4}
-              maxLength={1000}
               className='text-md max-h-[250px] min-h-[100px] w-full resize-none rounded-md border border-gray-300 p-2 focus:outline-haru-green'
               placeholder='순간의 기록을 입력하세요'
               style={{
@@ -178,16 +178,26 @@ const MomentEditDialog = ({
               }}
             />
           </div>
-
-          {/* 태그 추가 */}
-          <div className='flex flex-col'>
+          {/* 태그 에러 처리 및 글자수 안내 */}
+          <div className='flex justify-between text-end text-sm'>
             <div>
               {errors.tag && errors.tag.type !== 'too_small' && (
-                <div className='mb-2 text-xs text-red-500'>
+                <div className='font-bold text-red-500'>
                   {errors.tag?.message || tagError}
                 </div>
               )}
             </div>
+            <span
+              className={
+                contentLength > 500 ? 'font-bold text-red-500' : 'text-gray-500'
+              }
+            >
+              {contentLength}/500자
+            </span>
+          </div>
+
+          {/* 태그 추가 */}
+          <div className='flex flex-col'>
             <form
               onSubmit={handleSubmit(onSubmit)}
               className='mb-2 flex items-center gap-2'
@@ -226,7 +236,7 @@ const MomentEditDialog = ({
               />
               <button
                 onClick={() => setShouldResetTags(true)}
-                className='text-sm font-bold text-red-600/80 hover:text-red-600 disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
+                className='text-sm font-bold text-haru-light-green hover:text-haru-green disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
                 disabled={editedMoment.tags.length > 0 ? false : true}
               >
                 태그 목록 초기화
@@ -254,7 +264,9 @@ const MomentEditDialog = ({
         </div>
         {isSaveDisabled && (
           <div className='mt-2 text-center text-sm font-bold text-red-500'>
-            내용과 이미지가 모두 비어있어 저장할 수 없습니다.
+            {contentLength > 500
+              ? '내용이 500자를 초과하여 저장할 수 없습니다.'
+              : '내용과 이미지가 모두 비어있어 저장할 수 없습니다.'}
           </div>
         )}
       </DialogContent>
