@@ -43,7 +43,7 @@ const ImageDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className='m-0 h-[100dvh] w-full max-w-96 bg-haru-beige p-0'
+        className='max-w-mobile m-0 h-[100dvh] w-full bg-haru-beige p-0'
         showCloseButton={false}
       >
         <style>
@@ -67,10 +67,10 @@ const ImageDialog = ({
         </div>
 
         {/* 상단 헤더 */}
-        <div className='absolute left-0 right-0 top-0 z-10 flex items-center justify-between p-4'>
-          <div className='rounded-full rounded-bl-none bg-haru-yellow px-3 py-1 text-lg'>
+        <div className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4'>
+          <div className='px-3 py-1 text-lg rounded-full rounded-bl-none bg-haru-yellow'>
             <span className='mr-1'>{formattedTime}</span>
-            <span className='mr-2 font-leeseyoon text-sm'>의 기록</span>
+            <span className='mr-2 text-sm font-leeseyoon'>의 기록</span>
           </div>
           <DialogClose className='p-2 text-haru-light-green hover:text-red-600'>
             <span className='sr-only'>닫기</span>
@@ -79,12 +79,12 @@ const ImageDialog = ({
         </div>
 
         {/* 이미지 영역 */}
-        <div className='relative flex h-full w-full items-center justify-center'>
+        <div className='relative flex items-center justify-center w-full h-full'>
           {/* 이전 버튼 */}
           {images.length > 1 && (
             <button
               onClick={handlePrevious}
-              className='absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-haru-light-green px-2 py-1 text-white hover:bg-haru-green'
+              className='absolute px-2 py-1 text-white -translate-y-1/2 rounded-full left-4 top-1/2 bg-haru-light-green hover:bg-haru-green'
               aria-label='이전 이미지'
             >
               &#x2190;
@@ -105,7 +105,7 @@ const ImageDialog = ({
           {images.length > 1 && (
             <button
               onClick={handleNext}
-              className='absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-haru-light-green px-2 py-1 text-white hover:bg-haru-green'
+              className='absolute px-2 py-1 text-white -translate-y-1/2 rounded-full right-4 top-1/2 bg-haru-light-green hover:bg-haru-green'
               aria-label='다음 이미지'
             >
               &#x2192;
@@ -120,26 +120,26 @@ const ImageDialog = ({
             <div className='flex justify-center'>
               <button
                 onClick={toggleAutoPlay}
-                className='rounded-full bg-haru-light-green p-2 text-white hover:bg-haru-green'
+                className='p-2 text-white rounded-full bg-haru-light-green hover:bg-haru-green'
                 aria-label={
                   isAutoPlaying ? '자동 슬라이드 멈춤' : '자동 슬라이드 시작'
                 }
               >
                 {isAutoPlaying ? (
-                  <Pause className='h-4 w-4' />
+                  <Pause className='w-4 h-4' />
                 ) : (
-                  <Play className='h-4 w-4' />
+                  <Play className='w-4 h-4' />
                 )}
               </button>
             </div>
 
             {/* 인디케이터 */}
-            <div className='flex h-1 w-full gap-1'>
+            <div className='flex w-full h-1 gap-1'>
               {images.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className='relative h-full flex-1 overflow-hidden rounded-full bg-haru-light-green/30'
+                  className='relative flex-1 h-full overflow-hidden rounded-full bg-haru-light-green/30'
                   aria-label={`${idx + 1}번째 이미지로 이동`}
                 >
                   {currentIndex === idx && (

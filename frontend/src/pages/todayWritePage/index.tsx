@@ -120,7 +120,7 @@ const TodayWritePage = () => {
         )}
 
         {/* 하단 고정 입력 영역 */}
-        <div className='fixed bottom-[70px] left-0 right-0 mx-auto w-full max-w-96 bg-white px-2 pb-8 pt-2'>
+        <div className='max-w-mobile fixed bottom-[70px] left-0 right-0 mx-auto w-full bg-white px-2 pb-8 pt-2'>
           <div className='flex flex-col gap-4'>
             {hasContent && (
               <div className='flex flex-row justify-end px-4'>

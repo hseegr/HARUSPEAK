@@ -15,7 +15,7 @@ const BaseLayout = () => {
 
   return (
     <div className='flex flex-col items-center bg-gray-100'>
-      <div className='min-h-lvh w-full max-w-96 bg-white'>
+      <div className='w-full bg-white max-w-mobile min-h-lvh'>
         {currentTitle && <Header title={currentTitle} />}
         <main
           className={`flex w-full overflow-y-auto px-4 pb-[80px] pt-[56px] ${isHome ? 'bg-haru-yellow' : 'bg-white'}`}

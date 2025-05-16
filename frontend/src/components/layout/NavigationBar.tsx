@@ -19,7 +19,7 @@ const NavigationBar = () => {
       : 'text-haru-gray-4 hover:text-haru-gray-5';
 
   return (
-    <nav className='fixed bottom-0 z-40 flex h-[70px] w-full max-w-96 items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
+    <nav className='max-w-mobile fixed bottom-0 z-40 flex h-[70px] w-full items-center justify-around rounded-t-2xl bg-white shadow-[4px_4px_16px_12px_rgba(0,0,0,0.04)]'>
       {/* Home */}
       <button
         className={`${baseButtonClasses} ${getActiveColor('/')}`}
@@ -41,7 +41,7 @@ const NavigationBar = () => {
 
       {/* 플로팅 + 버튼 */}
       <button
-        className='absolute left-1/2 top-0 flex h-16 w-16 -translate-x-1/2 -translate-y-1/4 items-center justify-center rounded-full bg-haru-green text-white transition-colors duration-200 hover:bg-haru-light-green'
+        className='absolute top-0 flex items-center justify-center w-16 h-16 text-white transition-colors duration-200 -translate-x-1/2 rounded-full left-1/2 -translate-y-1/4 bg-haru-green hover:bg-haru-light-green'
         onClick={() => navigate('/todaywrite')}
         aria-label='오늘의 기록 추가'
       >

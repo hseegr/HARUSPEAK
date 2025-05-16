@@ -85,7 +85,7 @@ const MomentEditDialog = ({
       <DialogContent
         showCloseButton={false}
         layout='stacked'
-        className='min-h-full max-w-96'
+        className='max-w-mobile min-h-full'
       >
         <DialogDescription className='sr-only'>
           오늘의 순간 기록을 수정하는 대화상자입니다. 시간, 내용, 이미지, 태그를
