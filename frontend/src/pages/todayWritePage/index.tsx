@@ -31,7 +31,8 @@ const TodayWritePage = () => {
   const { mutate: saveDiary } = useTodayWriteMutation();
   const navigate = useNavigate();
 
-  const isTooLong = textBlocks.join('\n\n').length > 500;
+  // 프론트에서 토스트 메시지 처리
+  // const isTooLong = textBlocks.join('\n\n').length > 500;
 
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
@@ -52,10 +53,11 @@ const TodayWritePage = () => {
   const handleSave = async () => {
     if (images.length === 0 && textBlocks.length === 0) return;
 
-    if (isTooLong) {
-      toast.error('최대 500자까지만 저장할 수 있습니다.');
-      return;
-    }
+    // 프론트에서 토스트 메시지 처리
+    // if (isTooLong) {
+    //   toast.error('최대 500자까지만 저장할 수 있습니다.');
+    //   return;
+    // }
 
     try {
       setIsSaving(true);
@@ -83,10 +85,6 @@ const TodayWritePage = () => {
             clearAll();
             setIsSaving(false);
             navigate('/today');
-          },
-          onError: () => {
-            toast.error('순간 기록 저장에 실패했습니다.');
-            setIsSaving(false);
           },
         },
       );
