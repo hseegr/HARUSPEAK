@@ -43,7 +43,7 @@ const ImageDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className='m-0 h-[100dvh] w-full max-w-96 bg-haru-beige p-0'
+        className='m-0 h-[100dvh] w-full max-w-mobile bg-haru-beige p-0'
         showCloseButton={false}
       >
         <style>

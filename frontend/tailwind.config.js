@@ -6,6 +6,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      maxWidth: {
+        mobile: '420px',
+      },
       keyframes: {
         'bounce-and-rotate': {
           '0%': { transform: 'translateX(-100%) rotate(0deg)' },

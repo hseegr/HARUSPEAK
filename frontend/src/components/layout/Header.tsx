@@ -11,7 +11,7 @@ const Header = ({ title }: HeaderProps) => {
   const navigate = useNavigate();
 
   return (
-    <header className='fixed top-0 z-10 flex h-12 w-full max-w-96 items-center justify-center bg-white px-4'>
+    <header className='fixed top-0 z-10 flex h-12 w-full max-w-mobile items-center justify-center bg-white px-4'>
       {/* 왼쪽: 뒤로가기 */}
       <button
         onClick={() => navigate(-1)}
