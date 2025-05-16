@@ -51,6 +51,8 @@ public class TodayService {
      * @param userId
      */
     public void saveMoment(MomentWriteRequest request, Integer userId) {
+
+        if (request.content().trim().isEmpty() && request.images().isEmpty()) throw new HaruspeakException(ErrorCode.BLANK_MOMENT);
         LocalDateTime now = LocalDateTime.now();
         String key = redisKey(userId, now);
 
@@ -83,6 +85,7 @@ public class TodayService {
         Map<String, Object> existingMoment = (Map<String, Object>) redisTemplate.opsForHash().get(key, time);
 
         if (existingMoment == null) throw new HaruspeakException(ErrorCode.MOMENT_NOT_FOUND);
+        if (request.content().trim().isEmpty() && request.images().isEmpty()) throw new HaruspeakException(ErrorCode.BLANK_MOMENT);
         if (request.content().length()>500) throw new HaruspeakException(ErrorCode.INVALID_MOMENT_CONTENT_LENGTH);
 
         validateTags(request.tags());
