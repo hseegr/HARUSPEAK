@@ -21,7 +21,7 @@ export const useTagForm = ({ tags, onTagAdd }: UseTagFormProps) => {
     reset,
     watch,
   } = useForm<TagFormData>({
-    resolver: zodResolver(tagSchema),
+    resolver: zodResolver(tagSchema(tags)),
     defaultValues: {
       tag: '',
     },
