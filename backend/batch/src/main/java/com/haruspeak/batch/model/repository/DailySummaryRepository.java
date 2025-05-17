@@ -1,10 +1,9 @@
 package com.haruspeak.batch.model.repository;
 
+import com.haruspeak.batch.dto.context.ThumbnailUpdateContext;
 import com.haruspeak.batch.model.DailySummary;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -14,31 +13,38 @@ import java.util.List;
 @Repository
 public class DailySummaryRepository {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SqlExecutor sqlExecutor;
 
-    public DailySummaryRepository (@Qualifier("apiNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public DailySummaryRepository (SqlExecutor sqlExecutor) {
+        this.sqlExecutor = sqlExecutor;
     }
 
     private static final String SQL_INSERT_DAILY_SUMMARY =
             """
-            INSERT INTO daily_summary 
+            INSERT IGNORE INTO daily_summary 
             (user_id, write_date, title, content, image_url, moment_count) 
             VALUES (:userId, :writeDate, :title, :content, :imageUrl, :momentCount)
             """;
 
-    private static final String SQL_INSERT_DAILY_SUMMARY_WITHOUT_THUMBNAIL =
+    private static final String SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL =
             """
             INSERT INTO daily_summary 
-            (user_id, write_date, title, content, image_url, moment_count) 
-            VALUES (:userId, :writeDate, :title, :content, :imageUrl, :momentCount)
+            (user_id, write_date, title, content, moment_count, image_generate_count) 
+            SELECT :userId, :writeDate, :title, :content, :momentCount, 0
+            FROM DUAL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM daily_summary 
+                WHERE user_id = :userId 
+                AND write_date = :writeDate 
+            )
             """;
 
-    private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMNBAIL =
+    private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL =
             """
             UPDATE daily_summary
-            SET image_url = :imageUrl
-            WHERE user_id = :user_id
+            SET image_url = :imageUrl,
+            image_generate_count = 1
+            WHERE user_id = :userId
             AND write_date = :writeDate
             """;
 
@@ -46,13 +52,23 @@ public class DailySummaryRepository {
      * Chunk의 summary 들을 한 번에 insert
      * @param dailySummaries
      */
-    public void bulkInsertDailySummaries(List<DailySummary> dailySummaries) {
+    public void bulkInsertDailySummariesWithoutThumbnail(List<DailySummary> dailySummaries) {
         log.debug("🐛 INSERT INTO DAILY_SUMMARY 실행");
-        SqlParameterSource[] params = buildParams(dailySummaries);
-        executeBatchUpdate(params);
+        SqlParameterSource[] params = buildInsertParams(dailySummaries);
+        sqlExecutor.executeBatchUpdate(SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL, params);
     }
 
-    private SqlParameterSource[] buildParams(List<DailySummary> dailySummaries) {
+    /**
+     * summary의 썸네일 업데이트
+     * @param thumbnails
+     */
+    public void bulkUpdateThumbnailForDailySummaries(List<ThumbnailUpdateContext> thumbnails) {
+        log.debug("🐛 UPDATE DAILY_SUMMARY SET THUMBNAIL 실행");
+        SqlParameterSource[] params = buildUpdateParamsThumbnail(thumbnails);
+        sqlExecutor.executeBatchUpdate(SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL, params);
+    }
+
+    private SqlParameterSource[] buildInsertParams(List<DailySummary> dailySummaries) {
         return dailySummaries.stream()
                 .map(summary ->{
                     MapSqlParameterSource params = new MapSqlParameterSource();
@@ -60,33 +76,22 @@ public class DailySummaryRepository {
                     params.addValue("writeDate", summary.getWriteDate());
                     params.addValue("title", summary.getTitle());
                     params.addValue("content", summary.getContent());
-                    params.addValue("imageUrl", summary.getImageUrl());
                     params.addValue("momentCount", summary.getMomentCount());
+                    log.debug("daily_summary params: {}", params);
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);
     }
 
-    private void executeBatchUpdate(SqlParameterSource[] params) {
-        try {
-            int[] updateCounts = namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_DAILY_SUMMARY_WITHOUT_THUMBNAIL, params);
-
-            if (log.isDebugEnabled()) {
-                int successCount = 0;
-                int totalCount = updateCounts.length;
-
-                for (int count : updateCounts) {
-                    if (count > 0) {
-                        successCount++;
-                    }
-                }
-
-                log.debug("🐛 INSERT INTO DAILY_SUMMARY 완료 - {}/{}건", successCount, totalCount);
-            }
-            
-        } catch (Exception e) {
-            log.error("💥 DAILY_SUMMARY 삽입 실패", e);
-            throw e;
-        }
+    private SqlParameterSource[] buildUpdateParamsThumbnail(List<ThumbnailUpdateContext> thumbnails) {
+        return thumbnails.stream()
+                .map(thumbnail ->{
+                    MapSqlParameterSource params = new MapSqlParameterSource();
+                    params.addValue("userId", thumbnail.userId());
+                    params.addValue("writeDate", thumbnail.writeDate());
+                    params.addValue("imageUrl", thumbnail.imageUrl());
+                    return params;
+                })
+                .toArray(SqlParameterSource[]::new);
     }
 }

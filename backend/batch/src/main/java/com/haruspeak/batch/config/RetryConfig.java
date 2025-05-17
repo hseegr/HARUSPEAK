@@ -14,7 +14,7 @@ public class RetryConfig {
         RetryTemplate retryTemplate = new RetryTemplate();
 
         SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(3);  // 최대 3회 재시도
+        retryPolicy.setMaxAttempts(2);  // 최대 3회 재시도
 
         // 재시도 간 대기 시간 설정
         // 과부하 방지
