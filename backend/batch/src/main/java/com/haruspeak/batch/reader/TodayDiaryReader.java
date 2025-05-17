@@ -1,46 +1,30 @@
 package com.haruspeak.batch.reader;
 
-import com.haruspeak.batch.model.TodayDiary;
-import com.haruspeak.batch.model.repository.TodayDiaryRedisRepository;
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
+import com.haruspeak.batch.service.redis.TodayDiaryRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 
-import java.util.Iterator;
-import java.util.Set;
-
 @Slf4j
-public class TodayDiaryReader implements ItemReader<TodayDiary> {
+public class TodayDiaryReader implements ItemReader<TodayDiaryContext> {
 
-    private final TodayDiaryRedisRepository repository;
+    private final TodayDiaryRedisService service;
     private final String date;
 
-    private Iterator<String> keyIterator;
-
-    public TodayDiaryReader(TodayDiaryRedisRepository repository, String date) {
-        this.repository = repository;
+    public TodayDiaryReader(TodayDiaryRedisService service, String date) {
+        this.service = service;
         this.date = date;
     }
 
     @Override
-    public TodayDiary read() throws Exception {
-        if (keyIterator == null) {
-            Set<String> keys = repository.getAllKeys(date);
-            this.keyIterator = keys.iterator();
-        }
-
-        if (!keyIterator.hasNext()) {
-            log.debug("🐛 오늘의 다이어리 조회 커서 종료");
-            return null;
-        }
-
-        String key = keyIterator.next();
-        log.debug("🐛 [READER] 오늘의 요약/순간 일기 조회 - {}", key);
-
+    public TodayDiaryContext read() throws Exception {
+        log.debug("🐛 [READER] 오늘의 일기 조회");
         try {
-            return repository.getTodayDiaryByKey(key);
+            return service.popByDate(date);
+
         } catch (Exception e) {
-            log.error("💥 Diary 조회 중 예외 발생 key={}, error={}", key, e.getMessage(), e);
-            throw new RuntimeException(e);
+            log.error("💥 오늘의 일기 조회 중 예외 발생", e);
+            throw new RuntimeException();
         }
 
 

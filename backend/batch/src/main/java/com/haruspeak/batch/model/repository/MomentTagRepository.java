@@ -27,8 +27,17 @@ public class MomentTagRepository {
             AND m.moment_time = :momentTime
             AND t.user_id = :userId
             AND t.name = :name
-            ON DUPLICATE KEY UPDATE moment_id = m.moment_id
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM moment_tag_names mt
+                JOIN daily_moments dm
+                ON mt.moment_id = dm.moment_id
+                WHERE mt.user_id = :userId 
+                AND dm.moment_time = :momentTime
+                AND mt.name = :name
+            )
             """;
+
 
     public void bulkInsertMomentTags(List<DailyMoment> dailyMoments) {
         log.debug("🐛 INSERT INTO MOMENT_TAGS");

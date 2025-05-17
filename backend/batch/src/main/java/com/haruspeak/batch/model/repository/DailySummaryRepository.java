@@ -1,6 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.dto.ThumbnailUpdateDTO;
+import com.haruspeak.batch.dto.context.ThumbnailUpdateContext;
 import com.haruspeak.batch.model.DailySummary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,14 +29,21 @@ public class DailySummaryRepository {
     private static final String SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL =
             """
             INSERT INTO daily_summary 
-            (user_id, write_date, title, content, moment_count) 
-            VALUES (:userId, :writeDate, :title, :content, :momentCount)
+            (user_id, write_date, title, content, moment_count, image_generate_count) 
+            SELECT :userId, :writeDate, :title, :content, :momentCount, 0
+            FROM DUAL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM daily_summary 
+                WHERE user_id = :userId 
+                AND write_date = :writeDate 
+            )
             """;
 
     private static final String SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL =
             """
             UPDATE daily_summary
-            SET image_url = :imageUrl
+            SET image_url = :imageUrl,
+            image_generate_count = 1
             WHERE user_id = :userId
             AND write_date = :writeDate
             """;
@@ -55,7 +62,7 @@ public class DailySummaryRepository {
      * summary의 썸네일 업데이트
      * @param thumbnails
      */
-    public void bulkUpdateThumbnailForDailySummaries(List<ThumbnailUpdateDTO> thumbnails) {
+    public void bulkUpdateThumbnailForDailySummaries(List<ThumbnailUpdateContext> thumbnails) {
         log.debug("🐛 UPDATE DAILY_SUMMARY SET THUMBNAIL 실행");
         SqlParameterSource[] params = buildUpdateParamsThumbnail(thumbnails);
         sqlExecutor.executeBatchUpdate(SQL_UPDATE_DAILY_SUMMARY_SET_THUMBNAIL, params);
@@ -70,12 +77,13 @@ public class DailySummaryRepository {
                     params.addValue("title", summary.getTitle());
                     params.addValue("content", summary.getContent());
                     params.addValue("momentCount", summary.getMomentCount());
+                    log.debug("daily_summary params: {}", params);
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);
     }
 
-    private SqlParameterSource[] buildUpdateParamsThumbnail(List<ThumbnailUpdateDTO> thumbnails) {
+    private SqlParameterSource[] buildUpdateParamsThumbnail(List<ThumbnailUpdateContext> thumbnails) {
         return thumbnails.stream()
                 .map(thumbnail ->{
                     MapSqlParameterSource params = new MapSqlParameterSource();

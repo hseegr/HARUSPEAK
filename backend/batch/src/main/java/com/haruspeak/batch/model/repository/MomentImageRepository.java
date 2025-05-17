@@ -1,6 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.model.DailyMoment;
+import com.haruspeak.batch.dto.context.MomentImageContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -25,21 +25,24 @@ public class MomentImageRepository {
             FROM active_daily_moments
             WHERE user_id = :userId
             AND moment_time = :momentTime
-            AND NOT EXISTS (SELECT 1 FROM moment_images WHERE image_url = :imageUrl)
+            AND NOT EXISTS (
+                SELECT 1 FROM moment_images 
+                WHERE image_url = :image
+            )
             """;
 
     /**
      * images 한 번에 insert
      * - Moment 별로 UNION을 이용하여 select 한 번으로 moment_id와 함께 insert rows를 만들어 bulk insert
-     * @param dailyMoments
+     * @param momentImages
      */
-    public void bulkInsertMomentImages(List<DailyMoment> dailyMoments) {
+    public void bulkInsertMomentImages(List<MomentImageContext> momentImages) {
         log.debug("🐛 INSERT INTO MOMENT_IMAGES 실행");
-        SqlParameterSource[] params = buildParams(dailyMoments);
+        SqlParameterSource[] params = buildParams(momentImages);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_MOMENT_IMAGES,params);
     }
 
-    private SqlParameterSource[] buildParams(List<DailyMoment> dailyMoments) {
+    private SqlParameterSource[] buildParams(List<MomentImageContext> dailyMoments) {
         return dailyMoments.stream()
                 .flatMap(moment -> moment.getImages().stream()
                         .map(image -> {
