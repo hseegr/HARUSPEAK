@@ -21,7 +21,7 @@ public class TodayRedisService {
         this.apiRedisTemplate = apiRedisTemplate;
     }
 
-    public int getUserId(String key) {
+    private int getUserId(String key) {
         return Integer.parseInt(key.split(":")[1]);
     }
 
@@ -33,13 +33,18 @@ public class TodayRedisService {
         return apiRedisTemplate.keys(getKey("*", date));
     }
 
-    public TodayDiaryContext getTodayMomentsByKey(String key, String writeDate) {
+    public TodayDiaryContext getTodayMomentsByKey(String key, String date) {
         int userId = getUserId(key);
         List<DailyMoment> moments = getMomentsFromRedis(key, userId);
-        DailySummary summary = createDailySummary(userId, writeDate, moments.size());
+        DailySummary summary = createDailySummary(userId, date, moments.size());
 
         log.debug("🔍 userId:{}, summary:{}", userId, summary);
         return createTodayDiary(summary, moments);
+    }
+
+    public TodayDiaryContext getTodayMomentsByUserAndDate(String userId, String date) {
+        String key = getKey(userId, date);
+        return getTodayMomentsByKey(key, date);
     }
 
     private List<DailyMoment> getMomentsFromRedis(String key, int userId) {

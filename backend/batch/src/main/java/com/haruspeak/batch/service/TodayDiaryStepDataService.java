@@ -24,6 +24,6 @@ public class TodayDiaryStepDataService {
         todayTagService.saveTagStepData(diaries, date);
         todayImageService.saveImageStepData(diaries, date);
         thumbnailService.saveThumbnailStepData(diaries, date);
-//        todayDiaryService.deleteSummaryStepData(diaries, date);
+        todayDiaryService.deleteSummaryStepData(diaries, date);
     }
 }

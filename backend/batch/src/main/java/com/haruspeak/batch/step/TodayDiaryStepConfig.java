@@ -4,6 +4,7 @@ import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import com.haruspeak.batch.listener.SummaryStepListener;
 import com.haruspeak.batch.reader.TodayDiaryReader;
 import com.haruspeak.batch.reader.TodayMomentReader;
+import com.haruspeak.batch.reader.TodayMomentTargetUserReader;
 import com.haruspeak.batch.service.redis.*;
 import com.haruspeak.batch.writer.DailyMomentWriter;
 import com.haruspeak.batch.writer.DailySummaryWriter;
@@ -60,6 +61,22 @@ public class TodayDiaryStepConfig {
                 .build();
     }
 
+    /**
+     * 특정유저에 대해서 진행.
+     * @return
+     */
+    @Bean
+    public Step todayDiaryTargetUserSaveStep(){
+        return new StepBuilder("todayDiaryTargetUserSaveStep", jobRepository)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
+                .reader(todayMomentTargetUserReader(null, null))
+                .writer(todayDiaryWriter())
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(2)
+                .build();
+    }
+
 
     /**
      * 하루 요약 save -> summary, moments insert
@@ -82,6 +99,14 @@ public class TodayDiaryStepConfig {
     @StepScope
     public TodayMomentReader todayMomentReader(@Value("#{jobParameters['date']}") String date) {
         return new TodayMomentReader(todayDiaryRedisKeyService, todayRedisService, date);
+    }
+
+    @Bean
+    @StepScope
+    public TodayMomentTargetUserReader todayMomentTargetUserReader(
+            @Value("#{jobParameters['userId']}") String userId,
+            @Value("#{jobParameters['date']}") String date) {
+        return new TodayMomentTargetUserReader(todayRedisService, userId, date);
     }
 
 

@@ -2,6 +2,7 @@ package com.haruspeak.batch.controller;
 
 import com.haruspeak.batch.runner.TodayDiaryJobRunner;
 import com.haruspeak.batch.runner.TodayDiaryRetryJobRunner;
+import com.haruspeak.batch.runner.TodayDiaryTargetUserJobRunner;
 import com.haruspeak.batch.runner.TodayThumbnailJobRunner;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodayDiaryJobController {
 
     private final TodayDiaryJobRunner todayDiaryJobRunner;
+    private final TodayDiaryTargetUserJobRunner todayDiaryTargetUserJobRunner;
     private final TodayDiaryRetryJobRunner todayDiaryRetryJobRunner;
     private final TodayThumbnailJobRunner todayThumbnailJobRunner;
 
@@ -34,6 +36,21 @@ public class TodayDiaryJobController {
         todayDiaryJobRunner.run(date);
         log.info("🐛 [API 실행] 하루 일기 배치 완료 - DATE: {}", date);
         return ResponseEntity.ok("🐛 [API 실행] 하루 일기 배치 완료 - DATE: " + date);
+    }
+
+    @PostMapping("/execute/diary/{date}/user/{userId}")
+    @Operation(
+            summary = "특정 일자 일기 배치",
+            description = "특정 일자에 대한 하루 일기 배치 작업 실행(YYYY-MM-dd)"
+    )
+    public ResponseEntity<String> executeTodayDiaryJob(
+            @PathVariable String userId,
+            @PathVariable String date
+    ) {
+        log.info("🐛 [API 실행] 하루 일기 배치 요청 - USERID: {}, DATE: {}", userId, date);
+        todayDiaryTargetUserJobRunner.run(userId, date);
+        log.info("🐛 [API 실행] 하루 일기 배치 완료 - USERID: {}, DATE: {}", userId, date);
+        return ResponseEntity.ok("🐛 [API 실행] 하루 일기 배치 완료 - USERID: " + userId + "DATE: " + date);
     }
 
     @PostMapping("/execute/diary/{date}/retry")
