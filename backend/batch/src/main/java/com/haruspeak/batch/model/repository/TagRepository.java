@@ -19,16 +19,21 @@ import java.util.stream.Stream;
 
 public class TagRepository {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SqlExecutor sqlExecutor;
 
-    public TagRepository (@Qualifier("apiNamedParameterJdbcTemplate") NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public TagRepository (SqlExecutor sqlExecutor) {
+        this.sqlExecutor = sqlExecutor;
     }
 
     private static final String SQL_INSERT_TAGS =
             """
-            INSERT INTO tags (name) VALUES (:name)
-            ON DUPLICATE KEY UPDATE name = :name
+            INSERT INTO tags (name) 
+            SELECT :name
+            FROM DUAL
+            WHERE NOT EXISTS (
+                SELECT 1 FROM tags 
+                WHERE name = :name 
+            )
             """;
 
     /**
@@ -37,10 +42,8 @@ public class TagRepository {
      */
     public void bulkInsertTags(List<String> tags) {
         log.debug("🐛 INSERT INTO TAGS 실행");
-        log.debug("Tags: {}", tags);
-
         SqlParameterSource[] params = buildParams(tags);
-        executeBatchUpdate(params);
+        sqlExecutor.executeBatchUpdate(SQL_INSERT_TAGS, params);
     }
 
 
@@ -52,28 +55,5 @@ public class TagRepository {
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);
-    }
-
-
-    private void executeBatchUpdate(SqlParameterSource[] params) {
-        try {
-            int[] updateCounts = namedParameterJdbcTemplate.batchUpdate(SQL_INSERT_TAGS, params);
-
-            if (log.isDebugEnabled()) {
-                int successCount = 0;
-                int totalCount = updateCounts.length;
-
-                for (int count : updateCounts) {
-                    if (count > 0) {
-                        successCount++;
-                    }
-                }
-
-                log.debug("🐛 INSERT INTO TAGS - {}/{}건", successCount, totalCount);
-            }
-        } catch (Exception e) {
-            log.error("💥 TAGS 삽입 실패", e);
-            throw e;
-        }
     }
 }

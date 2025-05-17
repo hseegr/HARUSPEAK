@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,7 +19,7 @@ public class DailyMoment {
     private String createdAt;
     private int imageCount;
     private int tagCount;
-    private List<String> images;
-    private List<String> tags;
-    private List<Integer> userTagIds;
+    private Set<String> images;
+    private Set<String> tags;
+    private Set<Integer> userTagIds;
 }
