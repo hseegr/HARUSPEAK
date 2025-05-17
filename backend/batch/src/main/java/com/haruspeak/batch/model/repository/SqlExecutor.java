@@ -18,6 +18,7 @@ public class SqlExecutor {
 
     public void executeBatchUpdate(String sql, SqlParameterSource[] params) {
         try {
+            log.debug("Executing batch update: {}", sql);
             int[] updateCounts = namedParameterJdbcTemplate.batchUpdate(sql, params);
 
             if (log.isDebugEnabled()) {

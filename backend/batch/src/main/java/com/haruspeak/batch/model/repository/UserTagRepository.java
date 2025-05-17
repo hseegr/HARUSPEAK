@@ -1,6 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
-import com.haruspeak.batch.model.TodayDiaryTag;
+import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -20,14 +20,14 @@ public class UserTagRepository {
 
     private static final String SQL_INSERT_USER_TAGS =
             """
-            INSERT INTO user_tags (user_id, tag_id, last_used_at,total_usage_count, score)
+            INSERT INTO user_tags (user_id, tag_id, last_used_at, total_usage_count, score)
             SELECT :userId, tag_id, :date, :useCount, :useCount
             FROM tags
             WHERE name = :name
-            ON DUPLICATE KEY UPDATE 
-                 last_used_at = :date,
-                 total_usage_count = total_usage_count + :useCount,
-                 score = score + :useCount
+            ON DUPLICATE KEY UPDATE
+                last_used_at = IF(last_used_at != :date, :date, last_used_at),
+                total_usage_count = IF(last_used_at != :date, total_usage_count + :useCount, total_usage_count),
+                score = IF(last_used_at != :date, score + :useCount, score)
             """;
 
     /**
@@ -35,13 +35,13 @@ public class UserTagRepository {
      * @param diaryTags
      * @param date
      */
-    public void bulkInsertUserTags(List<TodayDiaryTag> diaryTags, String date) {
+    public void bulkInsertUserTags(List<TodayDiaryTagContext> diaryTags, String date) {
         log.debug("🐛 INSERT INTO USER_TAGS 실행");
         SqlParameterSource[] params = buildParams(diaryTags, date);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_USER_TAGS, params);
     }
 
-    private SqlParameterSource[] buildParams(List<TodayDiaryTag> diaryTags, String date) {
+    private SqlParameterSource[] buildParams(List<TodayDiaryTagContext> diaryTags, String date) {
         return diaryTags.stream()
                 .flatMap(tagInfo -> tagInfo.getTagCountMap().entrySet().stream()
                         .map(entry -> {
