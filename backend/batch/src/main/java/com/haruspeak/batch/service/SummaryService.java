@@ -74,6 +74,8 @@ public class SummaryService {
                 todayDiary.setDailySummary(null);
             }
         });
+
+        log.info("✅ 요약 생성 성공 {}건, 기본 적용 {}건, 실패 {}건", successList.size(), nonContentList.size(), failedList.size());
         return new SummaryProcessingResult(nonContentList, successList, failedList);
     }
 

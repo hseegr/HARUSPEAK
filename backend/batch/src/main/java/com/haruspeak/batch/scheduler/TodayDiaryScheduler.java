@@ -5,9 +5,12 @@ import com.haruspeak.batch.runner.TodayDiaryRetryJobRunner;
 import com.haruspeak.batch.runner.TodayThumbnailJobRunner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,6 +31,7 @@ public class TodayDiaryScheduler {
     public void scheduleBidNoticeFetch() {
         String yesterday = LocalDate.now().minusDays(1).format(DATE_FORMAT);
         log.info("🐛 하루 일기 전체 배치 스케줄 시작 - DATE: {}", yesterday);
+        Instant start = Instant.now();
 
         try {
             todayDiaryJobRunner.run(yesterday);
@@ -47,6 +51,7 @@ public class TodayDiaryScheduler {
             log.error("❌ todayThumbnailJob 실패 - {}", e.getMessage(), e);
         }
 
-        log.info("✅ 하루 일기 전체 배치 스케줄 종료 - DATE: {}", yesterday);
+        Duration duration = Duration.between(start, Instant.now());
+        log.info("✅ 하루 일기 전체 배치 스케줄 종료 - DATE: {}, 소요: {}분({}초)", yesterday, duration.toMinutes(), duration.toSeconds());
     }
 }
