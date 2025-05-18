@@ -19,7 +19,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @RequiredArgsConstructor
 public class TodayImageStepConfig {
-    private static final int CHUNK_SIZE = 100;
+
+    @Value("${basic.batch.chunk}")
+    private int chunk;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -36,7 +38,7 @@ public class TodayImageStepConfig {
     @Bean
     public Step todayImageSaveStep(){
         return new StepBuilder("todayImageSaveStep", jobRepository)
-                .<MomentImageContext, MomentImageContext>chunk(CHUNK_SIZE, transactionManager)
+                .<MomentImageContext, MomentImageContext>chunk(chunk, transactionManager)
                 .reader(todayImageReader(null))
                 .writer(momentImageWriter)
                 .faultTolerant()

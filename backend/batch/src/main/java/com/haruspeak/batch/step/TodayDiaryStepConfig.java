@@ -29,7 +29,9 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class TodayDiaryStepConfig {
-    private static final int CHUNK_SIZE = 100;
+
+    @Value("${ai.batch.chunk}")
+    private int chunk;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -52,7 +54,7 @@ public class TodayDiaryStepConfig {
     @Bean
     public Step todayDiarySaveStep(){
         return new StepBuilder("todayDiarySaveStep", jobRepository)
-                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(chunk, transactionManager)
                 .reader(todayMomentReader(null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
@@ -68,7 +70,7 @@ public class TodayDiaryStepConfig {
     @Bean
     public Step todayDiaryTargetUserSaveStep(){
         return new StepBuilder("todayDiaryTargetUserSaveStep", jobRepository)
-                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(chunk, transactionManager)
                 .reader(todayMomentTargetUserReader(null, null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
@@ -85,7 +87,7 @@ public class TodayDiaryStepConfig {
     @Bean
     public Step todayDiaryRetrySaveStep(){
         return new StepBuilder("todayDiaryRetrySaveStep", jobRepository)
-                .<TodayDiaryContext, TodayDiaryContext>chunk(CHUNK_SIZE, transactionManager)
+                .<TodayDiaryContext, TodayDiaryContext>chunk(chunk, transactionManager)
                 .reader(todayDiaryReader(null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
