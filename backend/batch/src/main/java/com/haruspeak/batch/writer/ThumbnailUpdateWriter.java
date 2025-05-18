@@ -34,7 +34,7 @@ public class ThumbnailUpdateWriter implements ItemWriter <ThumbnailGenerateConte
             List<ThumbnailGenerateContext> failedList = result.failedList();
             if(failedList!=null && !failedList.isEmpty()){
                 String date = failedList.get(0).getWriteDate();
-                redisService.pushAll(failedList, date);
+                redisService.pushAll(date, failedList);
             }
 
             summaryRepository.bulkUpdateThumbnailForDailySummaries(result.successList());

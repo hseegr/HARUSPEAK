@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/batch")
+@RequestMapping("/batch/step")
 @RequiredArgsConstructor
 @Tag(name = "STEP", description = "하루 일기 배치 작업(STEP) 수동 실행 API")
 public class TodayStepJobController {
@@ -21,7 +21,7 @@ public class TodayStepJobController {
     private final TodayStepJobRunner jobRunner;
 
 
-    @PostMapping("/execute/diary/{date}/step")
+    @PostMapping("/diary/date/{date}")
     @Operation(
             summary = "[STEP] 특정 일자 일기 배치",
             description = "[STEP] 특정 일자에 대한 하루 일기 배치 작업 실행(YYYY-MM-dd)"
@@ -33,7 +33,7 @@ public class TodayStepJobController {
         return ResponseEntity.ok("🐛 [API 실행] 하루 일기 배치 완료 - DATE: " + date);
     }
 
-    @PostMapping("/execute/diary/{date}/retry/step")
+    @PostMapping("/diary/date/{date}/retry")
     @Operation(
             summary = "[STEP] 특정 일자 일기 배치(RETRY)",
             description = "[STEP] 특정 일자에 대한 하루 일기 배치(RETRY) 작업 실행(YYYY-MM-dd)"
@@ -45,7 +45,7 @@ public class TodayStepJobController {
         return ResponseEntity.ok("🐛 [API 실행] 하루 일기 배치(RETRY) 완료 - DATE: " + date);
     }
 
-    @PostMapping("/execute/tag/{date}/step")
+    @PostMapping("/tag/date/{date}")
     @Operation(
             summary = "[STEP] 특정 일자 태그 배치",
             description = "[STEP] 특정 일자에 대한 태그 배치 작업 실행(YYYY-MM-dd)"
@@ -57,7 +57,7 @@ public class TodayStepJobController {
         return ResponseEntity.ok("🐛 [API 실행] 하루 일기 태그 배치 완료 - DATE: " + date);
     }
 
-    @PostMapping("/execute/image/{date}/step")
+    @PostMapping("/image/date/{date}")
     @Operation(
             summary = "[STEP] 특정 일자 이미지 배치",
             description = "[STEP] 특정 일자에 대한 이미지 작업 실행(YYYY-MM-dd)"
@@ -68,7 +68,5 @@ public class TodayStepJobController {
         log.info("🐛 [API 실행] 하루 일기 이미지 STEP 배치 완료 - DATE: {}", date);
         return ResponseEntity.ok("🐛 [API 실행] 하루 일기 이미지 배치 완료 - DATE: " + date);
     }
-
-
 
 }

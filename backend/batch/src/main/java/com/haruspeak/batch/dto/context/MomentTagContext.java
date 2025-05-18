@@ -9,9 +9,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MomentImageContext {
-    private int userId;
-    private String createdAt;
-    private  Set<String> images;
+public class MomentTagContext {
+        private int userId;
+        private String createdAt;
+        private Set<String> tags;
 }
-
