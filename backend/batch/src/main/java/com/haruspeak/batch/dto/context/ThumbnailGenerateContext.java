@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ThumbnailGenerateContext {
-        private int userId;
-        private String writeDate;
-        private String content;
+    private int userId;
+    private String writeDate;
+    private String content;
 }

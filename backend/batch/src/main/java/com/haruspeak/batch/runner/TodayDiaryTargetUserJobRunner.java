@@ -29,20 +29,20 @@ public class TodayDiaryTargetUserJobRunner {
                 .toJobParameters();
 
         try {
-            log.info("🐛 [{}(userId:{})]하루 일기 배치 실행 - {}", userId, date, LocalDateTime.now().format(TIME_FORMATTER));
+            log.info("🐛 [{} (userId:{})]하루 일기 배치 실행 - {}", date, userId, LocalDateTime.now().format(TIME_FORMATTER));
             Instant start = Instant.now();
 
             JobExecution execution = jobLauncher.run(todayDiaryTargetUserJob, jobParameters);
             Duration duration = Duration.between(start, Instant.now());
 
-            log.info("🐛 [{}(userId:{})]하루 일기 배치 실행 완료 상태 - {}, 소요: {}분({}초)", userId, date, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
+            log.info("🐛 [{} (userId:{})]하루 일기 배치 실행 완료 상태 - {}, 소요: {}분({}초)", date, userId, execution.getStatus(), duration.toMinutes(), duration.toSeconds());
 
             if (execution.getStatus() != BatchStatus.COMPLETED) {
-                log.warn("🐛 [{}(userId:{})]하루 일기 배치 실행 중 일부 실패 또는 중단: {}", userId, date,  execution.getExitStatus());
+                log.warn("🐛 [{} (userId:{})]하루 일기 배치 실행 중 일부 실패 또는 중단: {}", date, userId,  execution.getExitStatus());
             }
 
         } catch (Exception e) {
-            log.error("🐛 [{}(userId:{})] 하루 일기 배치 실행 실패 - {}", userId, date, e.getMessage(), e);
+            log.error("🐛 [{} (userId:{})] 하루 일기 배치 실행 실패 - {}", date, userId, e.getMessage(), e);
         }
     }
 

@@ -22,7 +22,7 @@ public class ThumbnailGenerateService {
     private final S3Service s3Service;
 
     public String generateAndUploadThumbnail(String content){
-        log.debug("🐛 오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
+        log.debug("오늘의 썸네일 생성 및 S3 저장 후 S3 URL 요청");
         try {
             String base64 = generateThumbnailBase64(content);
             return uploadThumbnailAndGetS3Url(base64);
@@ -34,7 +34,7 @@ public class ThumbnailGenerateService {
     }
 
     public ThumbnailProcessingResult generateThumbnailUrlInParallel(List<ThumbnailGenerateContext> contexts){
-        log.debug("🐛 썸네일 생성 + S3 저장 병렬 처리 시작 (총 {}건)", contexts.size());
+        log.debug("썸네일 생성 + S3 저장 병렬 처리 시작 (총 {}건)", contexts.size());
 
         List<ThumbnailUpdateContext> successList = Collections.synchronizedList(new ArrayList<>());
         List<ThumbnailGenerateContext> failedList = Collections.synchronizedList(new ArrayList<>());
@@ -63,7 +63,7 @@ public class ThumbnailGenerateService {
 
     private String uploadThumbnailAndGetS3Url(String base64){
         try {
-            return s3Service.uploadImagesAndGetUrls(base64);
+            return s3Service.uploadImageAndGetUrl(base64);
         }catch (Exception e) {
             log.error("💥 오늘의 썸네일 S3 저장 중 오류 발생", e);
             throw e;
