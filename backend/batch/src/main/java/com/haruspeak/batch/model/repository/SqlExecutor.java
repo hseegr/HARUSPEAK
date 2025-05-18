@@ -31,7 +31,7 @@ public class SqlExecutor {
                     }
                 }
 
-                log.debug("🐛 SQL 실행 - {}/{}건 완료", successCount, totalCount);
+                log.info("✅ SQL 실행 - {}/{}건 완료", successCount, totalCount);
             }
         } catch (Exception e) {
             log.error("💥 SQL 실행 실패", e);
