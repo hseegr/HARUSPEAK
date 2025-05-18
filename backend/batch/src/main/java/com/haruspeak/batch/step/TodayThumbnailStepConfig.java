@@ -19,7 +19,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @RequiredArgsConstructor
 public class TodayThumbnailStepConfig {
-    private static final int CHUNK_SIZE = 100;
+
+
+    @Value("${ai.batch.chunk}")
+    private int chunk;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -35,7 +38,7 @@ public class TodayThumbnailStepConfig {
     @Bean
     public Step todayThumbnailUpdateStep(){
         return new StepBuilder("todayThumbnailUpdateStep", jobRepository)
-                .<ThumbnailGenerateContext, ThumbnailGenerateContext>chunk(CHUNK_SIZE, transactionManager)
+                .<ThumbnailGenerateContext, ThumbnailGenerateContext>chunk(chunk, transactionManager)
                 .reader(thumbnailReader(null))
                 .writer(thumbnailUpdateWriter)
                 .faultTolerant()

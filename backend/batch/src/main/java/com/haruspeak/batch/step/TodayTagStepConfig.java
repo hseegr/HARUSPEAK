@@ -20,7 +20,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 public class TodayTagStepConfig {
 
-    private static final int CHUNK_SIZE = 100;
+    @Value("${basic.batch.chunk}")
+    private int chunk;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -35,7 +36,7 @@ public class TodayTagStepConfig {
     @Bean
     public Step todayTagSaveStep(){
         return new StepBuilder("todayTagSaveStep", jobRepository)
-                .<MomentTagContext, MomentTagContext>chunk(CHUNK_SIZE, transactionManager)
+                .<MomentTagContext, MomentTagContext>chunk(chunk, transactionManager)
                 .reader(todayTagReader(null))
                 .writer(momentTagWriter)
                 .faultTolerant()
