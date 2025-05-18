@@ -1,7 +1,7 @@
 package com.haruspeak.batch.listener;
 
 import com.haruspeak.batch.service.redis.TodayDiaryRedisKeyService;
-import com.haruspeak.batch.service.redis.TodayRedisService;
+import com.haruspeak.batch.service.redis.TodayMomentRedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -16,7 +16,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SummaryStepListener implements StepExecutionListener {
 
-    private final TodayRedisService todayRedisService;
+    private final TodayMomentRedisService todayMomentRedisService;
     private final TodayDiaryRedisKeyService todayDiaryRedisKeyService;
 
     @Override
@@ -24,7 +24,7 @@ public class SummaryStepListener implements StepExecutionListener {
         log.debug("🐛 STEP 시작 전, 일기의 KEY 목록을 REDIS에 저장");
 
         String date = stepExecution.getJobParameters().getString("date");
-        Set<String> keys = todayRedisService.getAllKeys(date);
+        Set<String> keys = todayMomentRedisService.getAllKeys(date);
 
         if(keys == null || keys.isEmpty()) {
             return;
@@ -36,7 +36,7 @@ public class SummaryStepListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        if(!stepExecution.getExitStatus().equals(ExitStatus.COMPLETED)) {
+        if(stepExecution.getExitStatus().equals(ExitStatus.FAILED)) {
             log.warn("❌ STEP 실패로 today key 목록 복구");
             todayDiaryRedisKeyService.recoverProcessingKeys();
         } else {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -40,14 +41,14 @@ public class TagRepository {
      * 사용된 Tag를 모두 추가
      * @param tags
      */
-    public void bulkInsertTags(List<String> tags) {
+    public void bulkInsertTags(Set<String> tags) {
         log.debug("🐛 INSERT INTO TAGS 실행");
         SqlParameterSource[] params = buildParams(tags);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_TAGS, params);
     }
 
 
-    private SqlParameterSource[] buildParams(List<String> tags) {
+    private SqlParameterSource[] buildParams(Set<String> tags) {
         return  tags.stream()
                 .map(tag -> {
                     MapSqlParameterSource params = new MapSqlParameterSource("name", tag);

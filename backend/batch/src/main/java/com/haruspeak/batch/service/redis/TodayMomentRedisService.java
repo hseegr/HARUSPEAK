@@ -1,8 +1,8 @@
 package com.haruspeak.batch.service.redis;
 
+import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import com.haruspeak.batch.model.DailyMoment;
 import com.haruspeak.batch.model.DailySummary;
-import com.haruspeak.batch.dto.context.TodayDiaryContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,12 +12,12 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class TodayRedisService {
+public class TodayMomentRedisService {
 
     @Qualifier("apiRedisTemplate")
     private final RedisTemplate<String, Object> apiRedisTemplate;
 
-    public TodayRedisService(@Qualifier("apiRedisTemplate") RedisTemplate<String, Object> apiRedisTemplate) {
+    public TodayMomentRedisService(@Qualifier("apiRedisTemplate") RedisTemplate<String, Object> apiRedisTemplate) {
         this.apiRedisTemplate = apiRedisTemplate;
     }
 
@@ -65,13 +65,11 @@ public class TodayRedisService {
                                           Set<String> images, Set<String> tags, int userId) {
         return DailyMoment.builder()
                 .userId(userId)
-                .createdAt(entry.getKey().toString())
+                .createdAt(entry.getKey().toString().substring(0, 19))
                 .momentTime(value.get("momentTime").toString().substring(0, 19)) // yyyy-MM-dd'T'HH:mm:ss
                 .content(value.get("content").toString())
                 .images(images)
                 .tags(tags)
-                .imageCount(images.size())
-                .tagCount(tags.size())
                 .build();
     }
 

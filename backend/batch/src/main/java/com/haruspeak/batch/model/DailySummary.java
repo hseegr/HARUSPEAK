@@ -7,6 +7,7 @@ import lombok.*;
 public class DailySummary {
     private Integer userId;
     private String writeDate;
+    private String image;
     private String title;
     private String content;
     private int momentCount;
@@ -18,6 +19,12 @@ public class DailySummary {
     }
 
     public void setSummaries(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public void setSummariesAndImage(String image, String title, String content) {
+        this.image = image;
         this.title = title;
         this.content = content;
     }

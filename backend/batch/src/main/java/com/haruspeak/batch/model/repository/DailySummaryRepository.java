@@ -29,8 +29,8 @@ public class DailySummaryRepository {
     private static final String SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL =
             """
             INSERT INTO daily_summary 
-            (user_id, write_date, title, content, moment_count, image_generate_count) 
-            SELECT :userId, :writeDate, :title, :content, :momentCount, 0
+            (user_id, write_date, title, content, moment_count, content_generate_count) 
+            SELECT :userId, :writeDate, :title, :content, :momentCount, 1
             FROM DUAL
             WHERE NOT EXISTS (
                 SELECT 1 FROM daily_summary 
@@ -48,13 +48,19 @@ public class DailySummaryRepository {
             AND write_date = :writeDate
             """;
 
+    public void bulkInsertDailySummaries(List<DailySummary> dailySummaries) {
+        log.debug("🐛 INSERT INTO DAILY_SUMMARY 실행");
+        SqlParameterSource[] params = buildInsertParams(dailySummaries);
+        sqlExecutor.executeBatchUpdate(SQL_INSERT_DAILY_SUMMARY, params);
+    }
+
     /**
      * Chunk의 summary 들을 한 번에 insert
      * @param dailySummaries
      */
-    public void bulkInsertDailySummariesWithoutThumbnail(List<DailySummary> dailySummaries) {
-        log.debug("🐛 INSERT INTO DAILY_SUMMARY 실행");
-        SqlParameterSource[] params = buildInsertParams(dailySummaries);
+    public void bulkInsertDailySummariesWithoutImage(List<DailySummary> dailySummaries) {
+        log.debug("🐛 INSERT INTO DAILY_SUMMARY WITHOUT IMAGE 실행");
+        SqlParameterSource[] params = buildInsertParamsWithoutImage(dailySummaries);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_DAILY_SUMMARY_EXCLUDING_THUMBNAIL, params);
     }
 
@@ -74,10 +80,26 @@ public class DailySummaryRepository {
                     MapSqlParameterSource params = new MapSqlParameterSource();
                     params.addValue("userId", summary.getUserId());
                     params.addValue("writeDate", summary.getWriteDate());
+                    params.addValue("imageUrl", summary.getImage());
                     params.addValue("title", summary.getTitle());
                     params.addValue("content", summary.getContent());
                     params.addValue("momentCount", summary.getMomentCount());
                     log.debug("daily_summary params: {}", params);
+                    return params;
+                })
+                .toArray(SqlParameterSource[]::new);
+    }
+
+    private SqlParameterSource[] buildInsertParamsWithoutImage(List<DailySummary> dailySummaries) {
+        return dailySummaries.stream()
+                .map(summary ->{
+                    MapSqlParameterSource params = new MapSqlParameterSource();
+                    params.addValue("userId", summary.getUserId());
+                    params.addValue("writeDate", summary.getWriteDate());
+                    params.addValue("title", summary.getTitle());
+                    params.addValue("content", summary.getContent());
+                    params.addValue("momentCount", summary.getMomentCount());
+                    log.debug("daily_summary without image params: {}", params);
                     return params;
                 })
                 .toArray(SqlParameterSource[]::new);

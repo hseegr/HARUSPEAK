@@ -10,21 +10,28 @@ public class ThumbnailReader implements ItemReader<ThumbnailGenerateContext> {
 
     private final ThumbnailRedisService service;
     private final String date;
+    private int count;
 
     public ThumbnailReader(ThumbnailRedisService service, String date) {
         this.service = service;
         this.date = date;
+        this.count = 0;
     }
 
     @Override
     public ThumbnailGenerateContext read() throws Exception {
-        log.debug("🐛 [READER] 오늘의 순간 일기 태그 전체 조회");
         try {
-            return service.popByDate(date);
+            ThumbnailGenerateContext context =  service.popByDate(date);
+            if (context == null) {
+                log.info("🐛 [READER: {}] 오늘의 일기 썸네일 STEP DATA 조최 - {}건", date, count);
+                return null;
+            }
+            count++;
+            return context;
 
         } catch (Exception e) {
-            log.error("💥 Image 조회 중 예외 발생", e);
-            throw new RuntimeException();
+            log.error("💥 오늘의 썸네일 STEP DATA 조회 중 예외 발생", e);
+            throw new RuntimeException("오늘의 썸네일 STEP DATA 조회 중 예외 발생", e);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.haruspeak.batch.step;
 
 import com.haruspeak.batch.dto.context.MomentImageContext;
-import com.haruspeak.batch.reader.TodayImageReader;
+import com.haruspeak.batch.reader.MomentImageReader;
 import com.haruspeak.batch.service.redis.ImageRedisService;
 import com.haruspeak.batch.writer.MomentImageWriter;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -50,8 +48,8 @@ public class TodayImageStepConfig {
 
     @Bean
     @StepScope
-    public TodayImageReader todayImageReader(@Value("#{jobParameters['date']}") String date) {
-        return new TodayImageReader(imageRedisService, date);
+    public MomentImageReader todayImageReader(@Value("#{jobParameters['date']}") String date) {
+        return new MomentImageReader(imageRedisService, date);
     }
 
 
