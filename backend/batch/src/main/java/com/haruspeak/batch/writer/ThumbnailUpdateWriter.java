@@ -44,7 +44,7 @@ public class ThumbnailUpdateWriter implements ItemWriter <ThumbnailGenerateConte
             throw new RuntimeException("💥오늘의 하루 일기 썸네일 생성 및 업데이트 실패", e);
         }
 
-        log.debug("✅ 썸네일 생성 성공 {}건, 실패 {}건", result.successList().size(), chunk.size() - result.successList().size());
+        log.info("✅ 썸네일 생성 성공 {}건, 실패 {}건", result.successList().size(), chunk.size() - result.successList().size());
 
     }
 }
