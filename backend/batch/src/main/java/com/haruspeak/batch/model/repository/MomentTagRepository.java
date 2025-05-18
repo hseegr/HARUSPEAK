@@ -1,5 +1,6 @@
 package com.haruspeak.batch.model.repository;
 
+import com.haruspeak.batch.dto.context.MomentTagContext;
 import com.haruspeak.batch.model.DailyMoment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,7 +25,7 @@ public class MomentTagRepository {
             SELECT m.moment_id, t.user_tag_id
             FROM active_daily_moments m, user_tag_details t
             WHERE m.user_id = :userId
-            AND m.moment_time = :momentTime
+            AND m.created_at = :createdAt
             AND t.user_id = :userId
             AND t.name = :name
             AND NOT EXISTS (
@@ -33,27 +34,27 @@ public class MomentTagRepository {
                 JOIN daily_moments dm
                 ON mt.moment_id = dm.moment_id
                 WHERE mt.user_id = :userId 
-                AND dm.moment_time = :momentTime
+                AND dm.created_at = :createdAt
                 AND mt.name = :name
             )
             """;
 
 
-    public void bulkInsertMomentTags(List<DailyMoment> dailyMoments) {
+    public void bulkInsertMomentTags(List<MomentTagContext> contexts) {
         log.debug("🐛 INSERT INTO MOMENT_TAGS");
-        SqlParameterSource[] params = buildParams(dailyMoments);
+        SqlParameterSource[] params = buildParams(contexts);
         sqlExecutor.executeBatchUpdate(SQL_INSERT_MOMENT_TAGS, params);
     }
 
-    private SqlParameterSource[] buildParams(List<DailyMoment> dailyMoments) {
-        return dailyMoments.stream()
+    private SqlParameterSource[] buildParams(List<MomentTagContext> contexts) {
+        return contexts.stream()
                 .flatMap(moment -> moment.getTags().stream()
                         .map(tagName -> {
                             MapSqlParameterSource params = new MapSqlParameterSource();
                             params.addValue("userId", moment.getUserId());
-                            params.addValue("momentTime", moment.getMomentTime());
+                            params.addValue("createdAt", moment.getCreatedAt());
                             params.addValue("name", tagName);
-                            log.debug("moment_tags parmas: {}", params);
+                            log.debug("moment_tags params: {}", params);
                             return params;
                         })
                 ).toArray(SqlParameterSource[]::new);

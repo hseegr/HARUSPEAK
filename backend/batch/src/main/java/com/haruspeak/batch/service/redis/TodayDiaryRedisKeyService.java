@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -22,19 +21,19 @@ public class TodayDiaryRedisKeyService {
 
     public void pushAllKeys(Set<String> keys){
         if (keys == null || keys.isEmpty()) return;
-        redisTemplate.opsForList().rightPushAll(TODAY_DIARY_KEYS, keys);
+        redisTemplate.opsForSet().add(TODAY_DIARY_KEYS, keys.toArray(new String[0]));
     }
 
     public String popOneKey(){
-        return redisTemplate.opsForList().leftPop(TODAY_DIARY_KEYS);
+        return redisTemplate.opsForSet().pop(TODAY_DIARY_KEYS);
     }
 
-    public void pushProcessingKey(String keys){
-        redisTemplate.opsForList().rightPush(TODAY_DIARY_PROCESSING, keys);
+    public void pushProcessingKey(String key){
+        redisTemplate.opsForSet().add(TODAY_DIARY_PROCESSING, key);
     }
 
     public void clearProcessingKeys(){
-        Boolean deleted = redisTemplate.delete(TODAY_DIARY_PROCESSING);
+        boolean deleted = redisTemplate.delete(TODAY_DIARY_PROCESSING);
         if (Boolean.TRUE.equals(deleted)) {
             log.debug("✅ 처리 중 key 리스트 삭제 성공");
         } else {
@@ -43,9 +42,9 @@ public class TodayDiaryRedisKeyService {
     }
 
     public void recoverProcessingKeys() {
-        List<String> processingKeys = redisTemplate.opsForList().range(TODAY_DIARY_PROCESSING, 0, -1);
+        Set<String> processingKeys = redisTemplate.opsForSet().members(TODAY_DIARY_PROCESSING) ;
         if (processingKeys != null && !processingKeys.isEmpty()) {
-            redisTemplate.opsForList().rightPushAll(TODAY_DIARY_KEYS, processingKeys);
+            pushAllKeys(processingKeys);
             redisTemplate.delete(TODAY_DIARY_PROCESSING);
             log.debug("✅ {}개의 키 복구 완료", processingKeys.size());
         } else {

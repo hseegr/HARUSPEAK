@@ -20,7 +20,7 @@ public class TodayDiaryRedisService {
     }
 
     public String getKeyByDate(String date) {
-        return "step:todayDiary:date" + date;
+        return String.format("step:todayDiary:date:%s", date);
     }
 
     public TodayDiaryContext popByDate(String date){
@@ -36,7 +36,7 @@ public class TodayDiaryRedisService {
         try {
             redisTemplate.opsForList().rightPushAll(getKeyByDate(date), diaries);
         } catch (Exception e) {
-            log.error("💥 TODAY SUMAMRY STEP DATA REDIS 저장 실패 - date:{}", date, e);
+            log.error("💥 TODAY SUMMARY STEP DATA REDIS 저장 실패 - date:{}", date, e);
             throw e;
         }
     }

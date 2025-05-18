@@ -24,7 +24,7 @@ public class MomentImageRepository {
             SELECT moment_id, :image
             FROM active_daily_moments
             WHERE user_id = :userId
-            AND moment_time = :momentTime
+            AND created_at = :createdAt
             AND NOT EXISTS (
                 SELECT 1 FROM moment_images 
                 WHERE image_url = :image
@@ -48,9 +48,9 @@ public class MomentImageRepository {
                         .map(image -> {
                             MapSqlParameterSource params = new MapSqlParameterSource();
                             params.addValue("userId", moment.getUserId());
-                            params.addValue("momentTime", moment.getMomentTime());
+                            params.addValue("createdAt", moment.getCreatedAt());
                             params.addValue("image", image);
-                            log.debug("moment_images parmas: {}", params);
+                            log.debug("moment_images params: {}", params);
                             return params;
                         })
                 ).toArray(SqlParameterSource[]::new);

@@ -1,7 +1,7 @@
 package com.haruspeak.batch.step;
 
-import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
-import com.haruspeak.batch.reader.TodayTagReader;
+import com.haruspeak.batch.dto.context.MomentTagContext;
+import com.haruspeak.batch.reader.MomentTagReader;
 import com.haruspeak.batch.service.redis.TagRedisService;
 import com.haruspeak.batch.writer.MomentTagWriter;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class TodayTagStepConfig {
     @Bean
     public Step todayTagSaveStep(){
         return new StepBuilder("todayTagSaveStep", jobRepository)
-                .<TodayDiaryTagContext, TodayDiaryTagContext>chunk(CHUNK_SIZE, transactionManager)
+                .<MomentTagContext, MomentTagContext>chunk(CHUNK_SIZE, transactionManager)
                 .reader(todayTagReader(null))
                 .writer(momentTagWriter)
                 .faultTolerant()
@@ -46,7 +46,7 @@ public class TodayTagStepConfig {
 
     @Bean
     @StepScope
-    public TodayTagReader todayTagReader(@Value("#{jobParameters['date']}") String date) {
-        return new TodayTagReader(tagRedisService, date);
+    public MomentTagReader todayTagReader(@Value("#{jobParameters['date']}") String date) {
+        return new MomentTagReader(tagRedisService, date);
     }
 }
