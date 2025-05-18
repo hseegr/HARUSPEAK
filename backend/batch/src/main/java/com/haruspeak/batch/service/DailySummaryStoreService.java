@@ -25,11 +25,15 @@ public class DailySummaryStoreService {
 
         List<DailySummary> summariesWithoutThumbnail = result.successList().stream()
                 .map(TodayDiaryContext::getDailySummary).toList();
-        dailySummaryRepository.bulkInsertDailySummariesWithoutImage(summariesWithoutThumbnail);
+        if(!summariesWithoutThumbnail.isEmpty()){
+            dailySummaryRepository.bulkInsertDailySummariesWithoutImage(summariesWithoutThumbnail);
+        }
 
         List<DailySummary> summaries = result.nonContentList().stream()
                 .map(TodayDiaryContext::getDailySummary).toList();
-        dailySummaryRepository.bulkInsertDailySummaries(summaries);
+        if(!summaries.isEmpty()){
+            dailySummaryRepository.bulkInsertDailySummaries(summaries);
+        }
 
         List<TodayDiaryContext> failedList = result.failedList();
         if(failedList!=null && !failedList.isEmpty()){

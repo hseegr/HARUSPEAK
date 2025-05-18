@@ -25,13 +25,6 @@ public class MomentImageRepository {
             FROM active_daily_moments
             WHERE user_id = :userId
             AND created_at = :createdAt
-            AND NOT EXISTS (
-                SELECT 1 FROM moment_images i 
-                JOIN active_daily_moments m 
-                ON (i.moment_id = m.moment_id)
-                WHERE i.user_id = :userId 
-                AND image_url = :image
-            )
             """;
 
     /**
