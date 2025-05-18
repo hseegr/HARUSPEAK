@@ -21,7 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class TodayThumbnailStepConfig {
 
 
-    @Value("${ai.batch.chunk}")
+    @Value("${thumbnail.batch.chunk}")
     private int chunk;
 
     private final JobRepository jobRepository;

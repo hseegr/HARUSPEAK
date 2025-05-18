@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TodayDiaryStepConfig {
 
-    @Value("${ai.batch.chunk}")
+    @Value("${summary.batch.chunk}")
     private int chunk;
 
     private final JobRepository jobRepository;
