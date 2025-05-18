@@ -15,32 +15,24 @@ public class ImageRedisService {
     @Qualifier("imageStepRedisTemplate")
     private final RedisTemplate<String, MomentImageContext> redisTemplate;
 
-    public ImageRedisService(@Qualifier("imageStepRedisTemplate") RedisTemplate<String, MomentImageContext>  redisTemplate) {
+    public ImageRedisService(@Qualifier("imageStepRedisTemplate") RedisTemplate<String, MomentImageContext> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     public String getKeyByDate(String date) {
-        return String.format("step:image:date:%s",date);
+        return String.format("step:image:date:%s", date);
     }
 
-    public MomentImageContext popByDate(String date){
+    public MomentImageContext popByDate(String date) {
         return redisTemplate.opsForList().leftPop(getKeyByDate(date));
     }
 
-    /**
-     * 썸네일 스텝 데이터 한번에 저장 FIFO 구조 사용
-     * @param contexts
-     * @param date
-     */
-    public void pushAll(List<MomentImageContext> contexts, String date){
+    public void pushAll(String date, List<MomentImageContext> contexts) {
         try {
-            contexts.forEach(context -> {
-                redisTemplate.opsForList().rightPush(getKeyByDate(date), context);
-            });
+            redisTemplate.opsForList().rightPushAll(getKeyByDate(date), contexts.toArray(new MomentImageContext[0]));
         } catch (Exception e) {
             log.error("💥 이미지 STEP DATA REDIS 저장 실패 - date:{}", date, e);
             throw e;
         }
     }
-
 }

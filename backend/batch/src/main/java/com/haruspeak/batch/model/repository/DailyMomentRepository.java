@@ -50,8 +50,8 @@ public class DailyMomentRepository {
                     params.addValue("userId", moment.getUserId());
                     params.addValue("content", moment.getContent());
                     params.addValue("momentTime", moment.getMomentTime());
-                    params.addValue("imageCount", moment.getImageCount());
-                    params.addValue("tagCount", moment.getTagCount());
+                    params.addValue("imageCount", moment.getImages().size());
+                    params.addValue("tagCount", moment.getTags().size());
                     params.addValue("createdAt", moment.getCreatedAt());
                     log.debug("daily_moments params {}", params);
                     return params;

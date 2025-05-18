@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.haruspeak.batch.dto.context.ThumbnailGenerateContext;
-import com.haruspeak.batch.dto.context.MomentImageContext;
-import com.haruspeak.batch.dto.context.TodayDiaryContext;
-import com.haruspeak.batch.dto.context.TodayDiaryTagContext;
+import com.haruspeak.batch.dto.context.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,8 +79,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, TodayDiaryTagContext> tagStepRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, TodayDiaryTagContext> template = new RedisTemplate<>();
+    public RedisTemplate<String, MomentTagContext> tagStepRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, MomentTagContext> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return applyDefaultSerializers(template);
     }

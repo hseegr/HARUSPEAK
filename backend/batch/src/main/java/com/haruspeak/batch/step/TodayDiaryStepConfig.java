@@ -6,6 +6,7 @@ import com.haruspeak.batch.reader.TodayDiaryReader;
 import com.haruspeak.batch.reader.TodayMomentReader;
 import com.haruspeak.batch.reader.TodayMomentTargetUserReader;
 import com.haruspeak.batch.service.redis.*;
+import com.haruspeak.batch.service.redis.TodayDiaryRedisKeyService;
 import com.haruspeak.batch.writer.DailyMomentWriter;
 import com.haruspeak.batch.writer.DailySummaryWriter;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class TodayDiaryStepConfig {
 
     private final SummaryStepListener summaryStepListener;
 
-    private final TodayRedisService todayRedisService;
+    private final TodayMomentRedisService todayMomentRedisService;
     private final TodayDiaryRedisKeyService todayDiaryRedisKeyService;
     private final TodayDiaryRedisService todayDiaryRedisService;
 
@@ -55,8 +56,7 @@ public class TodayDiaryStepConfig {
                 .reader(todayMomentReader(null))
                 .writer(todayDiaryWriter())
                 .faultTolerant()
-                .retry(Exception.class)
-                .retryLimit(2)
+                .noRetry(Exception.class)
                 .listener(summaryStepListener)
                 .build();
     }
@@ -98,7 +98,7 @@ public class TodayDiaryStepConfig {
     @Bean
     @StepScope
     public TodayMomentReader todayMomentReader(@Value("#{jobParameters['date']}") String date) {
-        return new TodayMomentReader(todayDiaryRedisKeyService, todayRedisService, date);
+        return new TodayMomentReader(todayDiaryRedisKeyService, todayMomentRedisService, date);
     }
 
     @Bean
@@ -106,7 +106,7 @@ public class TodayDiaryStepConfig {
     public TodayMomentTargetUserReader todayMomentTargetUserReader(
             @Value("#{jobParameters['userId']}") String userId,
             @Value("#{jobParameters['date']}") String date) {
-        return new TodayMomentTargetUserReader(todayRedisService, userId, date);
+        return new TodayMomentTargetUserReader(todayMomentRedisService, userId, date);
     }
 
 
