@@ -8,7 +8,7 @@ ENV TZ=Asia/Seoul
 WORKDIR /app
 
 # 빌드된 jar 복사
-COPY ./build/libs/api-server-0.0.1-SNAPSHOT.jar ./app.jar
+COPY ./build/libs/batch-server-0.0.1-SNAPSHOT.jar ./app.jar
 
 # jar 실행 (JVM에 타임존 직접 지정)
 ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
