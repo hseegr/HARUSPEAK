@@ -10,6 +10,7 @@ interface DiaryImageProps {
   generateCount: number;
   isEditing: boolean;
   onImageReset: () => void;
+  hasContent: boolean;
 }
 
 const DiaryImage = ({
@@ -20,6 +21,7 @@ const DiaryImage = ({
   generateCount,
   isEditing,
   onImageReset,
+  hasContent,
 }: DiaryImageProps) => {
   const shouldShowImageSkeleton =
     isImageRegenerating || isImageGenerating || !imageUrl;
@@ -31,16 +33,22 @@ const DiaryImage = ({
       ) : (
         <img className='rounded-xl' src={imageUrl} alt='하루 요약 이미지' />
       )}
-      <div className='absolute bottom-2 right-2'>
-        <ResetBtn
-          generateCount={generateCount}
-          onReset={onImageReset}
-          isDisabled={
-            isImageRegenerating || isPending || isImageGenerating || isEditing
-          }
-          type='image'
-        />
-      </div>
+      {hasContent && (
+        <div className='absolute bottom-2 right-2'>
+          <ResetBtn
+            generateCount={generateCount}
+            onReset={onImageReset}
+            isDisabled={
+              isImageRegenerating ||
+              isPending ||
+              isImageGenerating ||
+              isEditing ||
+              !hasContent
+            }
+            type='image'
+          />
+        </div>
+      )}
     </div>
   );
 };
