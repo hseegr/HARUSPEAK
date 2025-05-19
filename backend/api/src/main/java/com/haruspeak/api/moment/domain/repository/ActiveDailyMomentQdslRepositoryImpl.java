@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -227,16 +226,15 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(moment.userId.eq(userId));
 
-        if (request.getBefore() != null) {
-            LocalDate before = LocalDate.parse(request.getBefore());
-            builder.and(summary.writeDate.loe(before));
+        if (condition.getBefore() != null) {
+            builder.and(moment.momentTime.loe(condition.getBefore()));
         }
 
         if (condition.getStartDate() != null && condition.getEndDate() != null) {
-            LocalDate startDate = LocalDate.parse(request.getStartDate()); // "2025-05-01"
-            LocalDate endDate = LocalDate.parse(request.getEndDate());     // "2025-05-19"
-
-            builder.and(summary.writeDate.between(startDate, endDate));
+            builder.and(moment.momentTime.between(
+                    condition.getStartDate().atStartOfDay(),
+                    condition.getEndDate().atTime(23, 59, 59)
+            ));
         }
 
         if (momentIdByTagCondition!= null && !momentIdByTagCondition.isEmpty()) {
