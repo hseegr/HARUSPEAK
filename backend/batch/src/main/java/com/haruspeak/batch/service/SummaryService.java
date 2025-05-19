@@ -46,20 +46,20 @@ public class SummaryService {
                 String totalContent = buildTotalContent(moments);
 
                 if(TextUtil.isMeaningless(totalContent)){
-                    totalContent = buildTotalContentByTags(moments);
-
-                    if(TextUtil.isMeaningless(totalContent)){
+//                    totalContent = buildTotalContentByTags(moments);
+//
+//                    if(TextUtil.isMeaningless(totalContent)){
                         String date = todayDiary.getDailySummary().getWriteDate();
                         setDefaultDailySummary(todayDiary.getDailySummary(), date);
                         nonContentList.add(todayDiary);
                         log.debug("⚠️ 요약할 내용 없음 - userId:{}",todayDiary.getDailySummary().getUserId());
 
-                    }else {
-                        DailySummaryResponse summaries = generateDailySummary(totalContent);
-                        setDailySummary(todayDiary.getDailySummary(), summaries);
-                        successList.add(todayDiary);
-                        log.debug("🔎 태그로 요약 생성 userId:{}, {}",todayDiary.getDailySummary().getUserId(), summaries);
-                    }
+//                    }else {
+//                        DailySummaryResponse summaries = generateDailySummary(totalContent);
+//                        setDailySummary(todayDiary.getDailySummary(), summaries);
+//                        successList.add(todayDiary);
+//                        log.debug("🔎 태그로 요약 생성 userId:{}, {}",todayDiary.getDailySummary().getUserId(), summaries);
+//                    }
 
                 } else {
                     DailySummaryResponse summaries = generateDailySummary(totalContent);
@@ -88,6 +88,7 @@ public class SummaryService {
 
         return TextUtil.isMeaningless(result) ? null : result;
     }
+
 
     private String buildTotalContentByTags(List<DailyMoment> moments) {
         String result = moments.stream()
