@@ -63,6 +63,7 @@ public enum ErrorCode  {
     SUMMARY_CONTENT_GENERATE_COUNT_LIMIT_EXCEEDED(42930, "요약 재생성 최대 요청 횟수를 초과하였습니다. 더 이상 재생성이 불가능합니다."),
 
     // 500 Internal Server Error
+    INTERNAL_SERVER_ERROR(50000, "오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     USER_REGISTER_ERROR(50010, "회원가입 처리 중 오류가 발생했습니다."),
     TOKEN_SAVE_ERROR(50011, "토큰 저장 중 오류가 발생했습니다."),
     IMAGE_UPLOAD_ERROR(50020, "이미지 업로드 중 오류가 발생했습니다. 다시 시도해 주세요."), // S3 업로드 에러 세분화 시 50으로 따로

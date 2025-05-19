@@ -1,7 +1,6 @@
 package com.haruspeak.api.summary.presentation;
 
 import com.haruspeak.api.common.exception.ErrorResponse;
-import com.haruspeak.api.common.exception.ValidErrorResponse;
 import com.haruspeak.api.common.security.AuthenticatedUser;
 import com.haruspeak.api.summary.application.DailySummaryService;
 import com.haruspeak.api.summary.dto.request.DailySummaryUpdateRequest;
