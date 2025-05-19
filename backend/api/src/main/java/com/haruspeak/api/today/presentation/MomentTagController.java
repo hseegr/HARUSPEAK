@@ -6,6 +6,7 @@ import com.haruspeak.api.today.dto.request.MomentTagCreateRequest;
 import com.haruspeak.api.today.dto.response.MomentTagCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class MomentTagController {
     @PostMapping("/tags")
     @Operation(summary = "AI 모먼트 태그 자동생성", description = "모먼트 태그를 AI로부터 추천 받아 자동 생성합니다.")
     public ResponseEntity<MomentTagCreateResponse> createMomentTag (
-            @RequestBody MomentTagCreateRequest mtcr,
+            @Valid @RequestBody MomentTagCreateRequest mtcr,
             @AuthenticatedUser Integer userId
     ) {
         String uri = "/ai/moment-tag";

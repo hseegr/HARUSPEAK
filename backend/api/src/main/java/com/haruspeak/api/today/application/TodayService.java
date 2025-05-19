@@ -230,7 +230,7 @@ public class TodayService {
             if (tag.length() > 10) {
                 throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_LENGTH);
             }
-            if (!tag.matches("^[a-zA-Z0-9 _가-힣]+$")) {
+            if (!tag.matches("^[a-zA-Z0-9 _가-힣ㄱ-ㅎㅏ-ㅣ]+$")) {
                 throw new HaruspeakException(ErrorCode.INVALID_MOMENT_TAG_CHARACTER);
             }
             if (!seenTags.add(tag)) {

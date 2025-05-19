@@ -30,7 +30,7 @@ public abstract class BaseDiaryListRequest {
     protected LocalDate endDate;
 
     @Schema(description = "조회 개수 (1~30)", example = "30")
-    @NotNull
+    @NotNull(message = "조회 개수가 널이어서는 안됩니다.")
     @Min(value = 1, message = "조회 가능한 최소 개수는 1입니다.")
     @Max(value = 30, message = "조회 가능한 최대 개수는 30입니다.")
     protected Integer limit;
