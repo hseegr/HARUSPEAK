@@ -33,8 +33,8 @@ const DiarySummary = ({
         onSummaryChange={onContentChange}
       />
 
-      {/* 재생성 버튼은 수정 모드가 아닐 때만 표시 */}
-      {!isEditing || !hasContent || (
+      {/* 재생성 버튼은 수정 모드가 아니거나 hasContent가 있을 때만 보임 */}
+      {!isEditing && hasContent && (
         <div className='absolute bottom-2 right-2'>
           <ResetBtn
             generateCount={generateCount}
