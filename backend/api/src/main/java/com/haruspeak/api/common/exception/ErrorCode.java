@@ -17,6 +17,7 @@ public enum ErrorCode  {
     BLANK_BASE64(40021, "Base64 문자열이 비어있습니다."),
     INVALID_BASE64(40022, "유효하지 않은 Base64 문자열입니다."),
     INVALID_CONDITION_FORMAT(40040, "유효하지 않은 조건 형식입니다."),
+    NO_IS_EDIT_PAGE_CONDITION(40041, "태그 자동생성 요청시 현재페이지가 수정페이지인지 아닌지에 대한 여부가 필요합니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),

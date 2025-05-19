@@ -1,5 +1,7 @@
 package com.haruspeak.api.today.application;
 
+import com.haruspeak.api.common.exception.ErrorCode;
+import com.haruspeak.api.common.exception.HaruspeakException;
 import com.haruspeak.api.common.util.FastApiClient;
 import com.haruspeak.api.today.dto.request.MomentTagCreateRequest;
 import com.haruspeak.api.today.dto.request.TagUpdateRequest;
@@ -35,7 +37,9 @@ public class MomentTagService {
 
         TagUpdateRequest tagUpdateRequest = new TagUpdateRequest(mtcr.createdAt(), mergedTags);
 
-        todayService.updateTag(tagUpdateRequest, userId);
+        // 수정페이지면 레디스 저장
+        if(mtcr.isEditPage() == null) throw new HaruspeakException(ErrorCode.NO_IS_EDIT_PAGE_CONDITION);
+        if(mtcr.isEditPage()) todayService.updateTag(tagUpdateRequest, userId);
 
         return new MomentTagCreateResponse(mergedTags);
     }
