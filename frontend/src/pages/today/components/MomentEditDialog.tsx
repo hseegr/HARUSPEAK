@@ -27,7 +27,6 @@ const MomentEditDialog = ({
   const {
     editedMoment,
     isSaving,
-    date,
     currentTime,
     isSaveDisabled,
     contentLength,
@@ -94,7 +93,7 @@ const MomentEditDialog = ({
       <DialogContent
         showCloseButton={false}
         layout='stacked'
-        className='min-h-full max-w-mobile'
+        className='min-h-full max-w-mobile gap-2'
       >
         <DialogDescription className='sr-only'>
           오늘의 순간 기록을 수정하는 대화상자입니다. 시간, 내용, 이미지, 태그를
@@ -123,10 +122,7 @@ const MomentEditDialog = ({
             {isSaving ? '...' : '저장'}
           </button>
         </DialogHeader>
-        <div className='flex flex-col gap-2'>
-          <div className='text-md'>{date}</div>
-        </div>
-        <div className='flex flex-col gap-4 rounded-xl bg-haru-beige p-3'>
+        <div className='flex flex-col gap-2 rounded-xl bg-haru-beige p-3'>
           {/* 날짜 & 시간 */}
           <div>
             <input
@@ -139,31 +135,35 @@ const MomentEditDialog = ({
 
           {/* 이미지 리스트 */}
           {editedMoment.images.length > 0 && (
-            <div className='grid grid-cols-3 gap-2'>
-              {Array.from({ length: editedMoment.images.length }).map(
-                (_, idx) => (
-                  <div
-                    key={idx}
-                    className='relative h-24 w-full rounded-lg bg-haru-gray-2'
-                  >
-                    {editedMoment.images[idx] ? (
-                      <>
-                        <img
-                          src={editedMoment.images[idx]}
-                          alt={`image-${idx}`}
-                          className='h-full w-full rounded-lg object-cover'
-                        />
-                        <button
-                          onClick={() => handleDeleteImage(idx)}
-                          className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
-                        >
-                          ✕
-                        </button>
-                      </>
-                    ) : null}
-                  </div>
-                ),
-              )}
+            <div className='max-h-[250px] overflow-y-auto'>
+              <div
+                className={`grid ${editedMoment.images.length >= 4 ? 'grid-cols-5' : 'grid-cols-3'} gap-2 p-1`}
+              >
+                {Array.from({ length: editedMoment.images.length }).map(
+                  (_, idx) => (
+                    <div
+                      key={idx}
+                      className='relative aspect-square w-full rounded-lg bg-haru-gray-2'
+                    >
+                      {editedMoment.images[idx] ? (
+                        <>
+                          <img
+                            src={editedMoment.images[idx]}
+                            alt={`image-${idx}`}
+                            className='h-full w-full rounded-lg object-cover'
+                          />
+                          <button
+                            onClick={() => handleDeleteImage(idx)}
+                            className='absolute right-1 top-1 rounded-full bg-haru-black bg-opacity-50 p-0.5 px-1 text-xs text-white hover:text-red-500'
+                          >
+                            ✕
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
+                  ),
+                )}
+              </div>
             </div>
           )}
 
@@ -174,10 +174,7 @@ const MomentEditDialog = ({
               onChange={e => handleContentChange(e.target.value)}
               className='text-md w-full rounded-md border border-gray-300 p-2 focus:outline-haru-green'
               placeholder='순간의 기록을 입력하세요'
-              rows={Math.min(
-                6,
-                Math.max(3, editedMoment.content.split('\n').length),
-              )}
+              rows={3}
             />
           </div>
           {/* 태그 에러 처리 및 글자수 안내 */}
