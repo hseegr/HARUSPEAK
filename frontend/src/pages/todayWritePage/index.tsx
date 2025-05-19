@@ -97,9 +97,22 @@ const TodayWritePage = () => {
     <div className='relative h-full w-full'>
       <div className='flex h-full flex-col overflow-y-auto px-2 py-1 pb-[180px]'>
         {/* 글자 수 표시 */}
-        <div className='mb-3 flex justify-end font-mont text-sm font-medium text-haru-gray-5'>
-          {checkTextLength}/500자
+        <div className='mb-1 flex justify-end font-mont text-sm font-medium'>
+          <span
+            className={
+              checkTextLength > 500 ? 'text-red-500' : 'text-haru-gray-5'
+            }
+          >
+            {checkTextLength}/500자
+          </span>
         </div>
+
+        {/* 500자 초과 안내 문구 */}
+        {checkTextLength > 500 && (
+          <div className='mb-3 text-right text-xs text-red-500'>
+            500자까지만 입력 가능합니다.
+          </div>
+        )}
 
         {/* 이미지 첨부 리스트 */}
         <ImageInputList />
@@ -115,13 +128,17 @@ const TodayWritePage = () => {
         )}
 
         {/* 하단 고정 입력 영역 */}
-        <div className='max-w-mobile fixed bottom-[70px] left-0 right-0 mx-auto w-full bg-white px-2 pb-8 pt-2'>
+        <div className='fixed bottom-[70px] left-0 right-0 mx-auto w-full max-w-mobile bg-white px-2 pb-8 pt-2'>
           <div className='flex flex-col gap-4'>
             {hasContent && (
               <div className='flex flex-row justify-end px-4'>
                 <div
-                  onClick={handleSave}
-                  className='flex cursor-pointer justify-end px-2 text-sm font-semibold text-haru-green'
+                  onClick={!isSaving ? handleSave : undefined} // 저장 중이면 클릭 막기
+                  className={`flex justify-end px-2 text-sm font-semibold ${
+                    isSaving
+                      ? 'cursor-not-allowed text-gray-400'
+                      : 'cursor-pointer text-haru-green'
+                  }`}
                 >
                   {isSaving ? '저장 중' : '저장'}
                 </div>

@@ -50,7 +50,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           />
           <div
             className='font-leeseyoon text-lg'
-            style={{ whiteSpace: 'pre-wrap' }}
+            style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
           >
             {moment.content}
           </div>
@@ -58,17 +58,24 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
 
         {/* 하단 */}
         {(moment.tags.length > 0 || moment.content) && (
-          <section className='flex items-start'>
-            <div className='flex h-full w-full flex-wrap items-center gap-2'>
-              {moment.tags.map((tag: string, idx: number) => (
-                <TagBadge key={`${tag}-${idx}`} tag={tag} />
-              ))}
+          <section>
+            <div className='flex items-start'>
+              <div className='mb-2 flex h-full w-full flex-wrap items-center gap-2'>
+                {moment.tags.map((tag: string, idx: number) => (
+                  <TagBadge key={`${tag}-${idx}`} tag={tag} />
+                ))}
+              </div>
+              <AutoTagGenerator
+                moment={moment}
+                initialTags={moment.tags}
+                isToday={isToday}
+              />
             </div>
-            <AutoTagGenerator
-              moment={moment}
-              initialTags={moment.tags}
-              isToday={isToday}
-            />
+            {moment.tags.includes('아무말') && (
+              <div className='w-full text-sm text-haru-gray-5'>
+                아무말 태그가 있을 경우 태그 자동 생성을 할 수 없습니다
+              </div>
+            )}
           </section>
         )}
       </article>
