@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+import EmptyState from '@/components/EmptyState';
 import MomentCard from '@/components/MomentCard';
 import { useContentHandler } from '@/hooks/useContentHandler';
 import { useGetDiary } from '@/hooks/useDiaryQuery';
@@ -26,6 +27,13 @@ const Diary = () => {
 
   // 기존 useDeleteDiary 훅 사용
   const { mutateAsync: deleteDiary, isPending: isDeleting } = useDeleteDiary();
+
+  // content 여부 확인
+  const hasContent =
+    data?.summary.imageGenerateCount === 0 ||
+    data?.summary.contentGenerateCount === 0
+      ? false
+      : true;
 
   // 수정 상태 관리
   const {
@@ -90,19 +98,19 @@ const Diary = () => {
   };
 
   if (!summaryId) {
-    return <div>일기를 찾을 수 없습니다.</div>;
+    return <EmptyState title='일기를 찾을 수 없습니다' />;
   }
 
   if (isPending) {
-    return <div>일기를 불러오는 중입니다...</div>;
+    return <EmptyState title='일기를 불러오는 중입니다' />;
   }
 
   if (isError) {
-    return <div>일기를 불러오는 중 오류가 발생했습니다.</div>;
+    return <EmptyState title='일기를 불러오는 중 오류가 발생했습니다' />;
   }
 
   if (!data) {
-    return <div>일기를 찾을 수 없습니다.</div>;
+    return <EmptyState title='일기를 찾을 수 없습니다' />;
   }
 
   return (
@@ -130,6 +138,7 @@ const Diary = () => {
         generateCount={data.summary.imageGenerateCount}
         isEditing={isEditing}
         onImageReset={handleImageReset}
+        hasContent={hasContent}
       />
 
       {/* 요약 내용 섹션 */}
@@ -142,6 +151,7 @@ const Diary = () => {
         generateCount={data.summary.contentGenerateCount}
         onContentChange={setEditContent}
         onContentReset={handleContentReset}
+        hasContent={hasContent}
       />
 
       {/* 모먼트 목록 */}
