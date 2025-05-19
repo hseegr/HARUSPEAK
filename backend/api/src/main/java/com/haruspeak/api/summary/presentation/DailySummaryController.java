@@ -46,7 +46,7 @@ public class DailySummaryController {
                     )
             }
     )
-    public ResponseEntity<Void> modifyDailySummary(@PathVariable Integer summaryId, @RequestBody @Valid DailySummaryUpdateRequest request, @AuthenticatedUser Integer userId){
+    public ResponseEntity<Void> modifyDailySummary(@PathVariable Integer summaryId,  @Valid @RequestBody DailySummaryUpdateRequest request, @AuthenticatedUser Integer userId){
         log.info("[PATCH] api/summary/{} 하루 일기 요약 수정 요청 (userId={})", summaryId, userId);
         dailySummaryService.updateDailySummary(summaryId, request);
         return ResponseEntity.ok().build();
