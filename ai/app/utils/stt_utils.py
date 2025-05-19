@@ -4,6 +4,7 @@ from openai import AsyncOpenAI
 from fastapi import UploadFile, File
 from faster_whisper import WhisperModel, BatchedInferencePipeline
 import io
+import torch
 
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
@@ -12,7 +13,9 @@ BASE_URL = os.getenv("BASE_URL")
 
 client = AsyncOpenAI(api_key=OPEN_AI_API_KEY, base_url=BASE_URL)
 
-model = WhisperModel("large", device="cuda", compute_type="int8")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+model = WhisperModel("large", device=device, compute_type="int8")
 batched_model = BatchedInferencePipeline(model=model)
 
 
