@@ -11,6 +11,8 @@ public record MomentTagCreateRequest(
         @Schema(description = "순간 일기 생성시각", example = "2025-05-01T01:02:03")
         String createdAt,
         @Schema(description = "순간 일기 내용", example = "일기 내용 ㅡㅡ")
-        String content
+        String content,
+        @Schema(description = "수정 페이지인지 여부", example = "false")
+        Boolean isEditPage
 ) {
 }
