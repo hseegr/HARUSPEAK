@@ -71,24 +71,22 @@ export const useMomentTagRecommend = (isEditPage: boolean = false) => {
   return useMutation({
     mutationFn: recommendTag,
     onSuccess: (response, variables) => {
-      if (!isEditPage) {
-        queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
-      }
       toast.success('태그가 성공적으로 생성되었습니다.');
 
       // 쿼리 클라이언트를 통해 태그 업데이트
-      queryClient.setQueryData(['todayDiary'], (oldData: any) => {
-        if (!oldData) return oldData;
-        if (!oldData.data) return oldData;
-        return {
-          ...oldData,
-          data: oldData.data.map((moment: any) =>
-            moment.momentTime === variables.createdAt
-              ? { ...moment, tags: response.recommendTags }
-              : moment,
-          ),
-        };
-      });
+      if (!isEditPage) {
+        queryClient.setQueryData(['todayDiary'], (oldData: any) => {
+          if (!oldData || !oldData.data) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.map((moment: any) =>
+              moment.momentTime === variables.createdAt
+                ? { ...moment, tags: response.recommendTags }
+                : moment,
+            ),
+          };
+        });
+      }
     },
     onError: error => {
       toast.error(
