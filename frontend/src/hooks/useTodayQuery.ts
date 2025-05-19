@@ -65,20 +65,16 @@ export const useMomentDelete = () => {
   });
 };
 
-export const useMomentTagRecommend = () => {
+export const useMomentTagRecommend = (isEditPage: boolean = false) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: recommendTag,
     onSuccess: (response, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+      if (!isEditPage) {
+        queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+      }
       toast.success('태그가 성공적으로 생성되었습니다.');
-
-      // 태그 업데이트 로직
-      const { tags } = variables;
-      const spaceLeft = 3 - tags.length;
-      const tagsToAdd = response.recommendTags.slice(0, spaceLeft);
-      const newTags = [...tags, ...tagsToAdd];
 
       // 쿼리 클라이언트를 통해 태그 업데이트
       queryClient.setQueryData(['todayDiary'], (oldData: any) => {
@@ -88,7 +84,7 @@ export const useMomentTagRecommend = () => {
           ...oldData,
           data: oldData.data.map((moment: any) =>
             moment.momentTime === variables.createdAt
-              ? { ...moment, tags: newTags }
+              ? { ...moment, tags: response.recommendTags }
               : moment,
           ),
         };

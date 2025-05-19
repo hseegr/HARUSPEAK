@@ -18,21 +18,23 @@ const LoadingSpinner = () => {
           `}
         </style>
         <div className='flex items-center gap-1'>
-          {[...Array(5)].map((_, index) => (
-            <div
-              key={index}
-              className='h-0 w-2 rounded-full bg-haru-green'
-              style={{
-                animation: `wave 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite`,
-                transformOrigin: 'center',
-                animationDelay: `${index * 0.15}s`,
-              }}
-            />
-          ))}
+          <p className='text-xl font-bold text-haru-light-green/80 transition-all duration-300 hover:scale-105'>
+            로딩중
+          </p>
+          <div className='min-h-[64px]'>
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className='h-0 w-2 rounded-full bg-haru-green'
+                style={{
+                  animation: `wave 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite`,
+                  transformOrigin: 'center',
+                  animationDelay: `${index * 0.15}s`,
+                }}
+              />
+            ))}
+          </div>
         </div>
-        <p className='text-xl font-bold text-haru-light-green/80 transition-all duration-300 hover:scale-105'>
-          로딩중
-        </p>
       </div>
     </div>
   );
