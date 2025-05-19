@@ -22,11 +22,11 @@ public abstract class BaseDiaryListRequest {
     LocalDateTime before;
 
     @Schema(description = "조회 시작일", nullable = true, example = "2025-05-01")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     protected LocalDate startDate;
 
     @Schema(description = "조회 종료일", nullable = true, example = "2025-05-31")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     protected LocalDate endDate;
 
     @Schema(description = "조회 개수 (1~30)", example = "30")
