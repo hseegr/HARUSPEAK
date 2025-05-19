@@ -33,7 +33,7 @@ public class MomentImageWriter implements ItemWriter<MomentImageContext> {
 
         }catch (Exception e){
             log.error("💥 moment_images 삽입 중 에러가 발생했습니다.", e);
-            imageRedisService.pushAll(momentImages.get(0).getCreatedAt(), momentImages);
+            imageRedisService.pushAll(momentImages.get(0).getCreatedAt().substring(0,10), momentImages);
             throw new RuntimeException("순간 일기 이미지 저장 중 에러 발생", e);
         }
     }
