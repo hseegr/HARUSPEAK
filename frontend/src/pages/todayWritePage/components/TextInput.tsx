@@ -23,7 +23,11 @@ const TextInput = () => {
 
   // 텍스트 입력창 값 변경
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    if (newText.length > 500) {
+      return;
+    }
+    setText(newText);
   };
 
   // 텍스트 입력창 높이 자동 조절
