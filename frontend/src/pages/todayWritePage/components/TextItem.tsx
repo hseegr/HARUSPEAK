@@ -37,7 +37,7 @@ const TextItem = ({ text, index }: TextItemProps) => {
       <textarea
         ref={textareaRef}
         rows={1}
-        className='w-full resize-none overflow-hidden rounded-xl border border-haru-gray-3 bg-haru-gray-1 p-3 text-sm text-haru-black'
+        className='w-full resize-none overflow-hidden rounded-xl border border-haru-gray-3 bg-haru-gray-1 p-3 text-base text-haru-black'
         value={text}
         onChange={handleChange}
       />
