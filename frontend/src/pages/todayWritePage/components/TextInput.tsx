@@ -59,7 +59,8 @@ const TextInput = () => {
         onKeyDown={handleKeyDown}
         placeholder='오늘 무슨 일이 있었나요?'
         rows={1}
-        className='flex-grow resize-none bg-transparent text-sm placeholder-gray-400 focus:outline-none'
+        className='flex-grow resize-none overflow-y-auto bg-transparent text-sm placeholder-gray-400 focus:outline-none'
+        style={{ maxHeight: '120px' }}
       />
 
       {/* 보내기 버튼 */}
