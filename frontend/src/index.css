@@ -88,7 +88,7 @@
 
 @font-face {
   font-family: 'LeeSeoYoon'; /* 네가 부를 이름 (영문 이름 추천) */
-  src: url('/fonts/이서윤체.ttf') format('truetype'); /* 파일 경로 맞게! */
+  src: url('/fonts/omyu pretty.ttf') format('truetype'); /* 파일 경로 맞게! */
   font-weight: normal;
   font-style: normal;
 }
