@@ -36,6 +36,7 @@ onnxruntime==1.22.0
 openai==1.76.2
 orjson==3.10.18
 packaging==24.2
+pillow==11.2.1
 protobuf==6.30.2
 pydantic==2.11.4
 pydantic_core==2.33.2

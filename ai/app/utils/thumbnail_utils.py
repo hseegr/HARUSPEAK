@@ -1,6 +1,9 @@
 from dotenv import load_dotenv
 import os
 from openai import AsyncOpenAI
+from PIL import Image
+import base64
+import io
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -32,4 +35,13 @@ async def oa_generate_thumbnail(content: str) -> str:
         quality="low",
     )
 
-    return result.data[0].b64_json
+    image_bytes = base64.b64decode(result.data[0].b64_json)
+
+    image = Image.open(io.BytesIO(image_bytes))
+
+    image_resize = image.resize((256, 256))
+
+    buffered = io.BytesIO()
+    image_resize.save(buffered, format="PNG")
+
+    return base64.b64encode(buffered.getvalue()).decode('utf-8')
