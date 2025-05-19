@@ -1,14 +1,18 @@
 package com.haruspeak.api.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -29,16 +33,29 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler({ MethodArgumentTypeMismatchException.class, BindException.class })
-    public ResponseEntity<ErrorResponse> handleDateFormatException(Exception ex) {
-        log.warn("📆 날짜 형식 예외 발생: {}", ex.getMessage());
-        return ResponseEntity.status(ErrorCode.BAD_REQUEST.getCode()/ 100)
-                .body(createErrorResponse(
-                                ErrorCode.BAD_REQUEST.getCode(),
-                        "잘못된 요청입니다.",
-                        "날짜 형식이 올바르지 않습니다. (yyyy-MM-dd 또는 yyyy-MM-ddTHH:mm:ss 형식)"
-                        )
-                );
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("📛 타입 변환 실패: {} (value = {})", ex.getName(), ex.getValue());
+
+        String fieldName = ex.getName();
+        String message;
+
+        if (ex.getRequiredType() == LocalDate.class || ex.getRequiredType() == LocalDateTime.class) {
+            message = "날짜 형식이 올바르지 않습니다. (yyyy-MM-dd 또는 yyyy-MM-ddTHH:mm:ss 형식)";
+        } else if (ex.getRequiredType() == Integer.class) {
+            message = String.format("'%s'는 숫자여야 합니다.", fieldName);
+        } else {
+            message = "요청 값의 타입이 잘못되었습니다.";
+        }
+
+        return ResponseEntity.badRequest().body(
+                createErrorResponse(
+                        ErrorCode.BAD_REQUEST.getCode(),
+                        message,
+                        null
+                )
+        );
     }
 
 
@@ -88,7 +105,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalExceptions(Exception ex) {
         log.error("Unhandled 예외 발생: {}", ex.getMessage(), ex);
         return ResponseEntity.status(500)
-                .body(createErrorResponse(500,ex.getMessage(),"Unexpected Error"));
+                .body(createErrorResponse(
+                        ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
+                        null
+                ));
     }
 
     /**
@@ -101,4 +122,5 @@ public class GlobalExceptionHandler {
     private ErrorResponse createErrorResponse(int errorCode, String message, String details) {
         return new ErrorResponse(errorCode, message, LocalDateTime.now().toString(), details);
     }
+
 }

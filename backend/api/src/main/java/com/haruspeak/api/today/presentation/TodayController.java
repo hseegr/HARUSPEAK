@@ -83,7 +83,7 @@ public class TodayController {
             }
     )
     public ResponseEntity<Void> modifyMoment(@PathVariable String time, @Valid @RequestBody MomentUpdateRequest request, @AuthenticatedUser Integer userId){
-        log.info("[PATCH] api/today/time/{} 오늘의 순간 일기 수정 요청 (userId={}", time, userId);
+        log.info("[PATCH] api/today/time/{} 오늘의 순간 일기 수정 요청 (userId={})", time, userId);
         todayService.updateMoment(time, request,userId);
         return ResponseEntity.ok().build();
     }
