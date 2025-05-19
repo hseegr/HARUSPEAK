@@ -69,7 +69,12 @@ const DiaryFrame = ({
         </div>
 
         <div className='flex flex-col'>
-          <div className='m-1 font-leeseyoon text-lg'>{title}</div>
+          <div
+            className='m-1 font-leeseyoon text-lg'
+            style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
+          >
+            {title}
+          </div>
           <div className='w-full overflow-hidden'>
             {isImageGenerating || !imageUrl ? (
               <ImageSkeleton />

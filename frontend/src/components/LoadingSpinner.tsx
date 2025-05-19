@@ -17,11 +17,11 @@ const LoadingSpinner = () => {
             }
           `}
         </style>
-        <div className='flex items-center gap-1'>
+        <div>
           <p className='text-xl font-bold text-haru-light-green/80 transition-all duration-300 hover:scale-105'>
             로딩중
           </p>
-          <div className='min-h-[64px]'>
+          <div className='flex min-h-[64px] min-w-[64px] items-center justify-between'>
             {[...Array(5)].map((_, index) => (
               <div
                 key={index}

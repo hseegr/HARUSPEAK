@@ -59,8 +59,8 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
         {/* 하단 */}
         {(moment.tags.length > 0 || moment.content) && (
           <section>
-            <div className='flex items-start'>
-              <div className='mb-2 flex h-full w-full flex-wrap items-center gap-2'>
+            <div className='mb-2 flex items-center'>
+              <div className='flex h-full w-full flex-wrap items-center gap-2'>
                 {moment.tags.map((tag: string, idx: number) => (
                   <TagBadge key={`${tag}-${idx}`} tag={tag} />
                 ))}

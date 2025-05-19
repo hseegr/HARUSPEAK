@@ -85,13 +85,13 @@ const Home = () => {
             {/* 전체 통계 섹션 */}
             <section className='w-full rounded-lg bg-haru-beige p-4'>
               <div className='mb-2 flex justify-between'>
-                <p className='text-haru-gray-5'>지금까지 기록한 순간들 : </p>
+                <p className='text-haru-gray-5'>어제까지 기록한 순간들 : </p>
                 <p className='font-bold text-haru-green'>
                   {statistics.totalMomentCount}개
                 </p>
               </div>
               <div className='flex justify-between'>
-                <p className='text-haru-gray-5'>지금까지 기록한 하루들 : </p>
+                <p className='text-haru-gray-5'>어제까지 기록한 하루들 : </p>
                 <p className='font-bold text-haru-green'>
                   {statistics.totalDiaryCount}일
                 </p>

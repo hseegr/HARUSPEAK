@@ -1,7 +1,6 @@
 import EmptyState from '@/components/EmptyState';
 import MomentCard from '@/components/MomentCard';
 import { useToday } from '@/hooks/useTodayQuery';
-import { formatDate } from '@/lib/timeUtils';
 import { MomentContent } from '@/types/common';
 
 const TodayPage = () => {
@@ -18,15 +17,9 @@ const TodayPage = () => {
       </div>
     );
 
-  const firstMoment = data.data[0];
-  const formattedDate = firstMoment.createdAt
-    ? formatDate(firstMoment.createdAt)
-    : '';
-
   return (
     <div className='flex w-full flex-col'>
-      <div className='mb-2'>{formattedDate}</div>
-      <div className='flex w-full flex-col gap-3'>
+      <div className='flex w-full flex-col gap-4'>
         {data.data.map((moment: MomentContent, index: number) => (
           <MomentCard
             key={moment.momentTime || `moment-${index}`}

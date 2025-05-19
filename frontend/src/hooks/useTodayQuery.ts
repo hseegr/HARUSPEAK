@@ -7,10 +7,15 @@ import {
   recommendTag,
   updateMoment,
 } from '@/apis/todayApi';
-import { UpdateMomentRequest } from '@/types/today';
+import {
+  TagRequest,
+  TagResponse,
+  TodayDiaryResponse,
+  UpdateMomentRequest,
+} from '@/types/today';
 
 export const useToday = () => {
-  return useQuery({
+  return useQuery<TodayDiaryResponse>({
     queryKey: ['todayDiary'],
     queryFn: getToday,
   });
@@ -27,8 +32,20 @@ export const useMomentEdit = () => {
       createdAt: string;
       data: UpdateMomentRequest;
     }) => updateMoment(createdAt, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+    onSuccess: (_, variables) => {
+      // 즉시 UI 업데이트만 수행
+      queryClient.setQueryData<TodayDiaryResponse>(['todayDiary'], oldData => {
+        if (!oldData || !oldData.data) return oldData;
+        return {
+          ...oldData,
+          data: oldData.data.map(moment =>
+            moment.createdAt === variables.createdAt
+              ? { ...moment, ...variables.data }
+              : moment,
+          ),
+        };
+      });
+
       toast.success('순간 기록이 수정되었습니다.');
     },
     onError: error => {
@@ -51,8 +68,16 @@ export const useMomentDelete = () => {
       }
       return deleteMoment(createdAt);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+    onSuccess: (_, createdAt) => {
+      // 즉시 UI 업데이트만 수행
+      queryClient.setQueryData<TodayDiaryResponse>(['todayDiary'], oldData => {
+        if (!oldData || !oldData.data) return oldData;
+        return {
+          ...oldData,
+          data: oldData.data.filter(moment => moment.createdAt !== createdAt),
+        };
+      });
+
       toast.success('순간 기록이 삭제되었습니다.');
     },
     onError: error => {
@@ -68,27 +93,28 @@ export const useMomentDelete = () => {
 export const useMomentTagRecommend = (isEditPage: boolean = false) => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<TagResponse, Error, TagRequest>({
     mutationFn: recommendTag,
     onSuccess: (response, variables) => {
+      // 즉시 UI 업데이트만 수행
       if (!isEditPage) {
-        queryClient.invalidateQueries({ queryKey: ['todayDiary'] });
+        queryClient.setQueryData<TodayDiaryResponse>(
+          ['todayDiary'],
+          oldData => {
+            if (!oldData || !oldData.data) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map(moment =>
+                moment.createdAt === variables.createdAt
+                  ? { ...moment, tags: response.recommendTags }
+                  : moment,
+              ),
+            };
+          },
+        );
       }
-      toast.success('태그가 성공적으로 생성되었습니다.');
 
-      // 쿼리 클라이언트를 통해 태그 업데이트
-      queryClient.setQueryData(['todayDiary'], (oldData: any) => {
-        if (!oldData) return oldData;
-        if (!oldData.data) return oldData;
-        return {
-          ...oldData,
-          data: oldData.data.map((moment: any) =>
-            moment.momentTime === variables.createdAt
-              ? { ...moment, tags: response.recommendTags }
-              : moment,
-          ),
-        };
-      });
+      toast.success('태그가 성공적으로 생성되었습니다.');
     },
     onError: error => {
       toast.error(
