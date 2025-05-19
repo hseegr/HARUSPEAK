@@ -34,12 +34,12 @@ const MomentEditDialog = ({
     handleTimeChange,
     handleContentChange,
     handleDeleteImage,
-    handleDeleteTag,
     handleSave,
     resetState,
   } = useMomentEdit(moment, () => onOpenChange(false));
 
   const [shouldResetTags, setShouldResetTags] = useState(false);
+  const [localTags, setLocalTags] = useState<string[]>(moment.tags);
 
   const {
     register,
@@ -52,9 +52,9 @@ const MomentEditDialog = ({
     onSubmit,
     handleKeyPress,
   } = useTagForm({
-    tags: editedMoment.tags,
+    tags: localTags,
     onTagAdd: tag => {
-      editedMoment.tags = [...editedMoment.tags, tag];
+      setLocalTags(prev => [...prev, tag]);
     },
   });
 
@@ -64,21 +64,29 @@ const MomentEditDialog = ({
       resetState();
       reset();
       setTagError('');
+      setLocalTags(moment.tags);
     }
-  }, [open, resetState, reset, setTagError]);
+  }, [open, resetState, reset, setTagError, moment.tags]);
 
   // 태그 초기화를 처리하는 useEffect
   useEffect(() => {
     if (shouldResetTags) {
-      editedMoment.tags = [];
+      setLocalTags([]);
       setShouldResetTags(false);
     }
-  }, [shouldResetTags, editedMoment]);
+  }, [shouldResetTags]);
 
   // 취소 버튼 클릭 시 원래 상태로 복구
   const handleCancel = () => {
     resetState();
+    setLocalTags(moment.tags);
     onOpenChange(false);
+  };
+
+  // 저장 버튼 클릭 시 로컬 태그를 editedMoment에 반영
+  const handleSaveWithTags = () => {
+    editedMoment.tags = localTags;
+    handleSave();
   };
 
   return (
@@ -103,7 +111,7 @@ const MomentEditDialog = ({
           </DialogClose>
           <DialogTitle>오늘의 순간 수정</DialogTitle>
           <button
-            onClick={handleSave}
+            onClick={handleSaveWithTags}
             disabled={isSaving || isSaveDisabled}
             aria-label='순간 기록 수정 확정'
             className={`rounded-full px-3 py-1.5 text-sm ${
@@ -164,18 +172,12 @@ const MomentEditDialog = ({
             <textarea
               value={editedMoment.content}
               onChange={e => handleContentChange(e.target.value)}
-              rows={4}
-              className='text-md max-h-[250px] min-h-[100px] w-full resize-none rounded-md border border-gray-300 p-2 focus:outline-haru-green'
+              className='text-md w-full rounded-md border border-gray-300 p-2 focus:outline-haru-green'
               placeholder='순간의 기록을 입력하세요'
-              style={{
-                height: 'auto',
-                overflowY: 'auto',
-              }}
-              onInput={e => {
-                const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = `${Math.min(target.scrollHeight, 250)}px`;
-              }}
+              rows={Math.min(
+                6,
+                Math.max(3, editedMoment.content.split('\n').length),
+              )}
             />
           </div>
           {/* 태그 에러 처리 및 글자수 안내 */}
@@ -211,15 +213,15 @@ const MomentEditDialog = ({
                     : 'border-gray-300'
                 }`}
                 placeholder={
-                  editedMoment.tags.length >= 10
+                  localTags.length >= 10
                     ? '태그 최대 개수 도달 (10개)'
                     : '태그 입력'
                 }
-                disabled={editedMoment.tags.length >= 10}
+                disabled={localTags.length >= 10}
               />
               <button
                 type='submit'
-                disabled={editedMoment.tags.length >= 10 || !watch('tag')}
+                disabled={localTags.length >= 10 || !watch('tag')}
                 className='whitespace-nowrap rounded-full bg-haru-green px-3 py-2 text-xs font-bold text-white disabled:bg-gray-300 disabled:text-gray-500'
               >
                 태그 추가
@@ -229,16 +231,17 @@ const MomentEditDialog = ({
             <div className='mb-2 flex flex-row-reverse justify-between'>
               <AutoTagGenerator
                 moment={editedMoment}
-                initialTags={editedMoment.tags}
+                initialTags={localTags}
                 isToday={true}
                 hideWhenDisabled={false}
                 buttonStyle='simple'
                 isEditPage={true}
+                onTagsUpdate={newTags => setLocalTags(newTags)}
               />
               <button
                 onClick={() => setShouldResetTags(true)}
                 className='text-sm font-bold text-haru-light-green hover:text-haru-green disabled:cursor-not-allowed disabled:text-gray-500 disabled:hover:text-gray-500'
-                disabled={editedMoment.tags.length > 0 ? false : true}
+                disabled={localTags.length > 0 ? false : true}
               >
                 태그 목록 초기화
               </button>
@@ -246,14 +249,25 @@ const MomentEditDialog = ({
 
             {/* 현재 태그 목록 */}
             <div className='flex flex-wrap gap-2'>
-              {editedMoment.tags.map((tag, idx) => (
+              {localTags.includes('아무말') && (
+                <div className='w-full text-center text-sm text-haru-gray-5'>
+                  아무말 태그가 있을 경우 태그 자동 생성을 할 수 없습니다
+                </div>
+              )}
+              {localTags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className='flex items-center gap-1 rounded-full bg-haru-gray-2 px-3 py-1 font-leeseyoon text-sm'
+                  className={`flex items-center gap-1 rounded-full px-3 py-1 font-leeseyoon text-sm ${
+                    tag === '아무말'
+                      ? 'border border-haru-light-green bg-haru-yellow text-haru-green'
+                      : 'bg-haru-gray-2'
+                  }`}
                 >
                   {tag}
                   <button
-                    onClick={() => handleDeleteTag(idx)}
+                    onClick={() => {
+                      setLocalTags(prev => prev.filter((_, i) => i !== idx));
+                    }}
                     className='text-haru-gray-5 hover:text-red-600'
                   >
                     ✕

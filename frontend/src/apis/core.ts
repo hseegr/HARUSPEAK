@@ -4,7 +4,7 @@ export const DOMAIN = import.meta.env.VITE_API_DOMAIN;
 
 export const axiosInstance = axios.create({
   baseURL: DOMAIN,
-  timeout: 1000,
+  timeout: 5000,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true, // refreshToken, accessToken을 쿠키로 보낼 수 있게 설정
 });
