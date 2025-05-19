@@ -10,6 +10,7 @@ interface DiarySummaryProps {
   generateCount: number;
   onContentChange: (value: string) => void;
   onContentReset: () => void;
+  hasContent: boolean;
 }
 
 const DiarySummary = ({
@@ -21,6 +22,7 @@ const DiarySummary = ({
   generateCount,
   onContentChange,
   onContentReset,
+  hasContent,
 }: DiarySummaryProps) => {
   return (
     <div className='relative'>
@@ -31,13 +33,13 @@ const DiarySummary = ({
         onSummaryChange={onContentChange}
       />
 
-      {/* 재생성 버튼은 수정 모드가 아닐 때만 표시 */}
-      {!isEditing && (
+      {/* 재생성 버튼은 수정 모드가 아니거나 hasContent가 있을 때만 보임 */}
+      {!isEditing && hasContent && (
         <div className='absolute bottom-2 right-2'>
           <ResetBtn
             generateCount={generateCount}
             onReset={onContentReset}
-            isDisabled={isContentRegenerating || isPending}
+            isDisabled={isContentRegenerating || isPending || !hasContent}
             type='content'
           />
         </div>
