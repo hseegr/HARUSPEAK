@@ -42,7 +42,7 @@ const AutoTagGenerator = ({
           recommendTagMutation(
             {
               tags: initialTags,
-              createdAt: moment.momentTime,
+              createdAt: moment.createdAt || moment.momentTime,
               content: moment.content,
               isEditPage: isEditPage,
             },
