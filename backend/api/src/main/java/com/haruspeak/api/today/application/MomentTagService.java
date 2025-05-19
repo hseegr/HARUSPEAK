@@ -45,9 +45,8 @@ public class MomentTagService {
             specialCharacterList.add("아무말"); // 아무말 담기
             List<String> specialCharacterArrayMergedTagList = createNonDuplicateMergedTagList(prevTagList, specialCharacterList); // 기존 리스트와 합치기
 
-            // 수정페이지면 레디스 저장
             if(mtcr.isEditPage() == null) throw new HaruspeakException(ErrorCode.NO_IS_EDIT_PAGE_CONDITION); // 필드가 없을 경우(null) 에러
-            if(mtcr.isEditPage()) updateTagListInRedis(mtcr, specialCharacterArrayMergedTagList, userId); // 레디스 저장
+            if(!mtcr.isEditPage()) updateTagListInRedis(mtcr, specialCharacterArrayMergedTagList, userId); // 수정페이지 아닐때만 레디스 저장
 
             return new MomentTagCreateResponse(specialCharacterArrayMergedTagList); // 반환
         }
@@ -55,11 +54,9 @@ public class MomentTagService {
         // 3. FastApi 요청해서 추천받아오는 경우 - 기존태그 + "아무말"
         List<String> recommendedTags = getAiTagResponse(uri, mtcr).recommendTags(); // ai 서버에 프론트 요청값 전달 후 반환 받기
         List<String> mergedTagList = createNonDuplicateMergedTagList(prevTagList, recommendedTags); // 리스트 합치기
-        updateTagListInRedis(mtcr, mergedTagList, userId); // 레디스 업데이트
 
-        // 수정페이지면 레디스 저장
         if(mtcr.isEditPage() == null) throw new HaruspeakException(ErrorCode.NO_IS_EDIT_PAGE_CONDITION); // 필드가 없을 경우(null) 에러
-        if(mtcr.isEditPage()) updateTagListInRedis(mtcr, mergedTagList, userId); // // 레디스 저장
+        if(!mtcr.isEditPage()) updateTagListInRedis(mtcr, mergedTagList, userId); // 수정페이지 아닐때만 레디스 저장
 
         if(mergedTagList.isEmpty()) throw new HaruspeakException(ErrorCode.RECOMMEND_TAGS_ARRAY_EMPTY); // 빈배열 반환시 에러처리
         return new MomentTagCreateResponse(mergedTagList); // 반환
