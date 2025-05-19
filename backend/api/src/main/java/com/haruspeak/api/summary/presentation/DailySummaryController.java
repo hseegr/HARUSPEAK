@@ -38,7 +38,7 @@ public class DailySummaryController {
                     @ApiResponse(
                             responseCode = "400",
                             description = "Bad Request",
-                            content = @Content(schema = @Schema(implementation = ValidErrorResponse.class))
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
                     ),
                     @ApiResponse(
                             responseCode = "404",

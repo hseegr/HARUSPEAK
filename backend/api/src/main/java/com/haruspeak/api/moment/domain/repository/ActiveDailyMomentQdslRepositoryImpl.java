@@ -31,7 +31,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
     private final ActiveDailyMomentJpaRepository jpaRepository;
 
     private static final QActiveDailyMoment moment = QActiveDailyMoment.activeDailyMoment;
-    private static final QMomentTag tag = QMomentTag.momentTag;
+    private static final QMomentTag momentTag = QMomentTag.momentTag;
     private static final QMomentImage image = QMomentImage.momentImage;
     private static final QMomentTagName tagName = QMomentTagName.momentTagName;
 
@@ -119,7 +119,7 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
     private List<Tuple> fetchBaseActiveMomentListByCondition(BooleanBuilder conditions, int limit) {
         return queryFactory.select(selectMomentFields().toArray(new Expression[0]))
                 .from(moment)
-                .leftJoin(tag).on(moment.momentId.eq(tag.momentId))
+                .leftJoin(momentTag).on(moment.momentId.eq(momentTag.momentId))
                 .where(conditions)
                 .groupBy(moment.momentId)
                 .orderBy(moment.momentTime.desc())
@@ -202,17 +202,15 @@ public class ActiveDailyMomentQdslRepositoryImpl implements ActiveDailyMomentQds
     }
 
     /**
-     * 검색할 userTags를 모두 포함하는 momentIds 반환
+     * 검색할 userTags를 하나라도 가지고 있는 momentIds 반환 - OR 검색
      * - userId 필요없는 이유는 userTagId에 user가 포함되기 때문
      * @param userTagIds 검색 userTags
      * @return 모두 포함하는 moment ids
      */
     private List<Integer> findMomentIdsMatchingAllUserTags(List<Integer> userTagIds) {
-        return queryFactory.select(tag.momentId)
-                .from(tag)
-                .where(tag.userTagId.in(userTagIds))
-                .groupBy(tag.momentId)
-                .having(tag.userTagId.countDistinct().eq((long) userTagIds.size()))
+        return queryFactory.select(momentTag.momentId)
+                .from(momentTag)
+                .where(momentTag.userTagId.in(userTagIds))
                 .fetch();
     }
 
