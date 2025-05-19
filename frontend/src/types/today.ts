@@ -13,6 +13,7 @@ export interface TagRequest {
   tags: string[];
   createdAt: string;
   content: string;
+  isEditPage: boolean;
 }
 
 // 태그 생성 API 응답 타입
