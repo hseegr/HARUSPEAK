@@ -29,6 +29,8 @@ public enum ErrorCode  {
     BLANK_MOMENT(40046,"내용이 존재해야합니다."),
     DUPLICATION_DELETE_IMAGE(40047,"이미지에 삭제할 이미지가 존재합니다."),
     DUPLICATION_TAG(40048,"태그명이 중복됩니다."),
+    NO_IS_EDIT_PAGE_CONDITION(40041, "태그 자동생성 요청시 현재페이지가 수정페이지인지 아닌지에 대한 여부가 필요합니다."),
+
     // 401 Unauthorized
     UNAUTHORIZED(40100, "인증되지 않은 사용자입니다. 로그인 후 다시 시도해 주세요."),
     INVALID_TOKEN(40110, "유효하지 않은 토큰입니다."),
