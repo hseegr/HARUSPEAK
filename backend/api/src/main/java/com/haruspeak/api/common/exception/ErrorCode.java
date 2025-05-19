@@ -10,7 +10,8 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode  {
     // 400 Bad Request
-    MISSING_REQUIRED_FIELDS(40000, "요청에 필수 필드가 누락되었습니다."),
+    BAD_REQUEST(40000, "잘못된 요청입니다."),
+    MISSING_REQUIRED_FIELDS(40001, "요청에 필수 필드가 누락되었습니다."),
     GOOGLE_LOGIN_FAILED(40010, "구글 로그인 인증 실패. 유효한 인증 정보를 제공해 주세요. 구글에서 반환된 오류: %s"),
     INVALID_JWT_INPUT(40011, "JWT 생성에 필요한 필드가 누락되었거나 잘못되었습니다."),
     INVALID_AUDIO_FILE(40020, "음성 파일이 유효하지 않거나 잘못된 형식입니다."),
