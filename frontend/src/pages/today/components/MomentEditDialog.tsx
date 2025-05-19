@@ -233,6 +233,7 @@ const MomentEditDialog = ({
                 isToday={true}
                 hideWhenDisabled={false}
                 buttonStyle='simple'
+                isEditPage={true}
               />
               <button
                 onClick={() => setShouldResetTags(true)}

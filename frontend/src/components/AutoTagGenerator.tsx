@@ -7,6 +7,7 @@ interface AutoTagGeneratorProps {
   isToday?: boolean;
   hideWhenDisabled?: boolean;
   buttonStyle?: 'default' | 'simple';
+  isEditPage?: boolean;
 }
 
 const AutoTagGenerator = ({
@@ -15,6 +16,7 @@ const AutoTagGenerator = ({
   isToday = true,
   hideWhenDisabled = true,
   buttonStyle = 'default',
+  isEditPage = false,
 }: AutoTagGeneratorProps) => {
   const { mutate: recommendTagMutation, isPending } = useMomentTagRecommend();
 
@@ -30,7 +32,6 @@ const AutoTagGenerator = ({
     buttonStyle === 'default'
       ? 'rounded-full bg-haru-light-green hover:bg-haru-green px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
       : 'text-sm font-bold text-haru-light-green hover:text-haru-green disabled:cursor-not-allowed disabled:opacity-50';
-
   return (
     <div className='flex-shrink-0 pl-1'>
       <button
@@ -39,6 +40,7 @@ const AutoTagGenerator = ({
             tags: initialTags,
             createdAt: moment.momentTime,
             content: moment.content,
+            isEditPage: isEditPage,
           })
         }
         className={buttonClassName}
