@@ -29,9 +29,9 @@ public abstract class BaseDiaryListRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     protected LocalDate endDate;
 
-    @Schema(description = "조회 개수 (1~30)", defaultValue = "30", example = "30")
+    @Schema(description = "조회 개수 (1~30)", example = "30")
     @NotNull
-    @Min(1)
-    @Max(30)
+    @Min(value = 1, message = "조회 가능한 최소 개수는 1입니다.")
+    @Max(value = 30, message = "조회 가능한 최대 개수는 30입니다.")
     protected Integer limit;
 }
