@@ -127,6 +127,7 @@ const Diary = () => {
         onEditCancel={handleEditCancel}
         onEditSave={handleEditSave}
         onDeleteClick={handleDeleteClick}
+        summaryLength={editContent.length}
       />
 
       {/* 이미지 섹션 */}
