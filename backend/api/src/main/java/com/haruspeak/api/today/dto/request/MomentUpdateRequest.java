@@ -12,18 +12,10 @@ import java.util.List;
 public record MomentUpdateRequest(
         @Schema(description = "생성 시각", example = "2025-05-01T01:01:01")
         @NotBlank(message = "생성 시각은 필수 입니다.")
-        @Pattern(
-                regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$",
-                message = "생성 시각 형식이 올바르지 않습니다. (예: 2025-05-19T07:45:16 또는 2025-05-19T07:45:16.123456)"
-        )
         String createdAt,
 
         @Schema(description = "작성 시각(사용자 지정)", example = "2025-05-01T01:01:01")
         @NotBlank(message = "작성 시각은 필수 입니다.")
-        @Pattern(
-                regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?$",
-                message = "작성 시각 형식이 올바르지 않습니다. (예: 2025-05-19T07:45:16 또는 2025-05-19T07:45:16.123456)"
-        )
         String momentTime,
 
         @Schema(description = "삭제 후 남길 이미지 목록", example = "[\"삭제하지 않을 이미지\"]")
