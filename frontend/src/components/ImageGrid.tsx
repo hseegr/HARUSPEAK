@@ -24,7 +24,7 @@ const ImageGrid = ({ images, momentTime, momentId }: ImageGridProps) => {
           return (
             <div
               key={`${image}-${idx}`}
-              className='relative h-[105px] w-[105px] cursor-pointer overflow-hidden rounded-xl'
+              className='relative aspect-square w-1/3 cursor-pointer overflow-hidden rounded-xl'
               onClick={e => {
                 e.stopPropagation(); // 이벤트 전파 중지
                 setSelectedImageIndex(idx);

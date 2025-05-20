@@ -21,9 +21,9 @@ const ContentSummary = ({
 
   if (isEditing) {
     return (
-      <div className='rounded-xl bg-haru-beige p-4'>
+      <div className='rounded-xl border border-haru-light-green bg-haru-yellow p-4'>
         <textarea
-          className='h-full min-h-32 w-full resize-none bg-haru-light-green font-leeseyoon text-white focus:outline-none'
+          className='w-full bg-transparent p-1 font-leeseyoon text-xl focus:outline-none'
           value={summary}
           onChange={e => onSummaryChange?.(e.target.value)}
           autoFocus
@@ -34,7 +34,12 @@ const ContentSummary = ({
 
   return (
     <div className='rounded-xl bg-haru-beige p-4 pb-12'>
-      <p className='whitespace-pre-wrap font-leeseyoon'>{summary}</p>
+      <p
+        className='whitespace-pre-wrap font-leeseyoon'
+        style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
+      >
+        {summary}
+      </p>
     </div>
   );
 };
