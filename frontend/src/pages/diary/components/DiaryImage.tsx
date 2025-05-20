@@ -31,9 +31,13 @@ const DiaryImage = ({
       {shouldShowImageSkeleton ? (
         <ImageSkeleton />
       ) : (
-        <img className='rounded-xl' src={imageUrl} alt='하루 요약 이미지' />
+        <img
+          className='h-full w-full rounded-xl object-cover'
+          src={imageUrl}
+          alt='하루 요약 이미지'
+        />
       )}
-      {hasContent && (
+      {!isEditing && hasContent && (
         <div className='absolute bottom-2 right-2'>
           <ResetBtn
             generateCount={generateCount}
