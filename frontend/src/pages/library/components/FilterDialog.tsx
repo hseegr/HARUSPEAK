@@ -137,7 +137,7 @@ const FilterDialog = ({ open, onOpenChange, onApply }: FilterDialogProps) => {
       if (prev.includes(tagId)) {
         return prev.filter(id => id !== tagId);
       }
-      if (prev.length >= 3) {
+      if (prev.length >= 5) {
         return prev;
       }
       return [...prev, tagId];
