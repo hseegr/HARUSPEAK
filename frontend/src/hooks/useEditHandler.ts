@@ -33,8 +33,8 @@ export const useEditHandler = (
   const handleEditSave = () => {
     if (!summaryId) return;
 
-    if (!editTitle.trim() || !editContent.trim()) {
-      toast.warning('제목과 내용을 모두 입력해주세요.');
+    if (!editTitle.trim()) {
+      toast.warning('제목을 모두 입력해주세요.');
       return;
     }
 
