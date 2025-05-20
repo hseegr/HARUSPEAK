@@ -47,6 +47,14 @@ const ImageGrid = ({ images, momentTime, momentId }: ImageGridProps) => {
             </div>
           );
         })}
+        {/* 빈 공간 채우기 */}
+        {images.length === 1 && (
+          <>
+            <div className='w-1/3'></div>
+            <div className='w-1/3'></div>
+          </>
+        )}
+        {images.length === 2 && <div className='w-1/3'></div>}
       </div>
 
       <ImageDialog
