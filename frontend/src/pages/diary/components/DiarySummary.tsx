@@ -31,6 +31,7 @@ const DiarySummary = ({
         isLoading={isContentRegenerating}
         isEditing={isEditing}
         onSummaryChange={onContentChange}
+        generateCount={generateCount}
       />
 
       {/* 재생성 버튼은 수정 모드가 아니거나 hasContent가 있을 때만 보임 */}

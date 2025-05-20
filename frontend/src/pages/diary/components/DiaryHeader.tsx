@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import ContentEditBtn from './ContentEditBtn';
 import DiaryDeleteBtn from './DiaryDeleteBtn';
 import EditTitle from './EditTitle';
@@ -14,6 +16,7 @@ interface DiaryHeaderProps {
   onEditCancel: () => void;
   onEditSave: () => void;
   onDeleteClick: () => void;
+  summaryLength?: number;
 }
 
 const DiaryHeader = ({
@@ -27,7 +30,10 @@ const DiaryHeader = ({
   onEditCancel,
   onEditSave,
   onDeleteClick,
+  summaryLength,
 }: DiaryHeaderProps) => {
+  const [isTitleValid, setIsTitleValid] = useState(true);
+
   return (
     <div className=''>
       <div className='flex flex-col'>
@@ -36,6 +42,7 @@ const DiaryHeader = ({
             title={isEditing ? editTitle : title}
             isEditing={isEditing}
             onTitleChange={onTitleChange}
+            onValidChange={setIsTitleValid}
           />
           <div className='flex items-center justify-between'>
             <div>{date}</div>
@@ -53,6 +60,8 @@ const DiaryHeader = ({
                   onSave={onEditSave}
                   onCancel={onEditCancel}
                   isSaving={isSaving}
+                  isValid={isTitleValid}
+                  summaryLength={summaryLength}
                 />
               )}
             </div>

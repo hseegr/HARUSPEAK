@@ -92,7 +92,10 @@ export const useEditDiary = () => {
       toast.success('일기 수정이 완료되었습니다.');
     },
     onError: error => {
-      toast.error(error.message || '일기 수정 중 오류가 발생했습니다.');
+      const err = error as AxiosError<{ message?: string }>;
+      toast.error(
+        err.response?.data?.message || '일기 수정 중 오류가 발생했습니다.',
+      );
     },
   });
   return { mutate, isPending };
