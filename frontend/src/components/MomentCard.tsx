@@ -71,7 +71,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
                 isToday={isToday}
               />
             </div>
-            {moment.tags.includes('아무말') && (
+            {moment.tags.includes('아무말') && isToday && (
               <div className='w-full text-sm text-haru-gray-5'>
                 아무말 태그가 있을 경우 태그 자동 생성을 할 수 없습니다
               </div>
