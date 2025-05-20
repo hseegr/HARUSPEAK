@@ -48,6 +48,10 @@ export const compressImage = (
   quality = 0.6,
 ): Promise<File> => {
   return new Promise((resolve, reject) => {
+    // GIF는 변환하지 않고 그대로 반환
+    if (file.type === 'image/gif') {
+      return resolve(file);
+    }
     const reader = new FileReader();
 
     reader.onload = () => {
