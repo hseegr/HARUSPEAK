@@ -4,18 +4,24 @@ interface SaveCancelButtonsProps {
   onSave: () => void;
   onCancel: () => void;
   isSaving: boolean;
+  isValid: boolean;
+  summaryLength?: number;
 }
 
 const SaveCancelButtons = ({
   onSave,
   onCancel,
   isSaving,
+  isValid,
+  summaryLength,
 }: SaveCancelButtonsProps) => {
+  const isSummaryValid = summaryLength === undefined || summaryLength <= 200;
+
   return (
     <div className='mx-2 flex w-full gap-2'>
       <button
         onClick={onSave}
-        disabled={isSaving}
+        disabled={isSaving || !isValid || !isSummaryValid}
         className='flex items-center gap-1 rounded-full bg-haru-light-green px-2 py-1.5 text-sm text-white hover:bg-haru-green hover:bg-opacity-70 disabled:bg-haru-gray-4 disabled:text-haru-gray-2'
       >
         <Check size={18} />

@@ -48,6 +48,14 @@ const DateFilterDialog = ({
   const [error, setError] = useState<string | null>(null);
   const [isResetMode, setIsResetMode] = useState(false);
 
+  // 다이얼로그가 열릴 때마다 초기값 설정
+  useEffect(() => {
+    if (open) {
+      setStartDate(initialStartDate ? new Date(initialStartDate) : null);
+      setEndDate(initialEndDate ? new Date(initialEndDate) : null);
+    }
+  }, [open, initialStartDate, initialEndDate]);
+
   // 오늘 날짜 설정 (시간은 00:00:00으로 설정)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -117,15 +125,29 @@ const DateFilterDialog = ({
   };
 
   const handleStartDateSelect = (date: Date | undefined) => {
-    setStartDate(date ?? null);
-    setStartDateOpen(false); // 날짜 선택 후 달력 닫기
-    setIsResetMode(false);
+    if (date) {
+      // UTC 기준으로 날짜 설정 (시간을 00:00:00으로)
+      const utcDate = new Date(
+        Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+      );
+      setStartDate(utcDate);
+    } else {
+      setStartDate(null);
+    }
+    setStartDateOpen(false);
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    setEndDate(date ?? null);
-    setEndDateOpen(false); // 날짜 선택 후 달력 닫기
-    setIsResetMode(false);
+    if (date) {
+      // UTC 기준으로 날짜 설정 (시간을 00:00:00으로)
+      const utcDate = new Date(
+        Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+      );
+      setEndDate(utcDate);
+    } else {
+      setEndDate(null);
+    }
+    setEndDateOpen(false);
   };
 
   return (
