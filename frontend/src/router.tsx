@@ -56,6 +56,47 @@ export const router = createBrowserRouter([
             path: 'library',
             element: <Library />,
             handle: { title: '내 서재' },
+            loader: async ({ request }) => {
+              const url = new URL(request.url);
+              const startDate = url.searchParams.get('startDate');
+              const endDate = url.searchParams.get('endDate');
+
+              // startDate와 endDate가 모두 있는 경우에만 날짜 검증 수행
+              if (startDate && endDate) {
+                // 날짜 형식 검사 (YYYY-MM-DD)
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+                if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+                  return redirect('/404');
+                }
+
+                // 오늘 날짜 구하기
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // 날짜 유효성 검사
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                start.setHours(0, 0, 0, 0);
+                end.setHours(0, 0, 0, 0);
+
+                // 유효하지 않은 날짜인 경우 (예: 2024-13-45)
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                  return redirect('/404');
+                }
+
+                // 시작일이 종료일보다 늦은 경우
+                if (start > end) {
+                  return redirect('/404');
+                }
+
+                // 미래 날짜 체크
+                if (start > today || end > today) {
+                  return redirect('/404');
+                }
+              }
+              return null;
+            },
           },
           {
             path: 'moments',
