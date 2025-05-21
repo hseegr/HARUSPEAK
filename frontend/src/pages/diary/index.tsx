@@ -142,11 +142,13 @@ const Diary = () => {
         isEditing={isEditing}
         onImageReset={handleImageReset}
         hasContent={hasContent}
+        isContentRegenerating={isContentRegenerating}
       />
 
       {/* 요약 내용 섹션 */}
       <DiarySummary
         content={data.summary.content}
+        isImageGenerating={data.summary.isImageGenerating}
         editContent={editContent}
         isEditing={isEditing}
         isContentRegenerating={isContentRegenerating}
