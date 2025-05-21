@@ -11,6 +11,7 @@ interface DiaryImageProps {
   isEditing: boolean;
   onImageReset: () => void;
   hasContent: boolean;
+  isContentRegenerating: boolean;
 }
 
 const DiaryImage = ({
@@ -22,6 +23,7 @@ const DiaryImage = ({
   isEditing,
   onImageReset,
   hasContent,
+  isContentRegenerating,
 }: DiaryImageProps) => {
   const shouldShowImageSkeleton =
     isImageRegenerating || isImageGenerating || !imageUrl;
@@ -47,7 +49,8 @@ const DiaryImage = ({
               isPending ||
               isImageGenerating ||
               isEditing ||
-              !hasContent
+              !hasContent ||
+              isContentRegenerating
             }
             type='image'
           />
