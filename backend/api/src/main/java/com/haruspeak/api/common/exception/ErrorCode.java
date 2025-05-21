@@ -51,6 +51,7 @@ public enum ErrorCode  {
     MOMENT_CONFLICT(40920, "해당 시간의 일기가 이미 존재합니다."),
     THUMBNAIL_REGEN_CONFLICT(40921, "대기 중인 썸네일 재생성 요청이 이미 존재합니다."),
     THUMBNAIL_REGENERATING_CONFLICT(40922, "썸네일이 재생성 중입니다. 잠시 후에 시도해주세요."),
+    SUMMARY_REGENERATING_CONFLICT(40923, "하루일기 요약이 재생성 중입니다. 잠시 후에 시도해주세요."),
     CANNOT_DELETE_DURING_REGEN(40930, "요약 또는 이미지 재생성 중에는 일기를 삭제할 수 없습니다."),
     RECOMMEND_TAGS_ARRAY_EMPTY(40940, "응답값인 추천태그리스트가 비어있습니다. 올바르지 않은 응답입니다."),
 

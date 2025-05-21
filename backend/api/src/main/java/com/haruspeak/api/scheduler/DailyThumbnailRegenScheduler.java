@@ -108,8 +108,7 @@ public class DailyThumbnailRegenScheduler {
                 String thumbnailImageUrl = s3Service.uploadImagesAndGetUrls("data:image/png;base64," + dtcResp.base64());
                 dailySummary.updateImageUrl(thumbnailImageUrl); // RDB 반영
 
-                // "상태열" 수정 및 삭제
-                thumbnailData.put("state", ThumbnailRegenState.SUCCESS); // redis 에 상태변경 (성공)
+                // "상태열" 삭제
                 redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData); // redis 에 변경사항 반영
                 redisTemplate.opsForHash().delete(stateKey, redisField); // 상태열 필드 삭제
 
