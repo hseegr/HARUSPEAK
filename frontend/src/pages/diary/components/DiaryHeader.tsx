@@ -17,6 +17,7 @@ interface DiaryHeaderProps {
   onEditSave: () => void;
   onDeleteClick: () => void;
   summaryLength?: number;
+  isImageRegenerating: boolean;
 }
 
 const DiaryHeader = ({
@@ -31,6 +32,7 @@ const DiaryHeader = ({
   onEditSave,
   onDeleteClick,
   summaryLength,
+  isImageRegenerating,
 }: DiaryHeaderProps) => {
   const [isTitleValid, setIsTitleValid] = useState(true);
 
@@ -52,7 +54,10 @@ const DiaryHeader = ({
               {!isEditing && (
                 <div className='flex gap-1'>
                   <ContentEditBtn onClick={onEditStart} isEditing={isEditing} />
-                  <DiaryDeleteBtn onClick={onDeleteClick} />
+                  <DiaryDeleteBtn
+                    onClick={onDeleteClick}
+                    isImageRegenerating={isImageRegenerating}
+                  />
                 </div>
               )}
               {isEditing && (
