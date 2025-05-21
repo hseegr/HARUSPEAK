@@ -114,6 +114,7 @@ export const useMomentEdit = (
     setEditedMoment(initialMoment);
     setNewTag('');
     setDeletedImages([]);
+    setContentLength(initialMoment.content.length);
   }, [initialMoment]);
 
   return {

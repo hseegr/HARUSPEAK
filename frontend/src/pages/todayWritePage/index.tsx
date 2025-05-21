@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -31,6 +31,14 @@ const TodayWritePage = () => {
 
   // 텍스트 길이 체크
   const checkTextLength = textBlocks.join('\n\n').length;
+
+  // 마지막 텍스트 블록 위치를 참조하기 위한 ref
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // 텍스트 블록이 추가되었을 때 마지막으로 스크롤
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [textBlocks.length]);
 
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
@@ -95,25 +103,24 @@ const TodayWritePage = () => {
 
   return (
     <div className='relative h-full w-full'>
-      <div className='flex h-full flex-col overflow-y-auto px-2 py-1 pb-[180px]'>
-        {/* 글자 수 표시 */}
-        <div className='mb-1 flex justify-end font-mont text-sm font-medium'>
+      {/* 상단 고정 영역: 글자 수 + 안내문구 우측 정렬 */}
+      <div className='fixed left-0 right-0 top-12 z-10 mx-auto w-full max-w-mobile bg-white'>
+        <div className='flex flex-col items-end justify-end px-6'>
           <span
-            className={
+            className={`font-mont text-sm ${
               checkTextLength > 500 ? 'text-red-500' : 'text-haru-gray-5'
-            }
+            }`}
           >
             {checkTextLength}/500자
           </span>
+          {checkTextLength > 500 && (
+            <span className='text-xs text-red-500'>
+              500자까지만 입력 가능합니다.
+            </span>
+          )}
         </div>
-
-        {/* 500자 초과 안내 문구 */}
-        {checkTextLength > 500 && (
-          <div className='mb-3 text-right text-xs text-red-500'>
-            500자까지만 입력 가능합니다.
-          </div>
-        )}
-
+      </div>
+      <div className='mt-10 flex h-full flex-col overflow-y-auto px-2 py-1 pb-[180px]'>
         {/* 이미지 첨부 리스트 */}
         <ImageInputList />
 
@@ -133,9 +140,11 @@ const TodayWritePage = () => {
             {hasContent && (
               <div className='flex flex-row justify-end px-4'>
                 <div
-                  onClick={!isSaving ? handleSave : undefined} // 저장 중이면 클릭 막기
+                  onClick={
+                    !isSaving && checkTextLength <= 500 ? handleSave : undefined
+                  } // 저장 중이면 클릭 막기
                   className={`flex justify-end px-2 text-sm font-semibold ${
-                    isSaving
+                    isSaving || checkTextLength > 500
                       ? 'cursor-not-allowed text-gray-400'
                       : 'cursor-pointer text-haru-green'
                   }`}
@@ -168,6 +177,7 @@ const TodayWritePage = () => {
           </div>
         </div>
       </div>
+      <div ref={bottomRef} />
     </div>
   );
 };

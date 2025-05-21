@@ -6,6 +6,7 @@ interface MomentDeleteDialogProps {
   onOpenChange: (open: boolean) => void;
   momentTime: string;
   createdAt: string;
+  onDelete?: () => void;
 }
 
 const MomentDeleteDialog = ({
@@ -13,6 +14,7 @@ const MomentDeleteDialog = ({
   onOpenChange,
   momentTime,
   createdAt,
+  onDelete,
 }: MomentDeleteDialogProps) => {
   const { mutate: deleteMomentMutation, isPending } = useMomentDelete();
 
@@ -36,7 +38,10 @@ const MomentDeleteDialog = ({
           <button
             onClick={() => {
               deleteMomentMutation(createdAt, {
-                onSuccess: () => onOpenChange(false),
+                onSuccess: () => {
+                  onOpenChange(false);
+                  onDelete?.();
+                },
               });
             }}
             disabled={isPending}
