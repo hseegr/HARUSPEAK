@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HaruspeakException .class)
     public ResponseEntity<ErrorResponse> handleHaruspeakException(HaruspeakException e) {
-        log.error("HarusepakException 발생: {}", e.getErrorCode().getMessage());
+        log.warn("📛 HarusepakException 발생: {}", e.getErrorCode().getMessage());
         return ResponseEntity.status(e.getErrorCode().getCode() / 100)
                 .body(createErrorResponse(
                         e.getErrorCode().getCode(),
@@ -32,6 +32,28 @@ public class GlobalExceptionHandler {
                         e.getDetails())
                 );
     }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindException(BindException ex) {
+        log.warn("📛 바인딩 실패: {}", ex.getMessage());
+
+        String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        // userTags 관련 필드 에러만 필터링
+//        String message = ex.getFieldErrors().stream()
+//                .filter(fieldError -> "userTags".equals(fieldError.getField()))
+//                .findFirst()
+//                .map(fieldError -> String.format("'%s' 항목은 정수 리스트여야 합니다.", fieldError.getField()))
+//                .orElse("요청 값이 올바르지 않습니다.");
+
+        return ResponseEntity.badRequest().body(
+                createErrorResponse(
+                        ErrorCode.BAD_REQUEST.getCode(),
+                        ErrorCode.BAD_REQUEST.getMessage(),
+                        message
+                )
+        );
+    }
+
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -64,7 +86,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        log.error("Validation 예외 발생: {}", ex.getMessage());
+        log.warn("📛 Validation 예외 발생: {}", ex.getMessage());
 
         String firstErrorMessage = ex.getBindingResult()
                 .getFieldErrors()
@@ -103,7 +125,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalExceptions(Exception ex) {
-        log.error("Unhandled 예외 발생: {}", ex.getMessage(), ex);
+        log.error("📛 Unhandled 예외 발생: {}", ex.getMessage(), ex);
         return ResponseEntity.status(500)
                 .body(createErrorResponse(
                         ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
