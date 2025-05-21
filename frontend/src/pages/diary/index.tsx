@@ -128,6 +128,8 @@ const Diary = () => {
         onEditSave={handleEditSave}
         onDeleteClick={handleDeleteClick}
         summaryLength={editContent.length}
+        isImageRegenerating={isImageRegenerating}
+        isContentRegenerating={isContentRegenerating}
       />
 
       {/* 이미지 섹션 */}

@@ -1,10 +1,13 @@
 import { toast } from 'react-toastify';
 
-import { useRegenerateImage } from '@/hooks/useDiaryQuery';
+import { useGetDiary, useRegenerateImage } from '@/hooks/useDiaryQuery';
 
 export const useImageHandler = (summaryId: string) => {
-  const { mutate: regenerateImage, isPending: isImageRegenerating } =
-    useRegenerateImage();
+  const { data } = useGetDiary(summaryId);
+  const { mutate: regenerateImage, isPending } = useRegenerateImage();
+
+  const isImageRegenerating =
+    isPending || data?.summary?.isImageGenerating || false;
 
   const handleImageReset = () => {
     if (isImageRegenerating) {

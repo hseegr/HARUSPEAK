@@ -19,7 +19,7 @@ const ImageGrid = ({ images, momentTime, momentId }: ImageGridProps) => {
     <>
       <div className='mb-3 flex w-full gap-1'>
         {images.slice(0, 3).map((image, idx) => {
-          const remainingCount = images.length - 3;
+          const remainingCount = images.length - 2;
 
           return (
             <div

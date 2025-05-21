@@ -8,10 +8,19 @@ import MomentDeleteDialog from '@/pages/today/components/MomentDeleteDialog';
 import MomentEditDialog from '@/pages/today/components/MomentEditDialog';
 import { MomentCardProps } from '@/types/common';
 
-const MomentCard = ({ moment, isToday }: MomentCardProps) => {
+interface ExtendedMomentCardProps extends MomentCardProps {
+  onDelete?: () => void;
+}
+
+const MomentCard = ({ moment, isToday, onDelete }: ExtendedMomentCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const formattedTime = formatMomentTime(moment.momentTime);
+
+  const handleDelete = () => {
+    setIsDeleteDialogOpen(false);
+    onDelete?.();
+  };
 
   return (
     <>
@@ -91,6 +100,7 @@ const MomentCard = ({ moment, isToday }: MomentCardProps) => {
           onOpenChange={setIsDeleteDialogOpen}
           momentTime={moment.momentTime}
           createdAt={moment.createdAt}
+          onDelete={handleDelete}
         />
       )}
     </>
