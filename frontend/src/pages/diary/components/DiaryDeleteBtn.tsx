@@ -1,17 +1,19 @@
 interface DiaryDeleteBtnProps {
   onClick: () => void;
   isImageRegenerating: boolean;
+  isContentRegenerating: boolean;
 }
 
 const DiaryDeleteBtn = ({
   onClick,
   isImageRegenerating,
+  isContentRegenerating,
 }: DiaryDeleteBtnProps) => {
   return (
     <button
       onClick={onClick}
       className='px-2 py-1 font-mont text-haru-gray-4 hover:text-haru-green disabled:cursor-not-allowed disabled:text-haru-gray-5'
-      disabled={isImageRegenerating}
+      disabled={isImageRegenerating || isContentRegenerating}
     >
       삭제
     </button>
