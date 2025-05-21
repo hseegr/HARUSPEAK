@@ -9,6 +9,7 @@ import com.haruspeak.api.summary.domain.DailySummary;
 import com.haruspeak.api.summary.domain.ThumbnailRegenState;
 import com.haruspeak.api.summary.domain.repository.DailySummaryRepository;
 import com.haruspeak.api.summary.domain.repository.SummaryContentRegenRepository;
+import com.haruspeak.api.summary.domain.repository.SummaryThumnailRegenStateRedisRepository;
 import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class SummaryService {
     private final ActiveDailyMomentJpaRepository activeDailyMomentJpaRepository;
     private final FastApiClient fastApiClient;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final SummaryThumnailRegenStateRedisRepository summaryThumnailRegenStateRedisRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     // [API] AI 하루일기 요약 재생성
@@ -42,6 +44,10 @@ public class SummaryService {
 
         // 레디스에 상태(생성중) 저장
         summaryContentRegenRepository.saveSummaryRegenState(userId, summaryId);
+
+        // 만약 썸네일이 생성중이면 하루일기 요약재생성 기능 막기
+        boolean isThumbnailGenerating = summaryThumnailRegenStateRedisRepository.isGenereatingOfSummary(userId, summaryId);
+        if(isThumbnailGenerating) throw new HaruspeakException(ErrorCode.THUMBNAIL_REGENERATING_CONFLICT);
 
         // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
