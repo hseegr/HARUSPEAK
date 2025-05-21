@@ -42,12 +42,12 @@ public class SummaryService {
     @Transactional
     public DailySummaryCreateResponse regenerateDailySummary (Integer userId, Integer summaryId, String uri) {
 
-        // 레디스에 상태(생성중) 저장
-        summaryContentRegenRepository.saveSummaryRegenState(userId, summaryId);
-
         // 만약 썸네일이 생성중이면 하루일기 요약재생성 기능 막기
         boolean isThumbnailGenerating = summaryThumnailRegenStateRedisRepository.isGenereatingOfSummary(userId, summaryId);
         if(isThumbnailGenerating) throw new HaruspeakException(ErrorCode.THUMBNAIL_REGENERATING_CONFLICT);
+
+        // 레디스에 상태(생성중) 저장
+        summaryContentRegenRepository.saveSummaryRegenState(userId, summaryId);
 
         // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
