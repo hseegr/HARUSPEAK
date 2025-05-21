@@ -80,6 +80,11 @@ public class DailySummaryController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))
                     ),
                     @ApiResponse(
+                            responseCode = "409",
+                            description = "Conflict",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    ),
+                    @ApiResponse(
                             responseCode = "410",
                             description = "Gone",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class))

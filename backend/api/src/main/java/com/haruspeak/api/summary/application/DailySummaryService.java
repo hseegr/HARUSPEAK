@@ -118,6 +118,7 @@ public class DailySummaryService {
      */
     @Transactional
     public void deleteSummary(Integer summaryId, Integer userId){
+
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
                 .orElseThrow(()->{
                     log.warn("⚠️ 조회 실패 - 존재하지 않음 (userId={}, summaryId={})", userId, summaryId);
@@ -127,6 +128,11 @@ public class DailySummaryService {
         if(dailySummary.getUserId() != userId){
             log.warn("⚠️ 조회 실패 - 접근 권한 없음 (userId={}, summaryId={})", userId, summaryId);
             throw new AccessDeniedException();
+        }
+
+        if (thumnailRegenStateViewer.isGeneratingOfSummary(userId, summaryId)){
+            log.warn("⚠️ 삭세 실패 - 이미지 생성 중 (userId={}, summaryId={})", userId, summaryId);
+            throw new HaruspeakException(ErrorCode.CANNOT_DELETE_DURING_REGEN);
         }
 
         if(dailySummary.isDeleted()){
