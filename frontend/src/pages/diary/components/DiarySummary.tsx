@@ -11,6 +11,7 @@ interface DiarySummaryProps {
   onContentChange: (value: string) => void;
   onContentReset: () => void;
   hasContent: boolean;
+  isImageGenerating: boolean;
 }
 
 const DiarySummary = ({
@@ -23,6 +24,7 @@ const DiarySummary = ({
   onContentChange,
   onContentReset,
   hasContent,
+  isImageGenerating,
 }: DiarySummaryProps) => {
   return (
     <div className='relative'>
@@ -40,7 +42,12 @@ const DiarySummary = ({
           <ResetBtn
             generateCount={generateCount}
             onReset={onContentReset}
-            isDisabled={isContentRegenerating || isPending || !hasContent}
+            isDisabled={
+              isContentRegenerating ||
+              isPending ||
+              !hasContent ||
+              isImageGenerating
+            }
             type='content'
           />
         </div>
