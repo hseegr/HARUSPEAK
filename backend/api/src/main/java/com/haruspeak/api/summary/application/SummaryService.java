@@ -8,6 +8,7 @@ import com.haruspeak.api.moment.domain.repository.ActiveDailyMomentJpaRepository
 import com.haruspeak.api.summary.domain.DailySummary;
 import com.haruspeak.api.summary.domain.ThumbnailRegenState;
 import com.haruspeak.api.summary.domain.repository.DailySummaryRepository;
+import com.haruspeak.api.summary.domain.repository.SummaryContentRegenRepository;
 import com.haruspeak.api.summary.dto.request.DailySummaryCreateRequest;
 import com.haruspeak.api.summary.dto.response.DailySummaryCreateResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SummaryService {
 
+    private final SummaryContentRegenRepository summaryContentRegenRepository;
     private final DailySummaryRepository dailySummaryRepository;
     private final ActiveDailyMomentJpaRepository activeDailyMomentJpaRepository;
     private final FastApiClient fastApiClient;
@@ -37,6 +39,9 @@ public class SummaryService {
     // [API] AI 하루일기 요약 재생성
     @Transactional
     public DailySummaryCreateResponse regenerateDailySummary (Integer userId, Integer summaryId, String uri) {
+
+        // 레디스에 상태(생성중) 저장
+        summaryContentRegenRepository.saveSummaryRegenState(userId, summaryId);
 
         // dailySummary 불러오기 -> userId 로 user 것이 맞는지 확인
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
@@ -57,15 +62,20 @@ public class SummaryService {
 
         DailySummaryCreateRequest dscr = new DailySummaryCreateRequest(mergedMoments);
 
+
+
         try {
             // ai 서버에 프론트 요청값 전달 후 반환 받기
             DailySummaryCreateResponse response = fastApiClient.getPrediction(uri, dscr, DailySummaryCreateResponse.class);
+            // 레디스에서 요약상태 삭제
+            summaryContentRegenRepository.deleteSummaryRegenState(userId, summaryId);
             // 받아온 값 컨텐츠 RDB 업데이트
             dailySummary.updateContent(response.content());
             // 성공 시 요약내용재생성횟수 1회 증가
             dailySummary.increaseContentGenerateCount();
             return response;
         } catch (Exception e) {
+            summaryContentRegenRepository.deleteSummaryRegenState(userId, summaryId);
             throw new HaruspeakException(ErrorCode.SUMMARY_CONTENT_REGENERATION_FAILED); // 필요에 따라 ErrorCode 조정
         }
     }
@@ -76,6 +86,10 @@ public class SummaryService {
             Integer summaryId,
             Integer userId
     ) {
+
+        // 요약이 재생성 중이면 하루일기 썸네일 재생성 못하도록 에러던지기
+        boolean isSummaryGenerating = summaryContentRegenRepository.isSummaryGenerating(userId, summaryId);
+        if(isSummaryGenerating) throw new HaruspeakException(ErrorCode.SUMMARY_REGENERATING_CONFLICT);
 
         // RDB 에서 summaryId 에 해당하는 dailySummary 가져오기, 없으면 에러처리
         DailySummary dailySummary = dailySummaryRepository.findById(summaryId)
