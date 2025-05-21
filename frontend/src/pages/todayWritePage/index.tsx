@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -31,6 +31,14 @@ const TodayWritePage = () => {
 
   // 텍스트 길이 체크
   const checkTextLength = textBlocks.join('\n\n').length;
+
+  // 마지막 텍스트 블록 위치를 참조하기 위한 ref
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // 텍스트 블록이 추가되었을 때 마지막으로 스크롤
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [textBlocks.length]);
 
   // 음성 -> 텍스트 변환 버튼 클릭 핸들러
   const handleVoiceButtonClick = () => {
@@ -133,9 +141,11 @@ const TodayWritePage = () => {
             {hasContent && (
               <div className='flex flex-row justify-end px-4'>
                 <div
-                  onClick={!isSaving ? handleSave : undefined} // 저장 중이면 클릭 막기
+                  onClick={
+                    !isSaving && checkTextLength <= 500 ? handleSave : undefined
+                  } // 저장 중이면 클릭 막기
                   className={`flex justify-end px-2 text-sm font-semibold ${
-                    isSaving
+                    isSaving || checkTextLength > 500
                       ? 'cursor-not-allowed text-gray-400'
                       : 'cursor-pointer text-haru-green'
                   }`}
@@ -168,6 +178,7 @@ const TodayWritePage = () => {
           </div>
         </div>
       </div>
+      <div ref={bottomRef} />
     </div>
   );
 };
