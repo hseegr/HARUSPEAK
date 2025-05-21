@@ -88,37 +88,48 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.warn("📛 Validation 예외 발생: {}", ex.getMessage());
 
-        String firstErrorMessage = ex.getBindingResult()
+        FieldError firstFieldError = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .findFirst()
-                .map(FieldError::getDefaultMessage)
-                .orElse("잘못된 요청입니다.");
+                .orElse(null);
 
-        return ResponseEntity.status(ErrorCode.BAD_REQUEST.getCode()/ 100)
+        String message;
+        if (firstFieldError != null) {
+            String field = firstFieldError.getField();
+            String requiredType = extractRequiredTypeFromCodes(firstFieldError.getCodes());
+
+            message = String.format(
+                    "'%s' 항목은 %s 타입이어야 합니다.",
+                    field,
+                    requiredType != null ? requiredType : "올바른"
+            );
+        } else {
+            message = "요청 형식이 올바르지 않습니다.";
+        }
+
+        return ResponseEntity.status(ErrorCode.BAD_REQUEST.getCode() / 100)
                 .body(createErrorResponse(
                         ErrorCode.BAD_REQUEST.getCode(),
-                        firstErrorMessage,
-                        firstErrorMessage
-                        )
-                );
+                        message,
+                        ErrorCode.BAD_REQUEST.getMessage()
+                ));
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ValidErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        log.error("Validation 예외 발생: {}", ex.getMessage());
-//
-//        return ResponseEntity.status(ErrorCode.MISSING_REQUIRED_FIELDS.getCode() / 100)
-//                .body(new ValidErrorResponse(
-//                        ErrorCode.MISSING_REQUIRED_FIELDS.getCode(),
-//                        ErrorCode.MISSING_REQUIRED_FIELDS.getMessage(),
-//                        LocalDateTime.now(),
-//                        ex.getBindingResult().getFieldErrors().stream()
-//                                .map(fieldError -> {
-//                                    return new FieldErrorDetail(fieldError.getField(), fieldError.getDefaultMessage());
-//                                }).toList()
-//                ));
-//    }
+    private String extractRequiredTypeFromCodes(String[] codes) {
+        if (codes == null) return null;
+
+        for (String code : codes) {
+            if (code.startsWith("typeMismatch.")) {
+                if (code.contains("java.lang.Integer")) return "정수";
+                if (code.contains("java.util.List")) return "리스트";
+                if (code.contains("java.lang.String")) return "문자열";
+                if (code.contains("java.time.LocalDate")) return "날짜 (yyyy-MM-dd)";
+                if (code.contains("java.time.LocalDateTime")) return "시간 (yyyy-MM-dd HH:mm:ss)";
+            }
+        }
+        return null;
+    }
 
     /**
      * 모든 예외 (Exception) 처리 (서버 내부 오류)
