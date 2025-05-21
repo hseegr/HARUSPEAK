@@ -97,12 +97,14 @@ public class GlobalExceptionHandler {
         String message;
         if (firstFieldError != null) {
             String field = firstFieldError.getField();
+            Object rejectedValue = firstFieldError.getRejectedValue();
             String requiredType = extractRequiredTypeFromCodes(firstFieldError.getCodes());
 
             message = String.format(
-                    "'%s' 항목은 %s 타입이어야 합니다.",
+                    "'%s' 항목은 %s 타입이어야 합니다. (입력값: %s)",
                     field,
-                    requiredType != null ? requiredType : "올바른"
+                    requiredType != null ? requiredType : "올바른",
+                    rejectedValue
             );
         } else {
             message = "요청 형식이 올바르지 않습니다.";
@@ -112,7 +114,7 @@ public class GlobalExceptionHandler {
                 .body(createErrorResponse(
                         ErrorCode.BAD_REQUEST.getCode(),
                         message,
-                        ErrorCode.BAD_REQUEST.getMessage()
+                        message
                 ));
     }
 
