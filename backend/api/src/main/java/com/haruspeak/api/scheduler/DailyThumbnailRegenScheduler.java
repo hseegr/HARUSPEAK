@@ -12,6 +12,7 @@ import com.haruspeak.api.summary.dto.response.DailyThumbnailCreateResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,6 +30,9 @@ public class DailyThumbnailRegenScheduler {
     private final DailySummaryRepository dailySummaryRepository;
     private final FastApiClient fastApiClient;
     private final S3Service s3Service;
+
+    @Value("${AI_THUMBNAIL_BASE_URL}")
+    private String thumbnailUri;
 
     @Transactional
     @Scheduled(cron = "*/20 * * * * *")
@@ -85,7 +89,6 @@ public class DailyThumbnailRegenScheduler {
             redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData); // redis 에 변경사항 반영
 
             // ai 서버에 프론트 요청값 전달 후 반환 받기
-            String uri = "/ai/daily-thumbnail-dalle";
             DailyThumbnailCreateRequest dtcReq = new DailyThumbnailCreateRequest(content); // 요청값 담은 DTO
 
             try {
@@ -99,7 +102,7 @@ public class DailyThumbnailRegenScheduler {
                 redisTemplate.opsForHash().put(stateKey, redisField, thumbnailData); // redis 에 변경사항 반영
 
                 DailyThumbnailCreateResponse dtcResp = fastApiClient.getPrediction(
-                        uri,
+                        thumbnailUri,
                         dtcReq,
                         DailyThumbnailCreateResponse.class
                 );
