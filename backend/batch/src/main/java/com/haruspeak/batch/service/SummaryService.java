@@ -27,13 +27,13 @@ public class SummaryService {
     private String defaultThumbnail;
 
     public DailySummaryResponse generateDailySummary(String totalTodayContent) {
-      log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청 - {}", totalTodayContent.substring(0, Math.min(10, totalTodayContent.length())));
-      try {
-          return dailySummaryClient.getDailySummary(totalTodayContent);
-      }catch (Exception e) {
-          log.error("💥 오늘의 요약 생성 중 에러 발생 - totalTodayCount:{}", totalTodayContent, e);
-          throw e;
-      }
+        log.debug("🐛 오늘의 제목 및 요약 내용 생성 요청 - 글자수:{}", totalTodayContent.length());
+        try {
+            return dailySummaryClient.getDailySummary(totalTodayContent);
+        }catch (Exception e) {
+            log.error("💥 오늘의 요약 생성 중 에러 발생 - totalTodayCount:{}", totalTodayContent, e);
+            throw e;
+        }
     }
 
     public SummaryProcessingResult getTodayDiariesWithSummary(List<TodayDiaryContext> diaries) {
@@ -43,16 +43,18 @@ public class SummaryService {
         diaries.parallelStream().forEach(todayDiary -> {
             try {
                 List<DailyMoment> moments = todayDiary.getDailyMoments();
-                String totalContent = buildTotalContent(moments);
+                String totalContent = buildTotalContentExcludingMeaninglessTags(moments);
 
                 if(TextUtil.isMeaningless(totalContent)){
+                    addToNonContentList(todayDiary, nonContentList);
+
 //                    totalContent = buildTotalContentByTags(moments);
 //
 //                    if(TextUtil.isMeaningless(totalContent)){
-                        String date = todayDiary.getDailySummary().getWriteDate();
-                        setDefaultDailySummary(todayDiary.getDailySummary(), date);
-                        nonContentList.add(todayDiary);
-                        log.debug("⚠️ 요약할 내용 없음 - userId:{}",todayDiary.getDailySummary().getUserId());
+//                        String date = todayDiary.getDailySummary().getWriteDate();
+//                        setDefaultDailySummary(todayDiary.getDailySummary(), date);
+//                        nonContentList.add(todayDiary);
+//                        log.debug("⚠️ 요약할 내용 없음 - userId:{}",todayDiary.getDailySummary().getUserId());
 
 //                    }else {
 //                        DailySummaryResponse summaries = generateDailySummary(totalContent);
@@ -62,7 +64,10 @@ public class SummaryService {
 //                    }
 
                 } else {
-                    DailySummaryResponse summaries = generateDailySummary(totalContent);
+                    DailySummaryResponse summaries = generateDailySummary(Objects.requireNonNull(totalContent));
+                    if(summaries.summary().isBlank()){
+                        addToNonContentList(todayDiary, nonContentList);
+                    }
                     setDailySummary(todayDiary.getDailySummary(), summaries);
                     successList.add(todayDiary);
                     log.debug("🔎 userId:{}, {}",todayDiary.getDailySummary().getUserId(), summaries);
@@ -80,13 +85,22 @@ public class SummaryService {
     }
 
 
-    private String buildTotalContent(List<DailyMoment> moments) {
-        String result = moments.stream()
-                .map(DailyMoment::getContent)
-                .filter(content -> !TextUtil.isMeaningless(content))
-                .collect(Collectors.joining("\n\n"));
+    private void addToNonContentList(TodayDiaryContext todayDiary, List<TodayDiaryContext> nonContentList) {
+        String date = todayDiary.getDailySummary().getWriteDate();
+        setDefaultDailySummary(todayDiary.getDailySummary(), date);
+        nonContentList.add(todayDiary);
+        log.debug("⚠️ 요약할 내용 없음 - userId:{}",todayDiary.getDailySummary().getUserId());
+    }
 
-        return TextUtil.isMeaningless(result) ? null : result;
+
+    private String buildTotalContentExcludingMeaninglessTags(List<DailyMoment> moments) {
+        StringBuilder result = new StringBuilder();
+
+        for(DailyMoment moment : moments) {
+            if(moment.getTags().contains("아무말")) continue;
+            result.append(TextUtil.removeMeaninglessParts(moment.getContent())).append("\n");
+        }
+        return TextUtil.isMeaningless(result.toString()) ? null : result.toString();
     }
 
 
