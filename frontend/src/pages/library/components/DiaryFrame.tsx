@@ -62,6 +62,7 @@ const DiaryFrame = ({
                 onCheckedChange={handleCheckedChange}
                 className='absolute right-3 top-7 h-5 w-5 -translate-y-1/2 border-haru-gray-5 bg-white data-[state=checked]:border-haru-green data-[state=checked]:bg-haru-green'
                 onClick={e => e.stopPropagation()}
+                disabled={isImageGenerating}
                 id={`checkbox-${summaryId}`}
               />
             </div>
