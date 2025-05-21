@@ -4,9 +4,9 @@ import { useToday } from '@/hooks/useTodayQuery';
 import { MomentContent } from '@/types/common';
 
 const TodayPage = () => {
-  const { data, isLoading } = useToday();
+  const { data, isLoading, refetch } = useToday();
 
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading) return <EmptyState title='로딩중' />;
   if (!data?.data || data.dataCount === 0)
     return (
       <div className='flex h-[80vh] w-full flex-col items-center justify-center gap-4'>
@@ -25,6 +25,7 @@ const TodayPage = () => {
             key={moment.momentTime || `moment-${index}`}
             moment={moment}
             isToday={true}
+            onDelete={refetch}
           />
         ))}
       </div>
