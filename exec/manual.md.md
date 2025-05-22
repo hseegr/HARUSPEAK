@@ -304,6 +304,7 @@ git
                 # fastapi
                 AI_BASE_URL: http://fastapi:8000
                 AI_STT_BASE_URL: {AI_STT_BASE_URL}
+                AI_THUMBNAIL_BASE_URL: {AI_THUMNAIL_BASE_URL}
 
 
                 # logging      
