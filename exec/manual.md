@@ -1075,7 +1075,7 @@ EC2-1 서버에 직접 설치되며, React 정적 리소스 및 Spring Boot API�
 ```
 
 --- 
-#### ✅ 백엔드 (Backend)
+#### 백엔드 (Backend)
 
 ```bash
 - Java: 17.0.15  
@@ -1089,7 +1089,7 @@ EC2-1 서버에 직접 설치되며, React 정적 리소스 및 Spring Boot API�
 ```
 
 ---
-#### ✅ AI (FastAPI)
+#### AI (FastAPI)
 ```bash
 - Python: 3.10.12  
 - Uvicorn: 0.34.2  
@@ -1099,16 +1099,17 @@ EC2-1 서버에 직접 설치되며, React 정적 리소스 및 Spring Boot API�
 
 ---
 
-#### ✅ 데이터 
+#### 데이터 
 ```bash
 - MySQL: 8.0 (Docker 이미지: `mysql:8.0`)  
 - Redis: 7.0 (Docker 이미지: `redis:7`)
 ```
 
 --- 
+### ✅ 서버 2 (52.79.61.124)
+---
 
-1. 서버 2 (3.38.190.195)
-#### ✅ 백엔드 - 배치 (Backend)
+#### 백엔드 - 배치 (Backend)
 
 ```bash
 - Java: 17.0.15  
@@ -1122,7 +1123,7 @@ EC2-1 서버에 직접 설치되며, React 정적 리소스 및 Spring Boot API�
 ```
 
 ---
-#### ✅ AI - 배치 (FastAPI)
+#### AI - 배치 (FastAPI)
 ```bash
 - Python: 3.12.3  
 - FastAPI: 0.115.12  
@@ -1135,7 +1136,7 @@ EC2-1 서버에 직접 설치되며, React 정적 리소스 및 Spring Boot API�
 
 ---
 
-#### ✅ 데이터 - 배치
+#### 데이터 - 배치
 ```bash
 - MySQL: 8.0 (Docker 이미지: `mysql:8.0`)  
 - Redis: 7.0 (Docker 이미지: `redis:7`)
